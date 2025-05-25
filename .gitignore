@@ -167,5 +167,5 @@ staticfiles/
 searched_business.json
 **/media/
 /**/migrations
-genz40/settings.py
-genz40/settings.py
+# genz40/settings.py
+# genz40/settings.py
