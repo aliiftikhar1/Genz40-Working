@@ -166,6 +166,6 @@ staticfiles/
 .idea/
 searched_business.json
 **/media/
-/backend/migrations
+/**/migrations
 genz40/settings.py
 genz40/settings.py
