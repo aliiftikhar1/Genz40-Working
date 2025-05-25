@@ -1,0 +1,1632 @@
+{% extends 'public/DynamicConfigurator/baseFile.html' %} 
+{% load static %}
+{% load humanize %}
+{% load frontend_custom_filters %}
+
+{% block content %}
+<style>
+  .opacity-50 {
+    opacity: 0.5;
+  }
+  .cursor-not-allowed {
+    cursor: not-allowed;
+  }
+  .navbar {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
+  }
+  .nav-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+    flex-wrap: wrap;
+  }
+  .nav-link {
+    position: relative;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 50%;
+    background-color: #4f46e5;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+  }
+  .nav-link:hover::after {
+    width: 100%;
+  }
+  .nav-link.active {
+    color: #4f46e5;
+  }
+  .nav-link.active::after {
+    width: 100%;
+  }
+  @media (min-width: 768px) {
+    .navbar {
+      width: 50%;
+      left: 1rem;
+      top: 1rem;
+    }
+    .nav-container {
+      background-color: rgb(0, 0, 0);
+      border-radius: 0.75rem;
+    }
+  }
+  @media (max-width: 768px) {
+    .nav-links {
+      display: none;
+    }
+    .mobile-menu-button {
+      display: block;
+    }
+  }
+</style>
+<section class="relative bg-black">
+  <nav class="navbar bg-black">
+    <div class="nav-container bg-black">
+      <!-- Logo Section -->
+      <div class="px-4 py-2 md:px-6 md:py-3 shadow-[0_0_10px_white] bg-black flex rounded-xl">
+        <a class="flex items-center space-x-2" href="{% url 'index' %}">
+          <span class="logo-dark-mode logo-font text-sm md:text-2xl text-white">
+            GEN-Z 40 
+          </span>
+          <span class="h-5 md:h-10" style="
+              background-color: #ffff;
+              padding: 1px;
+              margin-left: 5px;
+              margin-right: 10px;
+            "></span>
+          <span>
+            <img src="{% static 'images/Alvi-Automobile-Logo/alvi-logo-2.jpg' %}" class="h-4 md:h-8" alt="" />
+          </span>
+        </a>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="nav-links">
+        <a href="{% url 'home' %}" class="nav-link text-white hover:text-indigo-400 {% if request.path == '/home/' %}active{% endif %}">
+          Home
+        </a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'index' %}" class="nav-link text-white hover:text-indigo-400 {% if request.path == '/index/' %}active{% endif %}">
+            Dashboard
+          </a>
+        {% endif %}
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <button class="mobile-menu-button hidden text-white focus:outline-none" onclick="toggleMobileMenu()">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden bg-black/95 absolute top-full left-0 w-full py-2">
+      <div class="flex flex-col space-y-2 px-4">
+        <a href="{% url 'home' %}" class="nav-link text-white hover:text-indigo-400 {% if request.path == '/home/' %}active{% endif %}">
+          Home
+        </a>
+        {% if user.is_authenticated %}
+          <a href="{% url 'index' %}" class="nav-link text-white hover:text-indigo-400 {% if request.path == '/index/' %}active{% endif %}">
+            Dashboard
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+  <div class="h-full w-full relative pt-12 md:pt-0">
+    <div class="flex md:flex-row flex-col w-full  h-auto md:h-full  items-start gap-8 ">
+      <div class="w-full h-auto md:h-screen  md:sticky top-0">
+        <div class="w-full h-auto md:h-full flex justify-center items-center">
+          {% if car_model.title == 'Mark I' %}
+          <img id="carImage" src="{% static 'mk1.gif' %}" class="w-full h-full md:w-[50rem] md:h-[50rem] object-contain" alt="Car Configuration" />
+          {% elif car_model.title == 'Mark II' %}
+          <img id="carImage" src="{% static 'mk2.gif' %}" class="w-full h-full md:w-[50rem] md:h-[50rem] object-contain" alt="Car Configuration" />
+          {% elif car_model.title == 'Mark IV' %}
+          <img id="carImage" src="{% static 'mk4.gif' %}" class="w-full h-full md:w-[50rem] md:h-[50rem] object-contain" alt="Car Configuration" />
+          {% else %}
+          <img id="carImage" src="{% static 'images/car/blue-car.png' %}" class="w-full h-full object-contain" alt="Car Configuration" />
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="bg-black mt-[-50px] md:w-[65%] shadow-lg p-2 md:p-6 h-[100%]  ">
+        <div class="sticky top-12 md:top-0 bg-black p-2 z-10">
+          <h2 class="text-3xl font-bold text-center text-white mb-3 md:mb-0">
+            Configure Your {{car_model.title}}
+          </h2>
+          <h2 class="text-xl text-center text-white mb-3 md:mb-3"
+              style='font-family:Verdana, Geneva, Tahoma, sans-serif; font-weight: 100;'>
+            Select your package
+          </h2>
+
+          <div class="flex justify-between text-[16px] border-b border-gray-700 mb-3 bg-white/10">
+            {% for package in packages %}
+            <button
+              class="tab-button {% if forloop.first %}active-tab bg-gradient-to-l from-white/20 via-white/40 to-white/20{% endif %} px-3 py-2 text-white font-medium w-full"
+              data-tab="{{ package.package_type }}">
+              {{ package.name }}
+            </button>
+            {% if not forloop.last %}
+            <div class="h-16 md:h-10 bg-white p-[0.5px] my-auto"></div>
+            {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+
+        {% for package in packages %}
+        <div class="tab-content {% if not forloop.first %}hidden{% endif %}" id="{{ package.package_type }}-content">
+          <div class="package-configurator rounded-lg p-3 md:p-0">
+            <div class="mb-6 sm:mt-6">
+              <h2 class="text-3xl font-extrabold text-white">
+                {{ package.name }} Package Configurator
+              </h2>
+              <p>{{ package.description }}</p>
+              <div class="mt-6 flex items-center gap-4">
+                <span class="text-xl text-gray-400 line-through">${{ package.baseAmount }}</span>
+                <span class="text-2xl font-bold text-white">${{package.discountAmount}}</span>
+              </div>
+              <div class="mt-4 h-1 w-full"></div>
+            </div>
+
+            <form id="{{ package.package_type }}Form" class="space-y-6 pb-28">
+              <input type="hidden" name="package_base_price" value="{{ package.discountAmount }}">
+              {% if package.package_type == 'roller' %}
+             
+                {% for section in sections %}
+                  {% with features=rollerfeatures|filter_by_section:section %}
+                    {% if features %}
+                      <div class="mt-6 pt-6 border-t border-gray-700">
+                        <h3 class="text-2xl text-center text-white mb-4">{{ section.name }}</h3>
+                        <div class="space-y-3">
+                          {% for feature in features %}
+                            {% if feature|is_feature_available:car_model.title %}
+                              {% if feature.type == 'checkbox' %}
+                              <div class="flex items-start md:items-center border border-gray-400 p-2 rounded relative">
+                                {% if feature.in_rollerPlus %}
+                                <div id="available_in_roller_plus" name="feature-name-slugified" class="absolute top-0 right-0 w-full h-full z-10 bg-none cursor-pointer rounded-md flex items-center justify-center">
+                                </div>
+                                {% endif %}
+                                <div class="flex items-center md:h-6 h-10">
+                                  <input
+                                    id="{{ feature.name|slugify }}"
+                                    name="{{ feature.name|slugify }}"
+                                    type="checkbox"
+                                    data-section="{{ section.name }}"
+                                    {% if feature.checked %}checked{% endif %}
+                                    {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
+                                    class="feature-checkbox focus:ring-indigo-500 h-6 w-6 rounded text-indigo-600 border-gray-500 {% if not feature.disabled and not feature.in_rollerPlus %}cursor-pointer{% else %}cursor-not-allowed{% endif %}"
+                                    data-price="{{ feature.price }}"
+                                    data-feature-name="{{ feature.name }}"
+                                    data-feature-id="{{ feature.id }}"
+                                    {% if feature.in_rollerPlus %}
+                                    data-rollerplus="true"
+                                    {% endif %}
+                                  >
+                                </div>
+                                <div class="ml-3 text-lg">
+                                  <label for="{{ feature.name|slugify }}" class="font-medium text-gray-300">{{ feature.name }}</label>
+                                  {% if feature.checked and feature.disabled %}
+                                    <span class="ml-2 text-lime-400 text-sm">Included</span>
+                                  {% elif feature.in_rollerPlus %}
+                                    <span class="ml-2 text-blue-400 text-sm">Available in Roller Plus</span>
+                                  {% elif not feature.disabled %}
+                                    <span class="ml-2 text-indigo-400">+${{ feature.price }}</span>
+                                  {% endif %}
+                                </div>
+                              </div>
+                              {% elif feature.type == 'radiobox' and feature.option1 and feature.option2 %}
+                              <div class="border border-gray-400 p-2 rounded relative">
+                                {% if feature.in_rollerPlus %}
+                                  <div id="available_in_roller_plus" name="feature-name-slugified" class="absolute top-0 right-0 w-full h-full z-10 bg-none cursor-pointer rounded-md flex items-center justify-center">
+                                  </div>
+                                {% endif %}
+                                <div class="text-lg font-medium text-gray-300 mb-2">
+                                  {{ feature.name }}  {% if  feature.included  %}
+                                  <span class="ml-2 text-lime-400 text-sm">Included</span>
+                                {% endif %}
+                                  {% if feature.in_rollerPlus %}
+                                    <span class="ml-2 text-blue-400 text-sm">(Available in Roller Plus)</span>
+                                  {% endif %}
+                                </div>
+                                <div class="space-y-2 pl-4">
+                                  <div class="flex items-center">
+                                    <input
+                                      id="{{ feature.name|slugify }}_option1"
+                                      name="{{ feature.name|slugify }}"
+                                      type="radio"
+                                      data-section="{{ section.name }}"
+                                      value="{{ feature.option1 }}"
+                                      {% if feature.checked %}checked{% endif %}
+                                      {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
+                                      class="feature-radio focus:ring-indigo-500 h-6 w-6 rounded-full text-indigo-600 border-gray-500 {% if not feature.disabled and not feature.in_rollerPlus %}cursor-pointer{% else %}cursor-not-allowed{% endif %}"
+                                      data-price="{{ feature.option1_price }}"
+                                      data-included="{{ feature.included }}"
+                                      data-feature-name="{{ feature.name }}"
+                                      data-option="option1"
+                                      data-feature-id="{{ feature.id }}"
+                                      {% if feature.in_rollerPlus %}
+                                      data-rollerplus="true"
+                                      {% endif %}
+                                    >
+                                    <label for="{{ feature.name|slugify }}" class="ml-3 text-gray-300">
+                                      {{ feature.option1 }}
+                                      {% if not feature.disabled and not feature.included and not feature.in_rollerPlus %}
+                                        <span class="text-indigo-400">+${{ feature.option1_price }}</span>
+                                      {% endif %}
+                                    </label>
+                                  </div>
+                                  <div class="flex items-center">
+                                    <input
+                                      id="{{ feature.name|slugify }}_option2"
+                                      name="{{ feature.name|slugify }}"
+                                      type="radio"
+                                      data-section="{{ section.name }}"
+                                      value="{{ feature.option2 }}"
+                                      {% if feature.checked %}checked{% endif %}
+                                      {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
+                                      class="feature-radio focus:ring-indigo-500 h-6 w-6 rounded-full text-indigo-600 border-gray-500 {% if not feature.disabled and not feature.in_rollerPlus %}cursor-pointer{% else %}cursor-not-allowed{% endif %}"
+                                      data-price="{{ feature.option2_price }}"
+                                      data-included="{{ feature.included }}"
+                                      data-feature-name="{{ feature.name }}"
+                                      data-option="option2"
+                                      data-feature-id="{{ feature.id }}"
+                                      {% if feature.in_rollerPlus %}
+                                      data-rollerplus="true"
+                                      {% endif %}
+                                    >
+                                    <label for="{{ feature.name|slugify }}" class="ml-3 text-gray-300">
+                                      {{ feature.option2 }}
+                                      {% if not feature.disabled and not feature.included and not feature.in_rollerPlus %}
+                                        <span class="text-indigo-400">+${{ feature.option2_price }}</span>
+                                      {% endif %}
+                                    </label>
+                                  </div>
+                                </div>
+                               
+                              </div>
+                              {% endif %}
+                            {% endif %}
+                          {% endfor %}
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% endwith %}
+                {% endfor %}
+              
+              {% elif package.package_type == 'roller_plus' %}
+                {% for section in sections %}
+                  {% with features=rollerplusfeatures|filter_by_section:section %}
+                    {% if features %}
+                      <div class="mt-6 pt-6 border-t border-gray-700">
+                        <h3 class="text-2xl text-center text-white mb-4">{{ section.name }}</h3>
+                        <div class="space-y-3">
+                          {% for feature in features %}
+                            {% if feature|is_feature_available:car_model.title %}
+                              {% if feature.type == 'checkbox' %}
+                              <div class="flex items-start md:items-center border border-gray-400 p-2 rounded">
+                                <div class="flex items-center md:h-6 h-10">
+                                  <input
+                                    id="{{ feature.name|slugify }}"
+                                    name="{{ feature.name|slugify }}"
+                                    type="checkbox"
+                                      data-section="{{ section.name }}"
+                                    {% if feature.checked %}checked{% endif %}
+                                    {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
+                                    class="feature-checkbox focus:ring-indigo-500 h-6 w-6 rounded text-indigo-600 border-gray-500 {% if not feature.disabled and not feature.in_rollerPlus %}cursor-pointer{% else %}cursor-not-allowed{% endif %}"
+                                    data-price="{{ feature.price }}"
+                                    data-feature-name="{{ feature.name }}"
+                                    
+                                    data-feature-id="{{ feature.id }}"
+                                  >
+                                </div>
+                                <div class="ml-3 text-lg">
+                                  <label for="{{ feature.name|slugify }}" class="font-medium text-gray-300">{{ feature.name }}</label>
+                                  {% if feature.checked and feature.disabled %}
+                                    <span class="ml-2 text-lime-400 text-sm">Included</span>
+                                  {% elif feature.in_rollerPlus %}
+                                    <span class="ml-2 text-blue-400 text-sm">Available in Roller Plus</span>
+                                  {% elif not feature.disabled %}
+                                    <span class="ml-2 text-indigo-400">+${{ feature.price }}</span>
+                                  {% endif %}
+                                </div>
+                              </div>
+                              {% elif feature.type == 'radiobox' and feature.option1 and feature.option2 %}
+                              <div class="border border-gray-400 p-2 rounded">
+                                <div class="text-lg font-medium text-gray-300 mb-2">
+                                  {{ feature.name }}  {% if  feature.included  %}
+                                  <span class="ml-2 text-lime-400 text-sm">Included</span>
+                                {% endif %}
+                                  {% if feature.in_rollerPlus %}
+                                    <span class="ml-2 text-blue-400 text-sm">(Available in Roller Plus)</span>
+                                  {% endif %}
+                                </div>
+                                <div class="space-y-2 pl-4">
+                                  <div class="flex items-center">
+                                    <input
+                                      id="{{ feature.name|slugify }}_option1"
+                                      name="{{ feature.name|slugify }}"
+                                      type="radio"
+                                      data-section="{{ section.name }}"
+                                      value="{{ feature.option1 }}"
+                                      {% if feature.checked %}checked{% endif %}
+                                      {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
+                                      class="feature-radio focus:ring-indigo-500 h-6 w-6 rounded-full text-indigo-600 border-gray-500 {% if not feature.disabled and not feature.in_rollerPlus %}cursor-pointer{% else %}cursor-not-allowed{% endif %}"
+                                      data-price="{{ feature.option1_price }}"
+                                      data-included="{{ feature.included }}"
+                                      data-feature-name="{{ feature.name }}"
+                                      data-option="option1"
+                                      data-feature-id="{{ feature.id }}"
+                                    >
+                                    <label for="{{ feature.name|slugify }}" class="ml-3 text-gray-300">
+                                      {{ feature.option1 }}
+                                      {% if not feature.disabled and not feature.included and not feature.in_rollerPlus %}
+                                        <span class="text-indigo-400">+${{ feature.option1_price }}</span>
+                                      {% endif %}
+                                    </label>
+                                  </div>
+                                  <div class="flex items-center">
+                                    <input
+                                      id="{{ feature.name|slugify }}_option2"
+                                      name="{{ feature.name|slugify }}"
+                                      type="radio"
+                                      data-section="{{ section.name }}"
+                                      value="{{ feature.option2 }}"
+                                      {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
+                                      class="feature-radio focus:ring-indigo-500 h-6 w-6 rounded-full text-indigo-600 border-gray-500 {% if not feature.disabled and not feature.in_rollerPlus %}cursor-pointer{% else %}cursor-not-allowed{% endif %}"
+                                      data-price="{{ feature.option2_price }}"
+                                      data-included="{{ feature.included }}"
+                                      data-feature-name="{{ feature.name }}"
+                                      data-option="option2"
+                                      data-feature-id="{{ feature.id }}"
+                                    >
+                                    <label for="{{ feature.name|slugify }}" class="ml-3 text-gray-300">
+                                      {{ feature.option2 }}
+                                      {% if not feature.disabled and not feature.included and not feature.in_rollerPlus %}
+                                        <span class="text-indigo-400">+${{ feature.option2_price }}</span>
+                                      {% endif %}
+                                    </label>
+                                  </div>
+                                </div>
+                               
+                              </div>
+                              {% endif %}
+                            {% endif %}
+                          {% endfor %}
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% endwith %}
+                {% endfor %}
+
+
+                {% elif package.package_type == 'builder' %}
+                {% for section in sections %}
+                  {% with features=builderfeatures|filter_by_section:section %}
+                    {% if features %}
+                      <div class="mt-6 pt-6 border-t border-gray-700">
+                        <h3 class="text-2xl text-center text-white mb-4">{{ section.name }}</h3>
+                        <div class="space-y-3">
+                          {% for feature in features %}
+                            {% if feature|is_feature_available:car_model.title %}
+                              {% if feature.type == 'checkbox' %}
+                              <div class="flex items-start md:items-center border border-gray-400 p-2 rounded">
+                                <div class="flex items-center md:h-6 h-10">
+                                  <input
+                                    id="{{ feature.name|slugify }}"
+                                    name="{{ feature.name|slugify }}"
+                                    type="checkbox"
+                                      data-section="{{ section.name }}"
+                                    {% if feature.checked %}checked{% endif %}
+                                    {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
+                                    class="feature-checkbox focus:ring-indigo-500 h-6 w-6 rounded text-indigo-600 border-gray-500 {% if not feature.disabled and not feature.in_rollerPlus %}cursor-pointer{% else %}cursor-not-allowed{% endif %}"
+                                    data-price="{{ feature.price }}"
+                                    data-feature-name="{{ feature.name }}"
+                                    
+                                    data-feature-id="{{ feature.id }}"
+                                  >
+                                </div>
+                                <div class="ml-3 text-lg">
+                                  <label for="{{ feature.name|slugify }}" class="font-medium text-gray-300">{{ feature.name }}</label>
+                                  {% if feature.checked and feature.disabled %}
+                                    <span class="ml-2 text-lime-400 text-sm">Included</span>
+                                  {% elif feature.in_rollerPlus %}
+                                    <span class="ml-2 text-blue-400 text-sm">Available in Roller Plus</span>
+                                  {% elif not feature.disabled %}
+                                    <span class="ml-2 text-indigo-400">+${{ feature.price }}</span>
+                                  {% endif %}
+                                </div>
+                              </div>
+                              {% elif feature.type == 'radiobox' and feature.option1 and feature.option2 %}
+                              <div class="border border-gray-400 p-2 rounded">
+                                <div class="text-lg font-medium text-gray-300 mb-2">
+                                  {{ feature.name }}  {% if  feature.included  %}
+                                  <span class="ml-2 text-lime-400 text-sm">Included</span>
+                                {% endif %}
+                                  {% if feature.in_rollerPlus %}
+                                    <span class="ml-2 text-blue-400 text-sm">(Available in Roller Plus)</span>
+                                  {% endif %}
+                                </div>
+                                <div class="space-y-2 pl-4">
+                                  <div class="flex items-center">
+                                    <input
+                                      id="{{ feature.name|slugify }}_option1"
+                                      name="{{ feature.name|slugify }}"
+                                      type="radio"
+                                      data-section="{{ section.name }}"
+                                      value="{{ feature.option1 }}"
+                                      {% if feature.checked %}checked{% endif %}
+                                      {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
+                                      class="feature-radio focus:ring-indigo-500 h-6 w-6 rounded-full text-indigo-600 border-gray-500 {% if not feature.disabled and not feature.in_rollerPlus %}cursor-pointer{% else %}cursor-not-allowed{% endif %}"
+                                      data-price="{{ feature.option1_price }}"
+                                      data-included="{{ feature.included }}"
+                                      data-feature-name="{{ feature.name }}"
+                                      data-option="option1"
+                                      data-feature-id="{{ feature.id }}"
+                                    >
+                                    <label for="{{ feature.name|slugify }}_option1" class="ml-3 text-gray-300">
+                                      {{ feature.option1 }}
+                                      {% if not feature.disabled and not feature.included and not feature.in_rollerPlus %}
+                                        <span class="text-indigo-400">+${{ feature.option1_price }}</span>
+                                      {% endif %}
+                                    </label>
+                                  </div>
+                                  <div class="flex items-center">
+                                    <input
+                                      id="{{ feature.name|slugify }}_option2"
+                                      name="{{ feature.name|slugify }}"
+                                      type="radio"
+                                      data-section="{{ section.name }}"
+                                      value="{{ feature.option2 }}"
+                                      {% if feature.disabled or feature.in_rollerPlus %}disabled{% endif %}
+                                      class="feature-radio focus:ring-indigo-500 h-6 w-6 rounded-full text-indigo-600 border-gray-500 {% if not feature.disabled and not feature.in_rollerPlus %}cursor-pointer{% else %}cursor-not-allowed{% endif %}"
+                                      data-price="{{ feature.option2_price }}"
+                                      data-included="{{ feature.included }}"
+                                      data-feature-name="{{ feature.name }}"
+                                      data-option="option2"
+                                      data-feature-id="{{ feature.id }}"
+                                    >
+                                    <label for="{{ feature.name|slugify }}_option2" class="ml-3 text-gray-300">
+                                      {{ feature.option2 }}
+                                      {% if not feature.disabled and not feature.included and not feature.in_rollerPlus %}
+                                        <span class="text-indigo-400">+${{ feature.option2_price }}</span>
+                                      {% endif %}
+                                    </label>
+                                  </div>
+                                </div>
+                               
+                              </div>
+                              {% endif %}
+                            {% endif %}
+                          {% endfor %}
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% endwith %}
+                {% endfor %}
+                {% endif %}
+
+
+
+              <div class="bg-gray-100/10 border-l-4 border-blue-500 p-4 my-4 rounded shadow-sm mx-auto">
+                <h4 class="text-lg font-medium text-white mb-2">Payment Schedule Note</h4>
+                <ul class="space-y-2 text-white">
+                  <li>• 40% WHEN YOUR ORDER BEGINS</li>
+                  <li>• 40% MID WAY (ABOUT 6-8 WEEKS FROM THE ORDER)</li>
+                  <li>• BALANCE WHEN YOUR CAR IS READY FOR DELIVERY</li>
+                </ul>
+                <div class="mt-3 pt-3 text-sm border-t border-gray-200 text-white">
+                  <p class="font-medium">➖ THIS RESERVATION WILL SAVE YOUR PLACE IN LINE</p>
+                  <p class="">➖ YOU WILL BE INVITED WHEN YOUR GENZ40 IS READY TO GO IN PRODUCTION</p>
+                </div>
+              </div>
+
+              <div id="{{ package.package_type }}_selected_features" class="selected-features-container mt-6 p-4 border border-gray-500 rounded-lg">
+                <h3 class="text-xl font-bold text-white mb-4">Package Summary</h3>
+                <ul id="{{ package.package_type }}_features_list" class="selected-features-list text-white space-y-2">
+                  <!-- Features will be dynamically added here -->
+                </ul>
+                <p id="{{ package.package_type }}_show_more_btn" class="mt-2 cursor-pointer text-blue-400 hover:text-blue-300 text-sm hidden">
+                  Show More Features
+                </p>
+              </div>
+
+              <div class="text-white w-full mx-auto font-sans">
+                <h2 class="text-2xl font-bold mb-4">Est. Purchase Price</h2>
+                <div class="flex justify-between mb-2">
+                  <span>Est. Purchase Price</span>
+                  <span id="{{ package.package_type }}totalPrice">${{ package.baseAmount }}</span>
+                </div>
+                <div class="flex justify-between mb-2 text-gray-400">
+                  <span>After Federal Tax Credit if eligible</span>
+                  <span>${{ package.discountAmount }}</span>
+                </div>
+                <div class="flex justify-between mb-2 text-gray-400">
+                  <span>Includes Destination and Order Fee</span>
+                </div>
+                <div class="flex justify-between mt-4 mb-2">
+                  <span>Non-refundable Order Fee</span>
+                  <span>${{ package.reserveAmount }}</span>
+                </div>
+                <div id="{{ package.package_type }}_LOGIN_SIGNUP_SECTION"></div>
+                <div class="flex justify-between mt-4 pt-4 border-t border-gray-600 text-xl font-bold">
+                  <span>Due Today</span>
+                  <span>${{ package.reserveAmount }}</span>
+                </div>
+                <button type="submit" id="{{ package.package_type }}_reserve_button" class="mt-4 w-full bg-transparent border border-white text-white py-3 rounded-md cursor-pointer hover: transition duration-300">
+                  Reserve
+                </button>
+              </div>
+            </form>
+            
+            <div id="{{ package.package_type }}_selected_features" class="selected-features-container mt-6 p-4 border border-gray-500 rounded-lg hidden">
+              <h3 class="text-xl font-bold text-white mb-4">Selected Features</h3>
+              <ul id="{{ package.package_type }}_features_list" class="selected-features-list text-white space-y-2"></ul>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock content %}
+
+{% block script %}
+<script>
+ document.addEventListener('DOMContentLoaded', function () {
+  let currentTab = null;
+  const tabButtons = document.querySelectorAll('.tab-button');
+  const tabContents = {};
+  
+  {% for package in packages %}
+  tabContents['{{ package.package_type }}'] = document.getElementById('{{ package.package_type }}-content');
+  {% endfor %}
+
+  Object.values(tabContents).forEach((content, index) => {
+    if (content) content.classList.toggle('hidden', index !== 0);
+  });
+
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const tabId = button.getAttribute('data-tab');
+
+      tabButtons.forEach(btn => {
+        btn.classList.remove('active-tab', 'bg-gradient-to-l', 'from-white/20', 'via-white/40', 'to-white/20');
+      });
+
+      button.classList.add('active-tab', 'bg-gradient-to-l', 'from-white/20', 'via-white/40', 'to-white/20');
+
+      Object.values(tabContents).forEach(content => {
+        if (content) content.classList.add('hidden');
+      });
+
+      const targetContent = tabContents[tabId];
+      if (targetContent) {
+        targetContent.classList.remove('hidden');
+        initPriceCalculator(tabId);
+      }
+    });
+  });
+
+  if (tabButtons.length > 0) {
+    const firstTabId = tabButtons[0].getAttribute('data-tab');
+    initPriceCalculator(firstTabId);
+  }
+
+  {% for package in packages %}
+  initPriceCalculator('{{ package.package_type }}');
+  {% endfor %}
+
+  // Add event listeners for form submissions
+  {% for package in packages %}
+  const {{ package.package_type }}Form = document.getElementById('{{ package.package_type }}Form');
+  if ({{ package.package_type }}Form) {
+    {{ package.package_type }}Form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      handlePackageSubmit('{{ package.package_type }}','{{package.id}}');
+    });
+  }
+  {% endfor %}
+});
+
+function initPriceCalculator(packageId) {
+  const basePriceInput = document.querySelector(`#${packageId}Form input[name="package_base_price"]`);
+  if (!basePriceInput) {
+    console.error(`Base price input not found for package: ${packageId}`);
+    return;
+  }
+
+  const basePrice = parseFloat(basePriceInput.value) || 0;
+
+  const totalPriceEl = document.getElementById(`${packageId}totalPrice`);
+  if (!totalPriceEl) {
+    console.error(`Total price element not found for package: ${packageId}`);
+    return;
+  }
+
+  function updatePrice() {
+    let total = basePrice;
+
+    const checkboxes = document.querySelectorAll(`#${packageId}Form .feature-checkbox:checked:not([disabled])`);
+    checkboxes.forEach(checkbox => {
+      const price = parseFloat(checkbox.getAttribute('data-price')) || 0;
+      total += price;
+    });
+
+
+    const radios = document.querySelectorAll(`#${packageId}Form .feature-radio:checked`);
+    radios.forEach(radio => {
+      const price = parseFloat(radio.getAttribute('data-price')) || 0;
+      const included = radio.getAttribute('data-included') === 'True'; // Convert to boolean
+      console.log("Included: ", included)
+      if (!included) {
+        total += price; // Only add price if not included
+      }
+    });
+
+    const formatted = new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(total);
+
+    totalPriceEl.textContent = formatted;
+  }
+
+  const form = document.getElementById(`${packageId}Form`);
+  if (form) {
+    const checkboxes = form.querySelectorAll('.feature-checkbox');
+    checkboxes.forEach(checkbox => {
+      if (!checkbox.disabled) {
+        checkbox.addEventListener('change', updatePrice);
+      }
+    });
+
+    const radios = form.querySelectorAll('.feature-radio');
+    radios.forEach(radio => {
+      if (!radio.disabled) {
+        radio.addEventListener('change', updatePrice);
+      }
+    });
+
+    updatePrice();
+  } else {
+    console.error(`Form not found for package: ${packageId}`);
+  }
+}
+
+let userLoggedIn = checkUserLoggedIn();
+function checkUserLoggedIn() {
+  return "{{request.user.id}}" !== "None";
+}
+function handlePackageSubmit(packageType,package_id) {
+
+  console.log(packageType,"Pacage SUbmit form triggered");
+  if (!userLoggedIn) {
+      showSignUpForm(packageType);
+    return;
+  }
+
+  const form = document.getElementById(`${packageType}Form`);
+  if (!form) return;
+
+
+  const checked = document.querySelectorAll(`#${packageType}Form input[type="checkbox"]:checked:not([disabled])`);
+
+  const checkboxFeatures = Array.from(checked).map(cb => {
+    const featureId = cb.getAttribute('data-feature-id');
+    return featureId;
+  }).filter(Boolean);
+
+  const radioFeatures = [];
+  const selectedRadios = document.querySelectorAll(`#${packageType}Form input[type="radio"]:checked:not([disabled])`);
+  selectedRadios.forEach(radio => {
+    const featureId = radio.getAttribute('data-feature-id');
+    const option = radio.getAttribute('data-option');
+    radioFeatures.push(`${featureId}:${option}`);
+  });
+
+  const features = [...checkboxFeatures, ...radioFeatures];
+
+  const totalPriceEl = document.getElementById(`${packageType}totalPrice`) || 
+                       document.getElementById(`${packageType}mobiletotalPrice`);
+  const price = totalPriceEl ? totalPriceEl.textContent.replace("$", "").replace(/,/g, "") : "100";
+  const carModel = "{{ car_model.id }}";
+  const userId = localStorage.getItem("userId") || sessionStorage.getItem("userId") || "fb292fed-9283-441f-82f9-da5fb505606b";
+
+  const formData = new FormData();
+  formData.append("title", packageType.charAt(0).toUpperCase() + packageType.slice(1));
+  formData.append("extra_features", features.length ? features : ["None"],);
+  formData.append("price", price);
+  formData.append("status", "pending");
+  formData.append("car_model", carModel);
+  formData.append("user", userId);
+  formData.append("package", package_id);
+
+  fetch("{% url 'save-booked-package' %}", {
+    method: "POST",
+    body: formData,
+    credentials: "include",
+    headers: {
+      "X-CSRFToken": getCookie("csrftoken"),
+    },
+  })
+  .then(res => {
+    if (res.status === 403) {
+      window.location.href = "{% url 'customer_login' %}";
+    }
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+    return res.json();
+  })
+  .then(data => {
+    toastr.success("Package Booked successfully!");
+    var newdata = new FormData();
+    console.log("Package id is : ", data)
+    newdata.append("package_id", data.id);
+    $('#pro').show();
+    $.ajax({
+      type: 'POST',
+      url: "{% url 'process_reservation_payment' %}",
+      headers: {
+        'X-CSRFToken': getCookie('csrftoken'),
+      },
+      data: newdata,
+      cache: false,
+      processData: false,
+      contentType: false,
+      crossDomain: true,
+      success: function (response) {
+        if (response.is_success) {
+          call_checkout(response['session_data']);
+        } else {
+          toastr.error(response['message']);
+        }
+        $('#pro').hide();
+      },
+      error: function (response) {
+        if (!response.is_success) {
+          toastr.error(response['message']);
+        }
+        $('#pro').hide();
+      }
+    });
+  })
+  .catch(err => {
+    console.error(err);
+    toastr.error("Failed to save configuration.");
+  });
+}
+
+function call_checkout(session_data) {
+  $.ajax({
+    type: 'POST',
+    url: "{% url 'create_package_checkout_session' %}",
+    data: JSON.stringify(session_data), 
+    headers: {
+      'X-CSRFToken': getCookie('csrftoken'),
+      "Content-Type": "application/json"
+    },
+    success: function (response) {
+      if (response.is_success) {
+        window.location.href = response.checkout_url;
+      } else {
+        toastr.error(response['message']);
+      }
+    },
+    error: function (response) {
+      if (!response.is_success) {
+        toastr.error(response['message']);
+      }
+    }
+  });
+}
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.startsWith(name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+// Login form functionality
+function showLoginForm(package_type) {
+
+  const loginSignupSection = document.getElementById(`${package_type}_LOGIN_SIGNUP_SECTION`);
+  if (!loginSignupSection) return;
+
+  // Clear the section content
+  loginSignupSection.innerHTML = '';
+
+  // Create form container
+  const formContainer = document.createElement('div');
+  formContainer.className = 'bg-black';
+
+  // Form HTML
+  formContainer.innerHTML = `
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-white">Fill the form to continue..</h2>
+      <button id="close-login" class="text-gray-500 hover:text-white">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    
+    <form id="login-form" class="space-y-4 ">
+      {% csrf_token %}
+      <div>
+        <label for="login-email" class="block text-sm font-medium text-white">Email</label>
+        <input type="email" id="login-email" name="email" required 
+               class="mt-1 block w-full border border-gray-300 text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+      
+      <div>
+        <label for="login-password" class="block text-sm font-medium text-white">Password</label>
+        <div class="relative mt-1">
+          <input type="password" id="login-password" name="password" required 
+                 class="block w-full text-white border border-gray-300 rounded-md shadow-sm py-2 px-3 pr-10 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+          <button type="button" id="toggle-login-password" class="absolute inset-y-0 right-0 px-3 flex items-center" tabindex="-1">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" id="login-eye-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 hidden" id="login-eye-off-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div>
+        <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          Continue
+        </button>
+      </div>
+      
+      <div class="text-center text-sm">
+        <p class="text-gray-600">Don't have an account? 
+          <a href="#" id="show-signup-form" class="font-medium text-indigo-600 hover:text-indigo-500">Sign up</a>
+        </p>
+      </div>
+    </form>
+  `;
+
+  loginSignupSection.appendChild(formContainer);
+
+  // Event listeners
+  document.getElementById('close-login').addEventListener('click', () => {
+    loginSignupSection.innerHTML = '';
+  });
+
+  document.getElementById('show-signup-form').addEventListener('click', (e) => {
+    e.preventDefault();
+    showSignUpForm(package_type);
+  });
+
+  setupLoginPasswordToggle();
+  document.getElementById('login-form').addEventListener('submit', handleLoginSubmit);
+}
+
+// Signup form functionality
+function showSignUpForm(package_type) {
+  const loginSignupSection = document.getElementById(`${package_type}_LOGIN_SIGNUP_SECTION`);
+  if (!loginSignupSection) return;
+
+  loginSignupSection.innerHTML = '';
+
+  const formContainer = document.createElement('div');
+  formContainer.className = 'bg-black';
+
+  // Form HTML
+  formContainer.innerHTML = `
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-2xl font-bold text-white">Fill the form to continue..</h2>
+      <button id="close-signup" class="text-gray-500 hover:text-white">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    
+    <form id="signup-form" class="gap-3 grid grid-cols-2">
+      {% csrf_token %}
+      <input type="text" name="role" value="customer" hidden/>
+      <input type="text" id="password1" name="password1" value="" hidden/>
+      <input type="text" id="password2" name="password2" value="" hidden/>
+      <div>
+        <label for="first_name" class="block text-sm font-medium text-white">First Name</label>
+        <input type="text" id="first_name" name="first_name" required 
+               class="mt-1 block w-full border text-white border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+      
+      <div>
+        <label for="last_name" class="block text-sm font-medium text-white">Last Name</label>
+        <input type="text" id="last_name" name="last_name" required 
+               class="mt-1 block w-full border border-gray-300 text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+      
+      <div>
+        <label for="signup-email" class="block text-sm font-medium text-white">Email</label>
+        <input type="email" id="signup-email" name="email" required 
+               class="mt-1 block w-full border border-gray-300 text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+      
+      <div>
+        <label for="phone_number" class="block text-sm font-medium text-white">Phone Number</label>
+        <input type="tel" id="phone_number" name="phone_number" required 
+               class="mt-1 block w-full border border-gray-300 text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+      </div>
+      
+      <div class="col-span-2 relative group focus-within:opacity-100">
+        <!-- Tooltip -->
+        <div class="top-full mt-1 left-0 z-10 w-full bg-gray-800 text-white text-xs rounded p-2 shadow-lg"
+             id="password-rules-static">
+          Password must contain at least:
+          <ul class="list-disc pl-4 mt-1 grid grid-cols-2" id="password-rules">
+            <li id="rule-uppercase" class="text-red-400">1 uppercase letter</li>
+            <li id="rule-lowercase" class="text-red-400">1 lowercase letter</li>
+            <li id="rule-number" class="text-red-400">1 number</li>
+            <li id="rule-special" class="text-red-400">1 special character</li>
+            <li id="rule-length" class="text-red-400">Minimum 8 characters</li>
+          </ul>
+        </div>
+        <label for="signup-password" class="block text-sm font-medium text-white">Password</label>
+        <div class="relative mt-1">
+          <input type="password" id="signup-password" name="password" required 
+                 class="block w-full text-white border border-gray-300 rounded-md shadow-sm py-2 px-3 pr-10 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+          <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 px-3 flex items-center" tabindex="-1">
+            <!-- Eye icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" id="eye-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <!-- Eye off icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 hidden" id="eye-off-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      
+      
+      <div class="col-span-2">
+        <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+          Continue
+        </button>
+      </div>
+      
+      <div class="text-center text-sm col-span-2">
+        <p class="text-gray-600">Already have an account? 
+          <a href="#" id="show-login-form" class="font-medium text-indigo-600 hover:text-indigo-500">Log in</a>
+        </p>
+      </div>
+    </form>
+  `;
+
+  loginSignupSection.appendChild(formContainer);
+
+  // Event listeners
+  document.getElementById('close-signup').addEventListener('click', () => {
+    loginSignupSection.innerHTML = '';
+  });
+
+  setupPasswordToggle();
+  document.getElementById('signup-form').addEventListener('submit', handleSignUpSubmit);
+  handlePasswordChange();
+  validatePasswordLive();
+  document.getElementById('show-login-form').addEventListener('click', (e) => {
+    e.preventDefault();
+    showLoginForm(package_type);
+  });
+}
+
+
+
+// Password toggle functionality
+function setupPasswordToggle() {
+  const toggleBtn = document.getElementById('toggle-password');
+  const passwordInput = document.getElementById('signup-password');
+  const eyeIcon = document.getElementById('eye-icon');
+  const eyeOffIcon = document.getElementById('eye-off-icon');
+
+  toggleBtn.addEventListener('click', () => {
+    const isPassword = passwordInput.type === 'password';
+    passwordInput.type = isPassword ? 'text' : 'password';
+    eyeIcon.classList.toggle('hidden', !isPassword);
+    eyeOffIcon.classList.toggle('hidden', isPassword);
+  });
+}
+
+// Login password toggle
+function setupLoginPasswordToggle() {
+  const toggleBtn = document.getElementById('toggle-login-password');
+  const passwordInput = document.getElementById('login-password');
+  const eyeIcon = document.getElementById('login-eye-icon');
+  const eyeOffIcon = document.getElementById('login-eye-off-icon');
+
+  toggleBtn.addEventListener('click', () => {
+    const isPassword = passwordInput.type === 'password';
+    passwordInput.type = isPassword ? 'text' : 'password';
+    eyeIcon.classList.toggle('hidden', !isPassword);
+    eyeOffIcon.classList.toggle('hidden', isPassword);
+  });
+}
+
+// Handle password synchronization for hidden fields
+function handlePasswordChange() {
+  const passwordInput = document.getElementById('signup-password');
+  const passwordInput1 = document.getElementById('password1');
+  const passwordInput2 = document.getElementById('password2');
+
+  // Listen for changes on the main password input
+  passwordInput.addEventListener('input', () => {
+    const passwordValue = passwordInput.value;
+    passwordInput1.value = passwordValue; // Update the first hidden password field
+    passwordInput2.value = passwordValue; // Update the second hidden password field
+  });
+}
+
+function validatePasswordLive() {
+  const passwordInput = document.getElementById('signup-password');
+  const continueBtn = document.querySelector('#signup-form button[type="submit"]');
+
+  const rules = {
+    uppercase: document.getElementById('rule-uppercase'),
+    lowercase: document.getElementById('rule-lowercase'),
+    number: document.getElementById('rule-number'),
+    special: document.getElementById('rule-special'),
+    length: document.getElementById('rule-length'),
+  };
+
+  function checkAllRules() {
+    const value = passwordInput.value;
+    const checks = {
+      uppercase: /[A-Z]/.test(value),
+      lowercase: /[a-z]/.test(value),
+      number: /\d/.test(value),
+      special: /[!@#$%^&*(),.?":{}|<>]/.test(value),
+      length: value.length >= 8,
+    };
+
+    let allValid = true;
+
+    for (const key in rules) {
+      if (checks[key]) {
+        rules[key].classList.remove('text-red-400');
+        rules[key].classList.add('text-green-400');
+      } else {
+        rules[key].classList.remove('text-green-400');
+        rules[key].classList.add('text-red-400');
+        allValid = false;
+      }
+    }
+
+    continueBtn.disabled = !allValid;
+    continueBtn.classList.toggle('opacity-50', !allValid);
+    continueBtn.classList.toggle('cursor-not-allowed', !allValid);
+  }
+
+  passwordInput.addEventListener('input', checkAllRules);
+  checkAllRules();  // Initial state
+}
+
+
+
+// Login submit handler
+function handleLoginSubmit(e) {
+  e.preventDefault();
+  
+  const formData = {
+    username: document.getElementById('login-email').value,
+    password: document.getElementById('login-password').value,
+    csrfmiddlewaretoken: getCookie('csrftoken')
+  };
+
+  $.ajax({
+    type: 'POST',
+    url: "{% url 'customer_login' %}",
+    data: formData,
+    success: function(response) {
+      if (response.is_success) {
+        toastr.success("Logged in successfully!");
+        userLoggedIn = true;
+        document.getElementById('close-login').click();
+        const activePackage = document.querySelector('.active-tab');
+        console.log("Active package is: ", activePackage);
+        if (activePackage) {
+          const packageType = activePackage.getAttribute('data-tab');
+          console.log("Package type is: ", packageType);
+          const reserveButton = document.getElementById(`${packageType}_reserve_button`);
+          console.log("Reserve button is: ", reserveButton);
+          if (reserveButton) {
+            reserveButton.click();
+          }
+        }
+      } else {
+        toastr.error(response.message || "Login failed");
+      }
+    },
+    error: function(response) {
+      toastr.error(response.responseJSON?.message || "Login failed");
+    }
+  });
+}
+
+// Signup submit handler
+function handleSignUpSubmit(e) {
+  e.preventDefault();
+  
+  const formData = {
+    first_name: document.getElementById('first_name').value,
+    last_name: document.getElementById('last_name').value,
+    email: document.getElementById('signup-email').value,
+    phone_number: document.getElementById('phone_number').value,
+    password: document.getElementById('signup-password').value
+  };
+
+  var data = new FormData($('#signup-form').get(0));
+  $('#pro').show();
+  
+  $.ajax({
+    type: 'POST',
+    url: "{% url 'customer_register' %}",
+    data: data,
+    cache: false,
+    processData: false,
+    contentType: false,
+    crossDomain: true,
+    success: function (response) {
+      if (response.is_success) {
+        toastr.success(response['message']);
+        
+        const getCookie = name => {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== "") {
+            document.cookie.split(";").forEach(cookie => {
+              cookie = cookie.trim();
+              if (cookie.startsWith(name + "=")) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              }
+            });
+          }
+          return cookieValue;
+        };
+        const csrftoken = getCookie('csrftoken');
+        
+        const loginData = {
+          csrfmiddlewaretoken: csrftoken,
+          username: formData.email,
+          password: formData.password,
+        };
+
+        $.ajax({
+          type: 'POST',
+          url: "{% url 'customer_login' %}",
+          data: loginData,
+          success: function(loginResponse) {
+            if (loginResponse.is_success) {
+              toastr.success("User logged in successfully!");
+              userLoggedIn = true;
+              const closebutton = document.getElementById('close-signup');
+              closebutton.click();
+
+              const activePackage = document.querySelector('.active-tab');
+              if (activePackage) {
+                const packageType = activePackage.getAttribute('data-tab');
+                const reserveButton = document.getElementById(`${packageType}_reserve_button`);
+                console.log("Reserve button is: ", reserveButton);
+                if (reserveButton) {
+                  reserveButton.click();
+                }
+              }
+            } else {
+              toastr.error(loginResponse['message']);
+            }
+          },
+          error: function(loginError) {
+            toastr.error("Auto-login failed. Please login manually.");
+            setTimeout(function() {
+              location.href = "{% url 'customer_login' %}";
+            }, 3000);
+          }
+        });
+        
+      } else {
+        toastr.error(response['message']);
+      }
+      $('#pro').hide();
+    },
+    error: function (response) {
+      if (!response.is_success) {
+        toastr.error(response['message'] || "Registration failed");
+      }
+      $('#pro').hide();
+    }
+  });
+}
+</script>
+<script>
+ document.addEventListener('DOMContentLoaded', function() {
+  // Handle clicks on Roller Plus features
+  document.querySelectorAll('#available_in_roller_plus').forEach(div => {
+    div.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // Get the feature name from the parent div's name attribute
+      const featureName = this.getAttribute('name');
+      
+      // Find the Roller Plus tab button and content
+      const rollerPlusTab = document.querySelector('.tab-button[data-tab="roller_plus"]');
+      const rollerPlusContent = document.getElementById('roller_plus-content');
+      
+      if (rollerPlusTab && rollerPlusContent) {
+        // Switch to Roller Plus tab
+        document.querySelectorAll('.tab-button').forEach(btn => {
+          btn.classList.remove('active-tab', 'bg-gradient-to-l', 'from-white/20', 'via-white/40', 'to-white/20');
+        });
+        
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.classList.add('hidden');
+        });
+        
+        rollerPlusTab.classList.add('active-tab', 'bg-gradient-to-l', 'from-white/20', 'via-white/40', 'to-white/20');
+        rollerPlusContent.classList.remove('hidden');
+        
+        initPriceCalculator('roller_plus');
+        
+        const targetFeature = rollerPlusContent.querySelector(`[name="${featureName}"]`);
+        
+        if (targetFeature) {
+          setTimeout(() => {
+            targetFeature.scrollIntoView({
+              behavior: 'smooth', 
+              block: 'center'
+            });
+            
+            // Add highlight effect
+            const originalBackground = targetFeature.style.background;
+            targetFeature.style.background = 'rgba(79, 70, 229, 0.2)';
+            targetFeature.style.boxShadow = '0 0 0 2px #4f46e5';
+            targetFeature.style.transition = 'all 0.3s ease';
+            
+            setTimeout(() => {
+              targetFeature.style.background = originalBackground;
+              targetFeature.style.boxShadow = '';
+            }, 2000);
+          }, 300); 
+        }
+      }
+    });
+  });
+});
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+  // Function to sync brake selections
+  function syncBrakeSelections(packageType) {
+    // Get front and rear brake radio inputs
+    const frontBrakeOption1 = document.querySelector(`#${packageType}Form input[id$="front-brakes_option1"]`);
+    const frontBrakeOption2 = document.querySelector(`#${packageType}Form input[id$="front-brakes_option2"]`);
+    const rearBrakeOption1 = document.querySelector(`#${packageType}Form input[id$="rear-brakes_option1"]`);
+    const rearBrakeOption2 = document.querySelector(`#${packageType}Form input[id$="rear-brakes_option2"]`);
+
+    if (!frontBrakeOption1 || !rearBrakeOption1) return;
+
+    // When front brake changes, update rear brake
+    if (frontBrakeOption1) {
+      frontBrakeOption1.addEventListener('change', function() {
+        if (this.checked) {
+          rearBrakeOption1.checked = true;
+          rearBrakeOption2.checked = false;
+          // Trigger price update
+          const event = new Event('change');
+          rearBrakeOption1.dispatchEvent(event);
+        }
+      });
+    }
+
+    if (frontBrakeOption2) {
+      frontBrakeOption2.addEventListener('change', function() {
+        if (this.checked) {
+          rearBrakeOption2.checked = true;
+          rearBrakeOption1.checked = false;
+          // Trigger price update
+          const event = new Event('change');
+          rearBrakeOption2.dispatchEvent(event);
+        }
+      });
+    }
+
+    // When rear brake changes, update front brake
+    if (rearBrakeOption1) {
+      rearBrakeOption1.addEventListener('change', function() {
+        if (this.checked) {
+          frontBrakeOption1.checked = true;
+          frontBrakeOption2.checked = false;
+          // Trigger price update
+          const event = new Event('change');
+          frontBrakeOption1.dispatchEvent(event);
+        }
+      });
+    }
+
+    if (rearBrakeOption2) {
+      rearBrakeOption2.addEventListener('change', function() {
+        if (this.checked) {
+          frontBrakeOption2.checked = true;
+          frontBrakeOption1.checked = false;
+          // Trigger price update
+          const event = new Event('change');
+          frontBrakeOption2.dispatchEvent(event);
+        }
+      });
+    }
+  }
+
+  // Initialize for each package type
+  syncBrakeSelections('roller');
+  syncBrakeSelections('roller_plus');
+  syncBrakeSelections('builder');
+});
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Constants
+    const DEFAULT_FEATURES_TO_SHOW = 5;
+    
+    // Function to update selected features display
+    function updateSelectedFeatures(packageType) {
+      const featuresList = document.getElementById(`${packageType}_features_list`);
+      const showMoreBtn = document.getElementById(`${packageType}_show_more_btn`);
+      if (!featuresList || !showMoreBtn) return;
+    
+      // Clear current list
+      featuresList.innerHTML = '';
+    
+      // Get all checked features
+      const checkboxes = Array.from(document.querySelectorAll(`#${packageType}Form .feature-checkbox:checked`));
+      const radios = Array.from(document.querySelectorAll(`#${packageType}Form .feature-radio:checked`));
+    
+      const allFeatures = [];
+    
+      // Collect checkbox features
+      checkboxes.forEach(checkbox => {
+        const featureName = checkbox.getAttribute('data-feature-name');
+        const price = checkbox.getAttribute('data-price');
+        const included = checkbox.disabled && checkbox.checked;
+        const section = checkbox.getAttribute('data-section') || 'General';
+    
+        allFeatures.push({
+          type: 'checkbox',
+          name: featureName,
+          price: price,
+          included: included,
+          section: section,
+          element: checkbox
+        });
+      });
+    
+      // Collect radio features
+      radios.forEach(radio => {
+        const featureName = radio.getAttribute('data-feature-name');
+        const price = radio.getAttribute('data-price');
+        const included = radio.getAttribute('data-included') === 'True';
+        const option = radio.getAttribute('data-option');
+        const section = radio.getAttribute('data-section') || 'General';
+    
+        allFeatures.push({
+          type: 'radio',
+          name: `${featureName} (${radio.value})`,
+          price: price,
+          included: included,
+          section: section,
+          element: radio
+        });
+      });
+    
+      // Group features by section
+      const featuresBySection = {};
+      allFeatures.forEach(feature => {
+        if (!featuresBySection[feature.section]) {
+          featuresBySection[feature.section] = [];
+        }
+        featuresBySection[feature.section].push(feature);
+      });
+    
+      const showAll = showMoreBtn.getAttribute('data-show-all') === 'true';
+      const DEFAULT_FEATURES_TO_SHOW = 5;
+      let shownCount = 0;
+      const maxToShow = showAll ? Infinity : DEFAULT_FEATURES_TO_SHOW;
+    
+      for (const [section, features] of Object.entries(featuresBySection)) {
+        if (shownCount >= maxToShow) break;
+    
+        const sectionHeader = document.createElement('li');
+        sectionHeader.innerHTML = `<strong class="text-indigo-300">${section}</strong>`;
+        sectionHeader.className = 'mt-3';
+        featuresList.appendChild(sectionHeader);
+    
+        for (const feature of features) {
+          if (shownCount >= maxToShow) break;
+          const li = document.createElement('li');
+          li.className = 'flex justify-between feature-item';
+          li.innerHTML = `
+            <span>${feature.name}</span>
+            ${feature.included ? '<span class="text-lime-400">Included</span>' :
+              feature.price > 0 ? `<span class="text-indigo-400">+$${parseInt(feature.price).toLocaleString()}</span>` : ''}
+          `;
+          featuresList.appendChild(li);
+          shownCount++;
+        }
+      }
+    
+      // Show/hide Show More button
+      const totalFeatures = allFeatures.length;
+      if (totalFeatures > DEFAULT_FEATURES_TO_SHOW) {
+        showMoreBtn.classList.remove('hidden');
+        showMoreBtn.textContent = showAll
+          ? 'Show Less'
+          : `Show More (${totalFeatures - DEFAULT_FEATURES_TO_SHOW})`;
+        showMoreBtn.onclick = () => {
+          showMoreBtn.setAttribute('data-show-all', !showAll);
+          updateSelectedFeatures(packageType);
+        };
+      } else {
+        showMoreBtn.classList.add('hidden');
+      }
+    
+      // Show/hide the summary container
+      const container = document.getElementById(`${packageType}_selected_features`);
+      if (container) {
+        if (totalFeatures > 0) {
+          container.classList.remove('hidden');
+        } else {
+          container.classList.add('hidden');
+        }
+      }
+    }
+    
+  
+    // Initialize for each package type
+    {% for package in packages %}
+    initFeatureUpdates('{{ package.package_type }}');
+    {% endfor %}
+  
+    // Function to set up event listeners for feature updates
+    function initFeatureUpdates(packageType) {
+      const form = document.getElementById(`${packageType}Form`);
+      if (!form) return;
+      
+      // Update features when any checkbox changes
+      form.querySelectorAll('.feature-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+          updateSelectedFeatures(packageType);
+          initPriceCalculator(packageType); // Also update price
+        });
+      });
+      
+      // Update features when any radio changes
+      form.querySelectorAll('.feature-radio').forEach(radio => {
+        radio.addEventListener('change', () => {
+          updateSelectedFeatures(packageType);
+          initPriceCalculator(packageType); // Also update price
+        });
+      });
+      
+      // Initial update
+      updateSelectedFeatures(packageType);
+    }
+  
+    // Modify the tab switching function to update features when tab changes
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const tabId = button.getAttribute('data-tab');
+        // Reset show more state when switching tabs
+        const showMoreBtn = document.getElementById(`${tabId}_show_more_btn`);
+        if (showMoreBtn) {
+          showMoreBtn.setAttribute('data-show-all', 'false');
+        }
+        updateSelectedFeatures(tabId);
+      });
+    });
+  });
+  </script>
+
+<style>
+
+.selected-features-container {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-left: 4px solid #4f46e5;
+}
+
+.selected-features-list li {
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.selected-features-list li:last-child {
+  border-bottom: none;
+}
+
+#show_more_btn {
+  transition: all 0.3s ease;
+}
+
+#show_more_btn:hover {
+  text-decoration: underline;
+}
+  .active-tab {
+    border-bottom: 2px solid #4f46e5;
+  }
+
+  .tab-content {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+</style>
+<script>
+  function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenu.classList.toggle('hidden');
+  }
+
+  // Close mobile menu when clicking outside
+  document.addEventListener('click', function(event) {
+    const mobileMenu = document.getElementById('mobile-menu');
+    const mobileMenuButton = document.querySelector('.mobile-menu-button');
+    
+    if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+      mobileMenu.classList.add('hidden');
+    }
+  });
+
+  // Close mobile menu when window is resized to desktop size
+  window.addEventListener('resize', function() {
+    if (window.innerWidth >= 768) {
+      document.getElementById('mobile-menu').classList.add('hidden');
+    }
+  });
+</script>
+{% endblock script %}

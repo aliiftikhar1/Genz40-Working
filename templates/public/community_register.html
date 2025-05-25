@@ -1,0 +1,766 @@
+{% extends "public/layout/base.html" %}
+{% load static %}
+{% block header %}
+<style>
+    /* Form Styles */
+    .form-control {
+        background-color: #000 !important;
+        color: #fff !important;
+        border: 1px solid #fff;
+        border-radius: 6px;
+        padding: 0.75rem;
+    }
+
+    .form-control:focus {
+        background-color: #000 !important;
+        color: #fff !important;
+        border-color: #fff;
+        box-shadow: none;
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .form-label {
+        color: #fff;
+        text-transform: uppercase;
+    }
+
+    .form-icon {
+        position: relative;
+    }
+
+    .form-icon i, .form-icon img {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        transform: translateY(-50%);
+    }
+
+    .form-control.ps-5 {
+        padding-left: 3rem;
+        background: transparent;
+        border: 1px solid #ccc;
+        color: #fff;
+    }
+
+    /* Password validation styles */
+    .password-requirements {
+        font-size: 0.8rem;
+        margin-top: 5px;
+        color: #fff;
+    }
+    
+    .password-requirements-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    .requirement {
+        color: #dc3545;
+        transition: color 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .requirement.valid {
+        color: #28a745;
+    }
+
+    /* Password toggle icon styles */
+    .password-toggle, .confirm-password-toggle {
+        color: #fff;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .password-toggle:hover, .confirm-password-toggle:hover {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Submit button styles */
+    .btn-success {
+        background: #28a745;
+        border: none;
+        padding: 0.75rem;
+        border-radius: 6px;
+        width: 100%;
+    }
+
+    /* Autofill fix for Chrome, Safari, Edge */
+    input:-webkit-autofill,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 1000px #000 inset !important;
+        box-shadow: 0 0 0 1000px #000 inset !important;
+        -webkit-text-fill-color: #fff !important;
+        color: #fff !important;
+        border: 1px solid #fff !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
+    /* Autofill fix for Firefox */
+    input:-moz-autofill {
+        box-shadow: 0 0 0 1000px #000 inset !important;
+        -moz-text-fill-color: #fff !important;
+        color: #fff !important;
+        border: 1px solid #fff !important;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 767.98px) {
+        .section {
+            /* Add mobile-specific styles here if needed */
+            margin-top: 2rem;
+        }
+        .password-requirements-grid {
+            grid-template-columns: 1fr;
+        }
+        #community-password-match-mobile {
+            display: block;
+            margin-top: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            min-height: 1.2em; /* reserve space even if empty */
+            word-break: break-word;
+        }
+    }
+</style>
+{% endblock header %}
+
+{% block content %}
+<section class="section bg-black d-none d-lg-block">
+    <div class="container-fluid">
+        <div class="row align-items-start">
+            <div class="col-md-1"></div>
+            <div class="col-md-4">
+                <div class="section-title me-lg-4">
+                    <h4 class="title text-white mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>
+                    <h4 class="title text-white mb-4 d-lg-none">JOIN GEN-Z COMMUNITY</h4>
+                    <p class="text-white para-dark para-desc mb-0">
+                        Interested in GEN-Z 40? Join the most sort out community of
+                        Builders & Enthusiats. Ask questions, and share your experience.
+                    </p>
+                    <div class="mt-4 pt-2 text-white">
+                        <h6 class="mb-4">WHAT ELSE YOU GET?</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Exclusive Offers
+                            </li>
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Build & Technical Support
+                            </li>
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Live Chat with Member & Group Experts
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-4">
+                <div class="card rounded shadow  bg-black" style="border: 1px solid black; padding-top: 1rem;">
+                    <div class="card-body pt-0">
+                        <div class="section-title">
+                            <h4 class="title title-light text-center">BECOME A MEMBER</h4>
+                            <form method="post" id="community-form" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" value="" name="password1" id="password1">
+                                <input type="hidden" value="" name="password2" id="password2">
+                                <input type="hidden" value="{{ country_code }}" name="country">
+                                <input type="hidden" value="customer" name="role">
+                                <div class="row mt-4">
+                                    <div class="row">
+                                        <div class="col-12 col-md-6 mb-3">
+                                            <label class="form-label text-dark text-uppercase">
+                                                First Name <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="user" class="fea icon-sm icons text-dark"></i>
+                                                <input name="first_name" id="first_name" type="text"
+                                                       class="form-control ps-5 bg-transparent text-dark"
+                                                       placeholder="First Name" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 mb-3">
+                                            <label class="form-label text-dark text-uppercase">
+                                                Last Name <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="user" class="fea icon-sm icons"></i>
+                                                <input name="last_name" id="last_name" type="text"
+                                                       class="form-control ps-5" placeholder="Last Name" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-md-6 mb-3">
+                                            <label class="form-label text-dark text-uppercase">
+                                                Email <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="mail" class="fea icon-sm icons"></i>
+                                                <input type="email" id="email" class="form-control ps-5"
+                                                       placeholder="Email" name="email" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 mb-3">
+                                            <label class="form-label text-dark text-uppercase">
+                                                Phone Number
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <img class="fea icon-sm icons"
+                                                     src="{{ country_flag_url }}"
+                                                     alt="Country Flag"
+                                                     style="width: 28px; height: 28px; top: 10px !important; left: 12px;">
+                                                <input name="phone_number" id="phone_number" type="text"
+                                                       class="form-control ps-5" placeholder="Phone Number">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-12 col-md-6 mb-3">
+                                            <label class="form-label text-dark text-uppercase">
+                                                Password <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="lock" class="fea icon-sm icons"></i>
+                                                <input type="password" id="community-password" name="password" class="form-control ps-5" required>
+                                                <i data-feather="eye" class="fea icon-sm icons position-absolute password-toggle" style="right: 10px; left: auto; cursor: pointer;"></i>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 mb-3">
+                                            <label class="form-label text-dark text-uppercase">
+                                                Confirm Password <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="lock" class="fea icon-sm icons"></i>
+                                                <input type="password" id="community-password-confirm" name="password_confirm" class="form-control ps-5" required>
+                                                <i data-feather="eye" class="fea icon-sm icons position-absolute confirm-password-toggle" style="right: 10px; left: auto; cursor: pointer;"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="">
+                                            <div id="community-password-match" class="mt-0 text-dark" style="font-size: 0.8rem;"></div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="password-requirements text-dark mt-2">
+                                                <p class="mb-1">Password must contain:</p>
+                                                <div class="password-requirements-grid">
+                                                    <div id="community-length" class="requirement">✓ At least 8 characters</div>
+                                                    <div id="community-uppercase" class="requirement">✓ At least 1 uppercase letter</div>
+                                                    <div id="community-number" class="requirement">✓ At least 1 number</div>
+                                                    <div id="community-special" class="requirement">✓ At least 1 special character</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                       
+                                    </div>
+                                    <div class="col-12 mb-2">
+                                        <label class="form-check-label text-dark">
+                                            By continuing, you agree to our
+                                            <a href="{% url 'privacy_policy' %}" target="_blank"
+                                               class="text-primary">
+                                                Privacy Policy
+                                            </a>
+                                        </label>
+                                    </div>
+                                    <div class="col-12 mb-0">
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-success" id="community-submit-btn">
+                                                Join now
+                                                <span class="spinner-border spinner-border-sm" id="pro"
+                                                      role="status" aria-hidden="true"
+                                                      style="display: none;"></span>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success mt-2" id="signin-btn" style="display: none;" onclick="window.location.href='{% url 'customer_login' %}'">
+                                                Sign In
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div><!-- row end -->
+                            </form>
+                        </div><!-- section-title end -->
+                    </div><!-- card-body end -->
+                </div><!-- card end -->
+            </div>
+        </div><!-- row end -->
+    </div><!-- container-fluid end -->
+</section>
+
+<!-- Community Form (Mobile) -->
+<section class="section bg-black d-lg-none">
+    <div class="container">
+        <div class="row align-items-start">
+            <div class="col-md-6">
+                <div class="section-title me-lg-4">
+                    <h4 class="title title-dark mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>
+                    <h4 class="title title-dark mb-4 d-lg-none">JOIN GEN-Z COMMUNITY</h4>
+                    <p class="text-dark para-light para-desc mb-0">
+                        Interested in GEN-Z 40? Join the most sort out community of
+                        Builders & Enthusiats. Ask questions, and share your experience.
+                    </p>
+                    <div class="mt-4 pt-2">
+                        <h6 class="title-dark mb-4">WHAT ELSE YOU GET?</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Exclusive Offers
+                            </li>
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Build & Technical Support
+                            </li>
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Live Chat with Member & Group Experts
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mt-4">
+                <div class="card rounded shadow border-0 bg-black">
+                    <div class="card-body p-0">
+                        <form method="post" id="community-form-mobile" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" value="" name="password1" id="password1_mobile">
+                            <input type="hidden" value="" name="password2" id="password2_mobile">
+                            <input type="hidden" value="{{ country_code }}" name="country">
+                            <input type="hidden" value="customer" name="role">
+                            <div class="row mt-4">
+                                <div class="row">
+                                    <div class="col-12 col-md-6 mb-3">
+                                        <label class="form-label text-dark text-uppercase">
+                                            First Name <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="user" class="fea icon-sm icons text-dark"></i>
+                                            <input name="first_name" id="first_name" type="text"
+                                                   class="ps-5 bg-transparent text-dark"
+                                                   style="width: 100%; padding: 12px; font-size: 14px;
+                                                          border: 1px solid #ccc; border-radius: 5px;
+                                                          outline: none; margin-bottom: 10px;"
+                                                   placeholder="First Name" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 mb-3">
+                                        <label class="form-label text-dark text-uppercase">
+                                            Last Name <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="user" class="fea icon-sm icons text-dark"></i>
+                                            <input name="last_name" id="last_name" type="text"
+                                                   class="ps-5 bg-transparent text-dark"
+                                                   style="width: 100%; padding: 12px; font-size: 14px;
+                                                          border: 1px solid #ccc; border-radius: 5px;
+                                                          outline: none; margin-bottom: 10px;"
+                                                   placeholder="Last Name" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-md-6 mb-3">
+                                        <label class="form-label text-dark text-uppercase">
+                                            Email <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="mail" class="fea icon-sm icons text-dark"></i>
+                                            <input type="email" id="email" class="ps-5 bg-transparent text-dark"
+                                                   style="width: 100%; padding: 12px; font-size: 14px;
+                                                          border: 1px solid #ccc; border-radius: 5px;
+                                                          outline: none; margin-bottom: 10px;"
+                                                   placeholder="Email"
+                                                   name="email" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 mb-3">
+                                        <label class="form-label text-dark text-uppercase">
+                                            Phone Number
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <img class="fea icon-sm icons"
+                                                 src="{{ country_flag_url }}"
+                                                 alt="Country Flag"
+                                                 style="width: 28px; height: 28px; top: 10px !important; left: 12px;">
+                                            <input name="phone_number" id="phone_number_mobile" type="text"
+                                                   class="ps-5 bg-transparent text-dark"
+                                                   style="width: 100%; padding: 12px; font-size: 14px;
+                                                          border: 1px solid #ccc; border-radius: 5px;
+                                                          outline: none; margin-bottom: 10px;"
+                                                   placeholder="Phone Number">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-md-6 mb-3">
+                                        <label class="form-label text-dark text-uppercase">
+                                            Password <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="lock" class="fea icon-sm icons"></i>
+                                            <input type="password" id="community-password-mobile" name="password" class="ps-5 bg-transparent text-dark"
+                                            style="width: 100%; padding: 12px; font-size: 14px;
+                                                   border: 1px solid #ccc; border-radius: 5px;
+                                                   outline: none; margin-bottom: 10px;" required>
+                                            <i data-feather="eye" class="fea icon-sm icons position-absolute password-toggle" style="right: 10px; left: auto; cursor: pointer;"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 mb-3">
+                                        <label class="form-label text-dark text-uppercase">
+                                            Confirm Password <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="lock" class="fea icon-sm icons"></i>
+                                            <input type="password" id="community-password-confirm-mobile" name="password_confirm" class="ps-5 bg-transparent text-dark"
+                                            style="width: 100%; padding: 12px; font-size: 14px;
+                                                   border: 1px solid #ccc; border-radius: 5px;
+                                                   outline: none; margin-bottom: 10px;" required>
+                                            <i data-feather="eye" class="fea icon-sm icons position-absolute confirm-password-toggle" style="right: 10px; left: auto; cursor: pointer;"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row ">
+                                    <div class="col-12">
+                                        <div class="col-12">
+                                            <div id="community-password-match-mobile" class="mt-0 text-dark" style="font-size: 0.8rem;"></div>
+                                        </div>
+                                        <div class="password-requirements text-dark mt-2">
+                                            <p class="mb-1">Password must contain:</p>
+                                            <div class="password-requirements-grid">
+                                                <div id="community-length-mobile" class="requirement">✓ At least 8 characters</div>
+                                                <div id="community-uppercase-mobile" class="requirement">✓ At least 1 uppercase letter</div>
+                                                <div id="community-number-mobile" class="requirement">✓ At least 1 number</div>
+                                                <div id="community-special-mobile" class="requirement">✓ At least 1 special character</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                                <div class="col-12 mb-2">
+                                    <label class="form-check-label text-dark">
+                                        By continuing, you agree to our
+                                        <a href="{% url 'privacy_policy' %}" target="_blank"
+                                           class="text-primary">
+                                            Privacy Policy
+                                        </a>
+                                    </label>
+                                </div>
+                                <div class="col-12 mb-0">
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-success">
+                                            Join now
+                                            <span class="spinner-border spinner-border-sm" id="pro_mob"
+                                                  role="status" aria-hidden="true"
+                                                  style="display: none;"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-success mt-2" id="signin-btn-mobile" style="display: none;" onclick="window.location.href='{% url 'customer_login' %}'">
+                                            Sign In
+                                        </button>
+                                    </div>
+                                </div>
+                            </div><!-- row end -->
+                        </form>
+                    </div><!-- card-body end -->
+                </div><!-- card end -->
+            </div>
+        </div><!-- row end -->
+    </div><!-- container end -->
+</section>
+{% endblock content %}
+
+{% block script %}
+<script>
+    // Phone number formatting
+    document.getElementById("phone_number").addEventListener("input", function (e) {
+        let value = e.target.value.replace(/\D/g, "");
+        if (value.length > 10) value = value.substring(0, 10);
+        
+        let formattedValue = value;
+        if (value.length > 6) {
+            formattedValue = `(${value.substring(0, 3)}) ${value.substring(3, 6)}-${value.substring(6)}`;
+        } else if (value.length > 3) {
+            formattedValue = `(${value.substring(0, 3)}) ${value.substring(3)}`;
+        } else if (value.length > 0) {
+            formattedValue = `(${value}`;
+        }
+        
+        e.target.value = formattedValue;
+    });
+
+    // Form submission
+    $("#community-form").submit(function (e) {
+        e.preventDefault();
+        $('#password1').val($('#community-password').val());
+        $('#password2').val($('#community-password-confirm').val());
+        var data = new FormData($('#community-form').get(0));
+        $('#pro').show();
+        
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'customer_register_community' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response.message);
+                    setTimeout(function() {
+                        window.location.replace("{% url 'customer_community_message' %}");
+                    }, 2000);
+                } else {
+                    toastr.error(response.message);
+                    if (response.message && response.message.toLowerCase().includes('already exists')) {
+                        $('#signin-btn').show();
+                    }
+                }
+                $('#community-form')[0].reset();
+                $('#pro').hide();
+            },
+            error: function (response) {
+                if (response.responseJSON) {
+                    toastr.error(response.responseJSON.message);
+                    if (response.responseJSON.message && response.responseJSON.message.toLowerCase().includes('already exists')) {
+                        $('#signin-btn').show();
+                    }
+                } else {
+                    toastr.error("An error occurred during registration");
+                }
+                $('#pro').hide();
+            }
+        });
+    });
+
+    // Password validation (Desktop)
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('community-password');
+        const confirmPasswordInput = document.getElementById('community-password-confirm');
+        const submitButton = document.getElementById('community-submit-btn');
+        const passwordMatch = document.getElementById('community-password-match');
+        
+        const lengthReq = document.getElementById('community-length');
+        const uppercaseReq = document.getElementById('community-uppercase');
+        const numberReq = document.getElementById('community-number');
+        const specialReq = document.getElementById('community-special');
+        
+        function validatePassword() {
+            const password = passwordInput.value;
+            
+            lengthReq.classList.toggle('valid', password.length >= 8);
+            uppercaseReq.classList.toggle('valid', /[A-Z]/.test(password));
+            numberReq.classList.toggle('valid', /[0-9]/.test(password));
+            specialReq.classList.toggle('valid', /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password));
+            
+            checkFormValidity();
+        }
+        
+        function checkPasswordMatch() {
+            if(confirmPasswordInput.value === '') {
+                passwordMatch.textContent = '';
+                passwordMatch.classList.remove('text-success', 'text-danger');
+            } else if(passwordInput.value === confirmPasswordInput.value) {
+                passwordMatch.textContent = 'Passwords match';
+                passwordMatch.classList.add('text-success');
+                passwordMatch.classList.remove('text-danger');
+            } else {
+                passwordMatch.textContent = 'Passwords do not match';
+                passwordMatch.classList.add('text-danger');
+                passwordMatch.classList.remove('text-success');
+            }
+            
+            checkFormValidity();
+        }
+        
+        function checkFormValidity() {
+            const password = passwordInput.value;
+            const passwordsMatch = passwordInput.value === confirmPasswordInput.value && confirmPasswordInput.value !== '';
+            const validLength = password.length >= 8;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            
+            submitButton.disabled = !(validLength && hasUppercase && hasNumber && hasSpecial && passwordsMatch);
+        }
+        
+        // Password toggle functionality
+        const passwordToggle = document.querySelector('.password-toggle');
+        const confirmPasswordToggle = document.querySelector('.confirm-password-toggle');
+        
+        passwordToggle.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.setAttribute('data-feather', type === 'password' ? 'eye' : 'eye-off');
+            feather.replace();
+        });
+        
+        confirmPasswordToggle.addEventListener('click', function() {
+            const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPasswordInput.setAttribute('type', type);
+            this.setAttribute('data-feather', type === 'password' ? 'eye' : 'eye-off');
+            feather.replace();
+        });
+        
+        // Initialize validation
+        validatePassword();
+        checkPasswordMatch();
+        
+        // Add event listeners
+        passwordInput.addEventListener('input', validatePassword);
+        confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+        passwordInput.addEventListener('input', checkPasswordMatch);
+        passwordInput.addEventListener('change', validatePassword);
+        confirmPasswordInput.addEventListener('change', checkPasswordMatch);
+    });
+
+    // Password validation (Mobile)
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInputMob = document.getElementById('community-password-mobile');
+        const confirmPasswordInputMob = document.getElementById('community-password-confirm-mobile');
+        const submitButtonMob = document.querySelector('#community-form-mobile button[type="submit"]');
+        const passwordMatchMob = document.getElementById('community-password-match-mobile');
+
+        const lengthReqMob = document.getElementById('community-length-mobile');
+        const uppercaseReqMob = document.getElementById('community-uppercase-mobile');
+        const numberReqMob = document.getElementById('community-number-mobile');
+        const specialReqMob = document.getElementById('community-special-mobile');
+
+        function validatePasswordMob() {
+            const password = passwordInputMob.value;
+            lengthReqMob.classList.toggle('valid', password.length >= 8);
+            uppercaseReqMob.classList.toggle('valid', /[A-Z]/.test(password));
+            numberReqMob.classList.toggle('valid', /[0-9]/.test(password));
+            specialReqMob.classList.toggle('valid', /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password));
+            checkFormValidityMob();
+        }
+
+        function checkPasswordMatchMob() {
+            if(confirmPasswordInputMob.value === '') {
+                passwordMatchMob.textContent = '';
+                passwordMatchMob.classList.remove('text-success', 'text-danger');
+            } else if(passwordInputMob.value === confirmPasswordInputMob.value) {
+                passwordMatchMob.textContent = 'Passwords match';
+                passwordMatchMob.classList.add('text-success');
+                passwordMatchMob.classList.remove('text-danger');
+            } else {
+                passwordMatchMob.textContent = 'Passwords do not match';
+                passwordMatchMob.classList.add('text-danger');
+                passwordMatchMob.classList.remove('text-success');
+            }
+            checkFormValidityMob();
+        }
+
+        function checkFormValidityMob() {
+            const password = passwordInputMob.value;
+            const passwordsMatch = passwordInputMob.value === confirmPasswordInputMob.value && confirmPasswordInputMob.value !== '';
+            const validLength = password.length >= 8;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            submitButtonMob.disabled = !(validLength && hasUppercase && hasNumber && hasSpecial && passwordsMatch);
+        }
+
+        // Password toggle functionality for mobile
+        const passwordToggleMob = document.querySelector('#community-form-mobile .password-toggle');
+        const confirmPasswordToggleMob = document.querySelector('#community-form-mobile .confirm-password-toggle');
+
+        if (passwordToggleMob) {
+            passwordToggleMob.addEventListener('click', function() {
+                const type = passwordInputMob.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInputMob.setAttribute('type', type);
+                this.setAttribute('data-feather', type === 'password' ? 'eye' : 'eye-off');
+                feather.replace();
+            });
+        }
+        if (confirmPasswordToggleMob) {
+            confirmPasswordToggleMob.addEventListener('click', function() {
+                const type = confirmPasswordInputMob.getAttribute('type') === 'password' ? 'text' : 'password';
+                confirmPasswordInputMob.setAttribute('type', type);
+                this.setAttribute('data-feather', type === 'password' ? 'eye' : 'eye-off');
+                feather.replace();
+            });
+        }
+
+        // Initialize validation for mobile
+        validatePasswordMob();
+        checkPasswordMatchMob();
+
+        // Add event listeners for mobile
+        passwordInputMob.addEventListener('input', validatePasswordMob);
+        confirmPasswordInputMob.addEventListener('input', checkPasswordMatchMob);
+        passwordInputMob.addEventListener('input', checkPasswordMatchMob);
+        passwordInputMob.addEventListener('change', validatePasswordMob);
+        confirmPasswordInputMob.addEventListener('change', checkPasswordMatchMob);
+    });
+
+    // Initialize Feather icons
+    lucide.createIcons();
+
+    // Mobile form submission
+    $("#community-form-mobile").submit(function (e) {
+        e.preventDefault();
+        $('#password1_mobile').val($('#community-password-mobile').val());
+        $('#password2_mobile').val($('#community-password-confirm-mobile').val());
+        var data = new FormData($('#community-form-mobile').get(0));
+        $('#pro_mob').show();
+
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'customer_register_community' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response.message);
+                    setTimeout(function() {
+                        window.location.replace("{% url 'customer_community_message' %}");
+                    }, 2000);
+                } else {
+                    toastr.error(response.message);
+                    if (response.message && response.message.toLowerCase().includes('already exists')) {
+                        $('#signin-btn-mobile').show();
+                    }
+                }
+                $('#community-form-mobile')[0].reset();
+                $('#pro_mob').hide();
+            },
+            error: function (response) {
+                if (response.responseJSON) {
+                    toastr.error(response.responseJSON.message);
+                    if (response.responseJSON.message && response.responseJSON.message.toLowerCase().includes('already exists')) {
+                        $('#signin-btn-mobile').show();
+                    }
+                } else {
+                    toastr.error("An error occurred during registration");
+                }
+                $('#pro_mob').hide();
+            }
+        });
+    });
+</script>
+{% endblock script %} 

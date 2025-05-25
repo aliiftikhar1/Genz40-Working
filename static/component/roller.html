@@ -1,0 +1,933 @@
+<!-- Roller Package Configurator Template -->
+<div class="roller-configurator bg-gray-800 rounded-lg shadow-lg p-6">
+  <!-- Header -->
+  <div class="mb-6">
+    <h2 class="text-2xl font-bold text-white">Roller Package Configurator</h2>
+    <p>Kit includes all the above plus fit up of body, doors hinged and latched</p>
+    <p class="text-gray-300 mt-2">Base price: $24,999.00</p>
+    <div class="mt-4 h-1 w-full bg-gray-700"></div>
+  </div>
+  
+  <!-- Form -->
+  <form id="rollerForm" class="space-y-6 pb-28" onsubmit="submitRollerForm(event)">
+    <!-- Chassis Section -->
+    <div class="">
+      <h3 class="text-xl font-semibold text-white mb-4">Chassis</h3>
+      
+      <!-- Included Features -->
+      <div class="space-y-3 mb-4">
+        <!-- Chassis - mig-welded -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="chassis" name="chassis" type="checkbox" checked disabled
+              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-not-allowed bg-gray-700">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="chassis" class="font-medium text-gray-300">Chassis - mig-welded Tubular Chassis be-spoke designed for GEN-Z40</label>
+            <span class="ml-2 text-gray-400 text-xs">Included</span>
+          </div>
+        </div>
+        
+        <!-- Chassis Powder Coating -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="powderCoating" name="powderCoating" type="checkbox" checked disabled
+              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-not-allowed bg-gray-700">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="powderCoating" class="font-medium text-gray-300">Chassis Powder Coating Black</label>
+            <span class="ml-2 text-gray-400 text-xs">Included</span>
+          </div>
+        </div>
+        
+        <!-- Aluminum Mounting Structure -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="aluminumMount" name="aluminumMount" type="checkbox" checked disabled
+              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-not-allowed bg-gray-700">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="aluminumMount" class="font-medium text-gray-300">Aluminum Front and Rear Body Mounting Structure</label>
+            <span class="ml-2 text-gray-400 text-xs">Included</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Optional Features -->
+      <div class="space-y-3">
+        <!-- Engine Mounts -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="engineMounts" name="engineMounts" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="399.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="engineMounts" class="font-medium text-gray-300">Engine Mounts</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Body Section -->
+    <div class=" mt-6 pt-6 border-t border-gray-700">
+      <h3 class="text-xl font-semibold text-white mb-4">Body</h3>
+      
+      <!-- Included Features -->
+      <div class="space-y-3 mb-4">
+        <!-- Fiberglass -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="fiberglass" name="fiberglass" type="checkbox" checked disabled
+              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-not-allowed bg-gray-700">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="fiberglass" class="font-medium text-gray-300">Hand-laid / Vacuum infused Fiberglass (complete inner and outer Panels)</label>
+            <span class="ml-2 text-gray-400 text-xs">Included</span>
+          </div>
+        </div>
+        
+        <!-- Nostril -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="nostril" name="nostril" type="checkbox" checked disabled
+              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-not-allowed bg-gray-700">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="nostril" class="font-medium text-gray-300">Nostril: Single or Double Mark I and Mark II</label>
+            <span class="ml-2 text-gray-400 text-xs">Included</span>
+          </div>
+        </div>
+        
+        <!-- Windshield -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="windshield" name="windshield" type="checkbox" checked disabled
+              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-not-allowed bg-gray-700">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="windshield" class="font-medium text-gray-300">DOT Glass Windshield</label>
+            <span class="ml-2 text-gray-400 text-xs">Included</span>
+          </div>
+        </div>
+        
+        <!-- Windows -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="windows" name="windows" type="checkbox" checked disabled
+              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-not-allowed bg-gray-700">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="windows" class="font-medium text-gray-300">Side and Rear Windows</label>
+            <span class="ml-2 text-gray-400 text-xs">Included</span>
+          </div>
+        </div>
+        
+        <!-- Door Hinges -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="doorHinges" name="doorHinges" type="checkbox" checked disabled
+              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-not-allowed bg-gray-700">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="doorHinges" class="font-medium text-gray-300">Door Hinges</label>
+            <span class="ml-2 text-gray-400 text-xs">Included</span>
+          </div>
+        </div>
+        
+        <!-- Door Latches -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="doorLatches" name="doorLatches" type="checkbox" checked disabled
+              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-not-allowed bg-gray-700">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="doorLatches" class="font-medium text-gray-300">Door Latches</label>
+            <span class="ml-2 text-gray-400 text-xs">Included</span>
+          </div>
+        </div>
+        
+        <!-- Headlight Covers -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="headlightCovers" name="headlightCovers" type="checkbox" checked disabled
+              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-not-allowed bg-gray-700">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="headlightCovers" class="font-medium text-gray-300">Headlight Covers</label>
+            <span class="ml-2 text-gray-400 text-xs">Included</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Optional Features -->
+      <div class="space-y-3">
+        <!-- Door Handles -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="doorHandles" name="doorHandles" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="299.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="doorHandles" class="font-medium text-gray-300">Stainless Steel Door Handles</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+        
+        <!-- Window Vent Hinge -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="ventHinge" name="ventHinge" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="149.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="ventHinge" class="font-medium text-gray-300">Window Vent Hinge Hardware</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+        
+        <!-- Fuel Caps -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="fuelCaps" name="fuelCaps" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="99.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="fuelCaps" class="font-medium text-gray-300">Fuel Filler Caps</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+        
+        <!-- Mirrors -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="mirrors" name="mirrors" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="199.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="mirrors" class="font-medium text-gray-300">Bullet-Style Chrome Mirrors</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+        
+        <!-- Latch Kit -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="latchKit" name="latchKit" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="249.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="latchKit" class="font-medium text-gray-300">Hartwell-Style Latch Kit</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+        
+        <!-- Gurney Bubble -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="gurneyBubble" name="gurneyBubble" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="349.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="gurneyBubble" class="font-medium text-gray-300">Gurney Bubble</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+        
+        <!-- Engine Vent -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="engineVent" name="engineVent" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="399.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="engineVent" class="font-medium text-gray-300">Le Mans Style Nine-Hole Engine Vent Panels (Mark I)</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+        
+        <!-- Spoiler -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="spoiler" name="spoiler" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="499.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="spoiler" class="font-medium text-gray-300">Le Mans Style Spoiler, Scoops, periscoops Mark II</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Suspension Section -->
+    <div class=" mt-6 pt-6 border-t border-gray-700">
+      <h3 class="text-xl font-semibold text-white mb-4">Suspension</h3>
+      
+      <!-- Included Features -->
+      <div class="space-y-3 mb-4">
+        <!-- Fabricated Lower Control Arm -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="lowerControlArm" name="lowerControlArm" type="checkbox" checked disabled
+              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-not-allowed bg-gray-700">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="lowerControlArm" class="font-medium text-gray-300">Customs Fabricated Lower control arm (Front & Rear)</label>
+            <span class="ml-2 text-gray-400 text-xs">Included</span>
+          </div>
+        </div>
+        
+        <!-- Custom Fab Lower Control Arm -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="customLowerControlArm" name="customLowerControlArm" type="checkbox" checked disabled
+              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-not-allowed bg-gray-700">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="customLowerControlArm" class="font-medium text-gray-300">Custom fab Lower control arm</label>
+            <span class="ml-2 text-gray-400 text-xs">Included</span>
+          </div>
+        </div>
+        
+        <!-- Upright -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="upright" name="upright" type="checkbox" checked disabled
+              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-not-allowed bg-gray-700">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="upright" class="font-medium text-gray-300">Upright</label>
+            <span class="ml-2 text-gray-400 text-xs">Included</span>
+          </div>
+        </div>
+        
+        <!-- Upper Control Arm -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="upperControlArm" name="upperControlArm" type="checkbox" checked disabled
+              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-not-allowed bg-gray-700">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="upperControlArm" class="font-medium text-gray-300">Ford Produces upper control arm (Front)</label>
+            <span class="ml-2 text-gray-400 text-xs">Included</span>
+          </div>
+        </div>
+        
+        <!-- Spindle/Uprights -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="spindle" name="spindle" type="checkbox" checked disabled
+              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-not-allowed bg-gray-700">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="spindle" class="font-medium text-gray-300">Ford Produced Spindle/uprights (Front)</label>
+            <span class="ml-2 text-gray-400 text-xs">Included</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Optional Features -->
+      <div class="space-y-3">
+        <!-- Wheel Bearing -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="wheelBearing" name="wheelBearing" type="checkbox" 
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="249.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="wheelBearing" class="font-medium text-gray-300">Wheel Bearing</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+        
+        <!-- Coilover Shocks -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="coiloverShocks" name="coiloverShocks" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="599.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="coiloverShocks" class="font-medium text-gray-300">Coilover Shocks</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+        
+        <!-- Coilover Springs -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="coiloverSprings" name="coiloverSprings" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="299.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="coiloverSprings" class="font-medium text-gray-300">Coilover Springs</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Steering Section -->
+    <div class=" mt-6 pt-6 border-t border-gray-700">
+      <h3 class="text-xl font-semibold text-white mb-4">Steering</h3>
+      
+      <!-- Included Features -->
+      <div class="space-y-3 mb-4">
+        <!-- Rack and Pinion -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="rackPinion" name="rackPinion" type="checkbox" checked disabled
+              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-not-allowed bg-gray-700">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="rackPinion" class="font-medium text-gray-300">Rack and pinion</label>
+            <span class="ml-2 text-gray-400 text-xs">Included</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Optional Features -->
+      <div class="space-y-3">
+        <!-- Steering Column -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="steeringColumn" name="steeringColumn" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="449.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="steeringColumn" class="font-medium text-gray-300">Collapsible Steering Column (D-Style)</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+        
+        <!-- Universal Joint -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="universalJoint" name="universalJoint" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="199.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="universalJoint" class="font-medium text-gray-300">Sealed Bearing Universal Joint</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+        
+        <!-- Quick-Release Adapter -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="quickRelease" name="quickRelease" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="249.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="quickRelease" class="font-medium text-gray-300">Quick-Release Steering Wheel Adapter</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Brakes Section -->
+    <div class=" mt-6 pt-6 border-t border-gray-700">
+      <h3 class="text-xl font-semibold text-white mb-4">Brakes</h3>
+      
+      <!-- Optional Features -->
+      <div class="space-y-3">
+        <!-- Front Brakes -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="frontBrakes" name="frontBrakes" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="1299.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="frontBrakes" class="font-medium text-gray-300">Front: Brembo / Wilwood</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+        
+        <!-- Rear Brakes -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="rearBrakes" name="rearBrakes" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="1199.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="rearBrakes" class="font-medium text-gray-300">Rear: Brembo / Wilwood</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+        
+        <!-- Lines and Fittings -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="brakeFittings" name="brakeFittings" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="399.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="brakeFittings" class="font-medium text-gray-300">Lines, clamps, adapters, Fittings</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Pedal Assembly Section -->
+    <div class=" mt-6 pt-6 border-t border-gray-700">
+      <h3 class="text-xl font-semibold text-white mb-4">Pedal Assembly</h3>
+      
+      <!-- Optional Features -->
+      <div class="space-y-3">
+        <!-- Triple Pedal -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="triplePedal" name="triplePedal" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="599.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="triplePedal" class="font-medium text-gray-300">Triple-Pedal Assembly</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+        
+        <!-- Master Cylinders -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="masterCylinders" name="masterCylinders" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="399.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="masterCylinders" class="font-medium text-gray-300">Clutch, Front and Rear Brake Master Cylinders</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+        
+        <!-- Fluid Reservoirs -->
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="fluidReservoirs" name="fluidReservoirs" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="149.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="fluidReservoirs" class="font-medium text-gray-300">Brake Fluid Reservoirs</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+        
+        <div class="flex items-center">
+          <div class="flex items-center h-5">
+            <input id="installationKit" name="installationKit" type="checkbox" disabled
+              class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+              data-price="149.99">
+          </div>
+          <div class="ml-3 text-sm">
+            <label for="installationKit" class="font-medium text-gray-300">Installation Kit</label>
+            <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+          </div>
+        </div>
+     
+ 
+
+<!-- Wheels Section -->
+<div class=" mt-6 pt-6 border-t border-gray-700">
+ <h3 class="text-xl font-semibold text-white mb-4">Wheels</h3>
+ 
+ <!-- Optional Features -->
+ <div class="space-y-3">
+   <!-- Halibrand Wheels -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="halibrandWheels" name="halibrandWheels" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="1799.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="halibrandWheels" class="font-medium text-gray-300">Halibrand Pin-Drive Wheels</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+   
+   <!-- BRM Wheels -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="brmWheels" name="brmWheels" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="1999.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="brmWheels" class="font-medium text-gray-300">BRM Pin-Drive Wheels</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+   
+   <!-- Tri-Wing Spinner -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="triWingSpinner" name="triWingSpinner" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="899.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="triWingSpinner" class="font-medium text-gray-300">Tri-Wing Spinner and Adapter Package (Mounts 4 Pin-Drive Wheels)</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+ </div>
+</div>
+
+<!-- Lighting Section -->
+<div class=" mt-6 pt-6 border-t border-gray-700">
+ <h3 class="text-xl font-semibold text-white mb-4">Lighting</h3>
+ 
+ <!-- Included Features -->
+ <div class="space-y-3 mb-4">
+   <!-- Headlight Covers -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="headlightCovers" name="headlightCovers" type="checkbox" checked disabled
+         class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-not-allowed bg-gray-700">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="headlightCovers" class="font-medium text-gray-300">Headlight Covers</label>
+       <span class="ml-2 text-gray-400 text-xs">Included</span>
+     </div>
+   </div>
+ </div>
+ 
+ <!-- Optional Features -->
+ <div class="space-y-3">
+   <!-- Headlights -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="headlights" name="headlights" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="299.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="headlights" class="font-medium text-gray-300">Pair Headlights</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+   
+   <!-- Front Marker Lights -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="frontMarkers" name="frontMarkers" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="149.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="frontMarkers" class="font-medium text-gray-300">Pair Front Marker Lights</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+   
+   <!-- Taillights -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="taillights" name="taillights" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="249.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="taillights" class="font-medium text-gray-300">Pair Rear Taillights</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+   
+   <!-- License Plate Lights -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="licensePlateLights" name="licensePlateLights" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="99.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="licensePlateLights" class="font-medium text-gray-300">Pair License Plate Marker Lights</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+ </div>
+</div>
+
+<!-- Electrical Section -->
+<div class=" mt-6 pt-6 border-t border-gray-700">
+ <h3 class="text-xl font-semibold text-white mb-4">Electrical</h3>
+ 
+ <!-- Optional Features -->
+ <div class="space-y-3">
+   <!-- Wiring Harness -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="wiringHarness" name="wiringHarness" type="checkbox" 
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="899.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="wiringHarness" class="font-medium text-gray-300">14 Circuit Color Coded and Labeled Wiring Harness with Integral Fuse Box and Relays</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+   
+   <!-- Wiper Motor -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="wiperMotor" name="wiperMotor" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="249.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="wiperMotor" class="font-medium text-gray-300">Wiper Motor Assembly</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+ </div>
+</div>
+
+<!-- Cooling & Fuel Section -->
+<div class=" mt-6 pt-6 border-t border-gray-700">
+ <h3 class="text-xl font-semibold text-white mb-4">Cooling & Fuel</h3>
+ 
+ <!-- Optional Features -->
+ <div class="space-y-3">
+   <!-- Radiator -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="radiator" name="radiator" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="799.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="radiator" class="font-medium text-gray-300">Custom Aluminum Radiator</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+   
+   <!-- Cooling Fans -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="coolingFans" name="coolingFans" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="349.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="coolingFans" class="font-medium text-gray-300">Pair Electric Cooling Fans</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+   
+   <!-- Coolant Tubes -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="coolantTubes" name="coolantTubes" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="299.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="coolantTubes" class="font-medium text-gray-300">Pair Original-Style Coolant Tubes</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+   
+   <!-- Fuel Tanks -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="fuelTanks" name="fuelTanks" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="999.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="fuelTanks" class="font-medium text-gray-300">Pair Aluminum Fuel Tanks - Installed</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+ </div>
+</div>
+
+<!-- Drivetrain Section -->
+<div class=" mt-6 pt-6 border-t border-gray-700">
+ <h3 class="text-xl font-semibold text-white mb-4">Drivetrain</h3>
+ 
+ <!-- Optional Features -->
+ <div class="space-y-3">
+   <!-- Drive Axles -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="driveAxles" name="driveAxles" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="1499.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="driveAxles" class="font-medium text-gray-300">Drive Axles and CV Joints</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+   
+   <!-- Shifter -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="shifter" name="shifter" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="649.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="shifter" class="font-medium text-gray-300">Cable-operated shifter and cables, with fittings</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+   
+   <!-- Transaxle -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="transaxle" name="transaxle" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="4999.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="transaxle" class="font-medium text-gray-300">Transaxle O1E/OIX or Boxter S</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+   
+   <!-- Engine -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="engine" name="engine" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="8999.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="engine" class="font-medium text-gray-300">Engine, Coyote, 427, 302 and more</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+ </div>
+</div>
+
+<!-- Interior Section -->
+<div class=" mt-6 pt-6 border-t border-gray-700">
+ <h3 class="text-xl font-semibold text-white mb-4">Interior</h3>
+ 
+ <!-- Optional Features -->
+ <div class="space-y-3">
+   <!-- Dash -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="dash" name="dash" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="1299.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="dash" class="font-medium text-gray-300">Original Style Dash (Left Hand Drive / Right Hand Drive)</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+   
+   <!-- Steering Wheel -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="steeringWheel" name="steeringWheel" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="499.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="steeringWheel" class="font-medium text-gray-300">Moto-lita 14" Steering Wheel</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+   
+   <!-- Seats -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="seats" name="seats" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="1499.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="seats" class="font-medium text-gray-300">Original style Seats with Leather</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+   
+   <!-- Gauges -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="gauges" name="gauges" type="checkbox" disabled
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="899.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="gauges" class="font-medium text-gray-300">Speed Hut Gauges set</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+ </div>
+</div>
+
+<!-- Exhaust Section -->
+<div class=" mt-6 pt-6 border-t border-gray-700">
+ <h3 class="text-xl font-semibold text-white mb-4">Exhaust</h3>
+ 
+ <!-- Optional Features -->
+ <div class="space-y-3">
+   <!-- Exhaust System -->
+   <div class="flex items-center">
+     <div class="flex items-center h-5">
+       <input id="exhaustSystem" name="exhaustSystem" type="checkbox" disabled  
+         class="roller-feature-checkbox focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-500 rounded cursor-pointer"
+         data-price="2499.99">
+     </div>
+     <div class="ml-3 text-sm">
+       <label for="exhaustSystem" class="font-medium text-gray-300">"Bundle of Snakes" Exhaust System</label>
+       <span class="ml-2 text-indigo-400">Available in Roller Plus</span>
+     </div>
+   </div>
+ </div>
+</div>
+
+</div>
+</div>
+
+<!-- Price Summary -->
+ <!-- desktop -->
+<div class="mt-10 pt-6 border-t  hidden md:block fixed -bottom-6 pb-4 w-100 bg-gray-800  border-gray-700">
+  <div class="flex justify-between items-center">
+    <h3 class="text-xl font-bold text-white">Total Price:</h3>
+    <div class="text-2xl font-bold text-indigo-400" id="rollertotalPrice">$24,999.00</div>
+  </div>
+  <button type="submit" class="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 py-3 px-6 rounded-md text-white font-medium shadow-md transition duration-300">
+    Save Configuration
+  </button>
+ </div>
+<!-- Mobile -->
+<div class=" p-3 border-t-2 border-white/40 fixed flex gap-2 items-center md:hidden bottom-0 left-0 bg-gray-800 w-full border-gray-700">
+ <div class="flex justify-between items-center w-full">
+   <h3 class="text-xl font-bold text-white">Total Price:</h3>
+   <div class="text-2xl font-bold text-indigo-400" id="rollermobiletotalPrice">$24,999.00</div>
+ </div>
+ <button type="submit" class=" bg-indigo-600 hover:bg-indigo-700 py-1 px-6 rounded-md text-white font-medium shadow-md transition duration-300">
+   Save
+ </button>
+</div>
+</form>
+</div>
+

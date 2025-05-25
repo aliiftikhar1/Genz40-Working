@@ -1,0 +1,135 @@
+{% extends "public/layout/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load frontend_custom_filters %}
+{% block header %}
+<style>
+    body{
+        background-color: #fff !important;
+    }
+    .shadow{
+        box-shadow: 0 0 3px rgba(173,181,189,1)!important
+    }
+    .form-control{
+        color: #000 !important;
+    }
+    .field-icon {
+        font-size: 1rem;
+        color: #6c757d;
+    }
+    
+
+</style>
+{% endblock %}
+
+{% block content %}
+ <!-- Hero Start -->
+ <section class="bg-home d-flex align-items-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card form-signin p-4 rounded shadow bg-dark">
+                    <h4 class="card-title text-center text-light">Sign In</h4>  
+                    <form class="login-form mt-4" method="post" id="login-form">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <label class="form-label text-light">Email <span class="text-danger">*</span></label>
+                                    <div class="form-icon position-relative">
+                                        <i data-feather="mail" class="fea icon-sm icons text-light"></i>
+                                        <input type="text" class="form-control ps-5 bg-white text-light" name="username" required="">
+                                    </div>
+                                </div>
+                            </div><!--end col-->
+
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <label class="form-label text-light">Password <span class="text-danger">*</span></label>
+                                    <div class="form-icon position-relative">
+                                        <i data-feather="key" class="fea icon-sm icons text-light"></i>
+                                        <input type="password" name="password" id="password" class="form-control bg-white ps-5" required="">
+                                        <span toggle="#password" class="fa fa-fw fa-eye field-icon toggle-password position-absolute top-50 end-0 translate-middle-y me-3" style="cursor: pointer; z-index: 2;"></span>
+                                    </div>                                    
+                                </div>
+                            </div><!--end col-->
+
+                            <div class="col-lg-12">
+                                <div class="d-flex justify-content-between">
+                                    <div class="mb-3">
+                                        <!-- <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                            <label class="form-check-label" for="flexCheckDefault">Remember me</label>
+                                        </div> -->
+                                    </div>
+                                    <p class="forgot-pass mb-3"><a href="{% url 'password_reset' %}" class="text-primary fw-bold float-end text-decoration-underline">Forgot password ?</a></p>
+                                </div>
+                            </div><!--end col-->
+
+                            <div class="col-lg-12 mb-0">
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-success">Sign in
+                                        <span class="spinner-border spinner-border-sm" id="pro1" role="status" aria-hidden="true" style="display: none;"></span>
+                                    </button>
+                                </div>
+                            </div><!--end col-->
+
+                            <div class="col-12 text-center">
+                                <p class="mb-0 mt-3"><small class="me-2 text-light">Don't have an account ?</small> <a href="{% url 'register_page' %}" class="text-primary fw-bold text-decoration-underline">Sign Up</a></p>
+                            </div><!--end col-->
+                        </div><!--end row-->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div> <!--end container-->
+</section>
+<!-- Hero End -->
+{% endblock content %}
+
+{% block script %}
+<script>
+    $(document).on('click', '.toggle-password', function () {
+        var input = $($(this).attr("toggle"));
+        if (input.attr("type") === "password") {
+            input.attr("type", "text");
+            $(this).removeClass("fa-eye").addClass("fa-eye-slash");
+        } else {
+            input.attr("type", "password");
+            $(this).removeClass("fa-eye-slash").addClass("fa-eye");
+        }
+    });
+</script>
+
+<script>
+    $("#login-form").submit(function (e) {
+    event.preventDefault();
+    var data = new FormData($('#login-form').get(0));
+    $('#pro1').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'customer_login' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response.message);
+                    redirectWithDelay("{% url 'dashboard' %}");
+                } else {
+                    toastr.error(response.message);
+                }
+                $('#login-form')[0].reset();
+                $('#pro1').hide();
+            },
+            error: function (response) {
+                // alert the error if any error occurred
+                alert(response["error"]);
+                $('#pro1').hide();
+            }
+        })
+    })
+</script>
+{% endblock script %}

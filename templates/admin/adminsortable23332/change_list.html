@@ -1,0 +1,8 @@
+<!-- templates/adminsortable2/change_list.html -->
+{% extends "admin/change_list.html" %}
+{% load adminsortable2_tags %}
+
+{% block content %}
+    {{ block.super }}
+    {% adminsortable2 %}
+{% endblock %}

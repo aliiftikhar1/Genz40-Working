@@ -1,0 +1,390 @@
+{% extends "public/layout/base.html" %}
+{% load static %}
+{% load humanize %}
+{% block header %}
+<style>
+    body{
+        background-color: #fff !important;
+    }
+    .shadow{
+        box-shadow: 0 0 1px #000!important;
+    }
+    .form-control {
+        background-color: #fff !important;
+        color: #000 !important;
+    }
+    .password-toggle {
+        cursor: pointer;
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+    .password-input-group {
+        position: relative;
+    }
+    .eye-icon{
+        position: absolute;
+        right: 20px;
+        top: 50px;
+    }
+    .disabled-field {
+        background-color: #e9ecef !important;
+        opacity: 1 !important;
+    }
+    .password-requirements {
+        font-size: 0.8rem;
+        margin-top: 5px;
+    }
+    
+    .requirement {
+        color: #dc3545;
+    }
+    
+    .requirement.valid {
+        color: #28a745;
+    }
+</style>
+{% endblock header %}
+
+{% block content %}
+<section class="bg-half-100 d-table w-100">
+    <div class="container bg-white">
+        <div class="layout-specing bg-white">
+            <div class="row bg-white">
+                <div class="col-md-12 col-lg-12 mt-4">
+                    <div class="card rounded shadow p-4 border-4 bg-white">
+                        <div class="row">
+                            <div class="col-6">
+                                <h3 class="text-light">{{ items.title }}</h3>
+                                <span class="badge bg-info">Est. Delivery - Mar 31, 2025</span>
+                            </div>
+                            <div class="col-6">
+                                <a href="{% url 'car_details' items.slug %}" class="btn btn-sm btn-outline-secondary text-light text-uppercase float-end mt-3">
+                                    <i class="mdi mdi-arrow-left-thin"></i>Back</a>
+                            </div>
+                        </div>
+                        
+                        {% if user.is_authenticated %}
+                        <div class="alert alert-info alert-dismissible fade show text-light mt-3 mb-3" role="alert"
+                            style="background-color: rgb(59 130 246 / .2)!important; border-color: rgb(59 130 246 / .5) !important;">
+                            <i class="uil uil-user-circle fs-5 align-middle me-1 text-light"></i><strong
+                                class="text-uppercase">Welcome back, {{ user.first_name }}!</strong><br>
+                            Your account details have been pre-filled below. You can proceed with your reservation.
+                        </div>
+                        {% else %}
+                        <div class="alert alert-info alert-dismissible fade show text-light mt-3 mb-3" role="alert"
+                            style="background-color: rgb(59 130 246 / .2)!important; border-color: rgb(59 130 246 / .5) !important;">
+                            <i class="uil uil-info-circle fs-5 align-middle me-1 text-light"></i><strong
+                                class="text-uppercase">Reserve now, Configure later</strong><br>
+                            This reservation will save your position in line. When your car is available
+                            for production, we will invite you to configure and choose from dozens of options to make it
+                            complete personalized and unique.
+                        </div>
+                        {% endif %}
+
+                        <form class="bg-white text-light" id="checkout-form" method="POST">
+                            {% csrf_token %}
+                            <input type="text" value="{{ country_code }}" name="country" hidden>
+                            <input type="text" value="customer" name="role" hidden>
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <label for="firstName" class="form-label">First Name<span class="text-danger"> *</span></label>
+                                    <input type="text" class="form-control {% if user.is_authenticated %}disabled-field{% endif %}" 
+                                           name="first_name" id="first_name" 
+                                           value="{{ user.first_name }}" 
+                                           {% if user.is_authenticated %}readonly{% endif %} required />
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <label for="lastName" class="form-label">Last Name<span class="text-danger"> *</span></label>
+                                    <input type="text" class="form-control {% if user.is_authenticated %}disabled-field{% endif %}" 
+                                           name="last_name" id="last_name" 
+                                           value="{{ user.last_name }}" 
+                                           {% if user.is_authenticated %}readonly{% endif %} required />
+                                </div>
+
+                                <div class="col-sm-6">
+                                    <label for="email" class="form-label">Email<span class="text-danger"> *</span></label>
+                                    <input type="email" class="form-control {% if user.is_authenticated %}disabled-field{% endif %}" 
+                                           name="email" id="email"
+                                           value="{{ user.email }}" 
+                                           {% if user.is_authenticated %}readonly{% endif %} required />
+                                </div>
+
+                                <div class="col-sm-6 position-relative">
+                                    <label for="phone_number" class="form-label">Phone Number<span class="text-danger"> *</span></label>
+                                    <div class="input-group has-validation">
+                                        <span class="input-group-text bg-white text-muted border" style="border-radius: 4px 0px 0px 4px;">
+                                            <img class="fea icon-sm icons" src="{{ country_flag_url }}"
+                                                alt="Country Flag" style="width: 28px; height: 28px;" />
+                                        </span>
+                                        <input type="tel" class="form-control {% if user.is_authenticated and user.phone_number %}disabled-field{% endif %}" 
+                                               name="phone_number" id="phone_number" 
+                                               value="{% if user.is_authenticated %}{{ user.phone_number|default:'' }}{% endif %}" 
+                                               {% if user.is_authenticated and user.phone_number %}readonly{% endif %} 
+                                               maxlength="14" required />
+                                    </div>
+                                </div>
+
+                                {% if not user.is_authenticated %}
+                                <div class="col-sm-6 password-input-group">
+                                    <label for="password1" class="form-label">Password<span class="text-danger"> *</span></label>
+                                    <input type="password" class="form-control" name="password1" id="password1" required />
+                                    <i class="uil uil-eye password-toggle eye-icon" onclick="togglePassword('password1', this)"></i>
+                                    <div class="password-requirements text-light mt-2">
+                                        <p class="mb-1">Password must contain:</p>
+                                        <div id="length" class="requirement">✓ At least 8 characters</div>
+                                        <div id="uppercase" class="requirement">✓ At least 1 uppercase letter</div>
+                                        <div id="number" class="requirement">✓ At least 1 number</div>
+                                        <div id="special" class="requirement">✓ At least 1 special character</div>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-6 password-input-group">
+                                    <label for="password2" class="form-label">Confirm Password<span class="text-danger"> *</span></label>
+                                    <input type="password" class="form-control" name="password2" id="password2" required />
+                                    <i class="uil uil-eye password-toggle eye-icon" onclick="togglePassword('password2', this)"></i>
+                                </div>
+                                {% else %}
+                                <input type="hidden" name="password1" value="authenticated-user" />
+                                <input type="hidden" name="password2" value="authenticated-user" />
+                                {% endif %}
+
+                                <div class="col-sm-3">
+                                    <label for="zip_code" class="form-label">Delivery Zip Code<span class="text-danger"> *</span></label>
+                                    <input type="text" class="form-control {% if user.is_authenticated and user.zip_code %}disabled-field{% endif %}" 
+                                           name="zip_code" id="zip_code"
+                                           value="{% if user.is_authenticated %}{{ user.zip_code|default:'' }}{% endif %}"
+                                           {% if user.is_authenticated and user.zip_code %}readonly{% endif %}
+                                           maxlength="5" required />
+                                </div>
+
+                                <div class="col-md-12 text-light">
+                                    <small class="text-gray text-sm" style="font-size: 11px;">
+                                        By entering my contact information above, I authorize Alvi Automobiles to
+                                        contact me about this request and Alvi Automobiles Updates including other Alvi
+                                        Automobiles products, services and events. I can opt out in the Alvi Automobiles app or by
+                                        unsubscribing. This is not a purchase requirement.
+                                    </small>
+                                </div>
+    
+                                <div class="col-md-12 text-light mt-3 mb-1 text-sm" style="font-size: 11px;">
+                                    <h4 class="mb-0">Due Today
+                                        <span class="mb-0 float-end mt-2">$ {{ amount_due }}</span>
+                                    </h4>
+                                    <small>Fully Refundable</small>
+                                </div>
+                            </div>
+
+                            <input type="hidden" value="{{ amount_due|floatformat:"0" }}" name="amount" />
+                            <input type="hidden" value="{{ items.slug }}" name="car_slug" />
+                            <input type="hidden" value="{{ package.id }}" name="package_id" />
+                            <input type="hidden" value="{{ package.name }}" name="package_name" />
+                            <input type="hidden" value="{{ items.id }}" name="car_model" />
+                            <input type="hidden" value="{{ package.discountAmount }}" name="price" />
+                            <div class="d-grid mt-3 mb-1">
+                                <button type="submit"
+                                    class="mb-1 btn btn-secondary text-light text-uppercase">
+                                    Reserve Now
+                                    <span class="spinner-border spinner-border-sm" id="pro" role="status"
+                                        aria-hidden="true" style="display: none;"></span>
+                                </button>
+                            </div>
+                            <div class="col-md-12 text-light mb-5">
+                                <small class="text-light text-sm mb-5" style="font-size: 11px;">
+                                    By placing this order, I understand that this is just the reservation fee and not a
+                                    car purchase price.
+                                    The Final price of the car will depend on options and features I choose. Reservation
+                                    today will save your spot and lock your price for either Package "Roller or Turnkey
+                                    Minus"
+                                </small>
+                            </div>
+                        </form>
+                    </div>
+                </div><!--end col-->
+            </div><!--end row-->
+        </div>
+    </div><!--end container-->
+</section>
+{% endblock content %}
+
+{% block script %}
+<script>
+    window.addEventListener("pageshow", function (event) {
+        if (event.persisted) {
+            location.reload();  // Reload page if accessed via back button
+        }
+    });
+</script>
+<script>
+    document.getElementById("phone_number").addEventListener("input", function (e) {
+        let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+    
+        if (value.length > 10) value = value.substring(0, 10); // Limit to 10 digits
+    
+        let formattedValue = value;
+    
+        if (value.length > 6) {
+            formattedValue = `(${value.substring(0, 3)}) ${value.substring(3, 6)}-${value.substring(6)}`;
+        } else if (value.length > 3) {
+            formattedValue = `(${value.substring(0, 3)}) ${value.substring(3)}`;
+        } else if (value.length > 0) {
+            formattedValue = `(${value}`;
+        }
+    
+        e.target.value = formattedValue;
+    });
+    
+    function togglePassword(fieldId, icon) {
+        const passwordField = document.getElementById(fieldId);
+        if (passwordField.type === "password") {
+            passwordField.type = "text";
+            icon.classList.remove("uil-eye");
+            icon.classList.add("uil-eye-slash");
+        } else {
+            passwordField.type = "password";
+            icon.classList.remove("uil-eye-slash");
+            icon.classList.add("uil-eye");
+        }
+    }
+</script>
+<script>
+    $("#checkout-form").submit(function (e) {
+        e.preventDefault();
+        
+        {% if not user.is_authenticated %}
+        // Only check passwords for new users
+        const password1 = $('#password1').val();
+        const password2 = $('#password2').val();
+        
+        if (password1 !== password2) {
+            toastr.error("Passwords do not match");
+            return false;
+        }
+        {% endif %}
+        
+        var data = new FormData(this);
+        $('#pro').show();
+        
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'create_account_before_checkout' %}",
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+                if (response.is_success) {
+        
+                        saveBookedPackage(response.session_data);
+                    
+                } else {
+                    toastr.error(response.message);
+                    $('#pro').hide();
+                }
+            },
+            error: function (response) {
+                toastr.error("An error occurred during account creation");
+                $('#pro').hide();
+            }
+        });
+    });
+    
+    function loginUser(email, password, callback) {
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'customer_login' %}",
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            data: {
+                'email': email,
+                'password': password,
+            },
+            success: function (response) {
+                if (response.is_success) {
+                    callback();
+                } else {
+                    toastr.error(response.message);
+                    $('#pro').hide();
+                }
+            },
+            error: function (response) {
+                toastr.error("An error occurred during login");
+                $('#pro').hide();
+            }
+        });
+    }
+    
+    function saveBookedPackage(session_data) {
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'save-booked-package' %}",
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            data: session_data,
+            success: function (response) {
+                if (response.id) {
+                    var newdata = Object.assign({}, session_data, { booking_id: response.id });
+                    
+                    call_checkout(newdata);
+                } else {
+                    toastr.error(response.message);
+                    $('#pro').hide();
+                }
+            },
+            error: function (response) {
+                toastr.error("An error occurred while saving your package");
+                $('#pro').hide();
+            }
+        });
+    }
+    
+    function call_checkout(session_data){
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'create_checkout_session' %}",
+            data: JSON.stringify(session_data), 
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                "Content-Type": "application/json"
+            },
+            success: function (response) {
+                if (response.is_success) {
+                    window.location.href = response.checkout_url;
+                } else {
+                    toastr.error(response.message);
+                    $('#pro').hide();
+                }
+            },
+            error: function (response) {
+                toastr.error("An error occurred during checkout");
+                $('#pro').hide();
+            }
+        });
+    }
+</script>
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock script %}

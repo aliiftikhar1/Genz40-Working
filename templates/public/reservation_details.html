@@ -1,0 +1,838 @@
+{% extends "public/layout/base.html" %}
+{% load static %}
+{% load humanize %}
+{% load frontend_custom_filters %}
+{% load reservation_tags %}
+
+{% block content %}
+<div class="reservation-details-container">
+    <!-- Header Section -->
+    <div class="reservation-header">
+        <div class="reservation-info">
+            <h1 >Reservation No. {{ booked_package.reservation_number }}</h1>
+            <div class="status-badge d-none d-lg-flex {% if booked_package.status == 'confirmed' %}confirmed
+            {% elif booked_package.status == 'cancelled' %}cancelled
+            {% else %}pending{% endif %}">
+            {{ booked_package.get_status_display }}
+        </div>
+        </div>
+        
+        <div class="reservation-meta">
+            
+            <div class="meta-item ">
+                {% comment %} <span class="meta-label">Car:</span> {% endcomment %}
+                <span class="meta-value">{{ booked_package.car_model.title }}</span>
+            </div>
+            <div class="car-meta-item"></div>
+            <div class="meta-item">
+                {% comment %} <span class="meta-label">Package:</span> {% endcomment %}
+                <span class="meta-value">{{ booked_package.package.name }}</span>
+            </div>
+        </div>
+        <div class="reservation-meta">
+            <div class="meta-item highlight">
+                <span class="meta-label">Total:</span>
+                <span class="meta-value">${{ booked_package.price|floatformat:0|intcomma  }}</span>
+            </div>
+            <div class="meta-item highlight">
+                <span class="meta-label">Remaining:</span>
+                <span class="meta-value">${{ booked_package.remaining_price|floatformat:0|intcomma }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="reservation-content">
+        <!-- Main Content Column -->
+        <div class="main-content">
+            <!-- Car Image Section -->
+            <div class="image-section">
+                {% if car_image %}
+                    <img src="{{ car_image.image.url }}" alt="Car Image" class="car-image">
+                {% else %}
+                    <div class="no-image-placeholder">
+                        <i class="fas fa-car"></i>
+                        <p>No image available</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Features Section -->
+            <div class="features-section ">
+                <div class="section-header">
+                    <h2>Features</h2>
+                    <button class="toggle-btn" id="toggleFeatures">
+                        <span class="toggle-text">Show</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                </div>
+                
+                <div class="features-content" id="featuresContent">
+                    <div class="row">
+                        <div class="col-md-6">
+                            {% if included_features_grouped %}
+                                <h1 style="font-size: 1.5rem;color:lime;">Included Features</h1>
+                                {% for group in included_features_grouped %}
+                                    <h4>{{ group.section }}</h4>
+                                    <ul>
+                                        {% for feature in group.features %}
+                                            <li>{{ feature.name }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        {% comment %} <div class="col-md-6">
+                            {% if included_features %}
+                            <h1 style="font-size: 1.5rem;color:lime;">Included Features</h1>
+                            <ul>
+                                {% for feature in included_features %}
+                                    <li>{{ feature.name }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        </div> {% endcomment %}
+                        <div class="col-md-6">
+                            {% if extra_features_grouped %}
+                                <h1 style="font-size: 1.5rem;color:lime;">Selected Features</h1>
+                                {% for group in extra_features_grouped %}
+                                    <h4>{{ group.section }}</h4>
+                                    <ul>
+                                        {% for feature in group.features %}
+                                            <li>{{ feature.name }} - {{ feature.price|floatformat:0|intcomma }} $</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endfor %}
+                            {% endif %}
+                            {% if newly_added_features_grouped %}
+                                <h1 style="font-size: 1.5rem;color:lime;">Newly Added Features</h1>
+                                {% for group in newly_added_features_grouped %}
+                                    <h4>{{ group.section }}</h4>
+                                    <ul>
+                                        {% for feature in group.features %}
+                                            <li>{{ feature.features.name }} - {{ feature.amount|floatformat:0|intcomma }} $</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        {% comment %} <div class="col-md-6">
+                            {% if extra_features_names %}
+                            <h1 style="font-size: 1.5rem;color:lime;">Selected Features</h1>
+                            <ul>
+                                {% for feature in extra_features_names %}
+                                    <li>{{ feature.name }} - {{feature.price|floatformat:0|intcomma}} $</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        
+                            {% if newly_added_features %}
+                            <h1 style="font-size: 1.5rem;color:lime;">Newly Added Features</h1>
+                            <ul>
+                                {% for feature in newly_added_features %}
+                                    <li>{{ feature.features }} - {{feature.amount|floatformat:0|intcomma}} $</li>
+
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        </div> {% endcomment %}
+                    </div>
+                   
+                    
+                    {% if pending_features.exists %}
+                    <div class="pay-all-container mb-4">
+                        <div class="d-flex justify-content-between align-items-center p-3" style="background-color: black; border-radius: 8px;">
+                            <div>
+                                <h5 class="mb-1">Pending Features Total</h5>
+                                <p class="mb-0 text-muted">{{ pending_features.count }} feature(s) awaiting payment</p>
+                            </div>
+                            <div class="text-end">
+                                <h4 class="mb-1">${{ pending_features_total|intcomma }}</h4>
+                                <form method="POST" action="{% url 'initiate_feature_payment' %}" id="pay-all-features-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="reservation_number" value="{{ booked_package.reservation_number }}">
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="fas fa-credit-card me-2"></i> Pay All Now
+                                    </button>
+                                </form>
+                            </div> 
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if booked_package.build_type == 'initial_payment' %}
+                        <div class="alert alert-info" role="alert">
+                            <strong>Note:</strong> The initial payment is required to start production.
+                        </div>
+                    {% elif booked_package.build_type == 'midway_payment' %}
+                        <div class="alert alert-info" role="alert">
+                            <strong>Note:</strong> The midway payment is required to proceed with the build.
+                        </div>
+                    {% elif booked_package.build_type == 'final_payment' %}
+                        <div class="alert alert-info" role="alert">
+                            <strong>Note:</strong> The final payment is required to complete the order.
+                        </div>
+                    {% endif %}
+
+                    <!-- Added Features List -->
+                    <div class="added-features">
+                        <h3>Added Features</h3>
+                        <div id="added-features-container">
+                            {% for new_feature in new_pending_features %}
+                                <div style="position: relative;" class="feature-card {% if new_feature.status == 'approved' %}approved
+                                    {% elif new_feature.status == 'rejected' %}rejected
+                                    {% elif new_feature.status == 'completed' %}completed
+                                    {% else %}pending{% endif %}">
+                                    <div class="feature-info">
+                                        <h4>{{ new_feature.features }}</h4>
+                                        <div class="feature-meta">
+                                            <span class="amount">${{ new_feature.amount|intcomma }}</span>
+                                            <span class="status-badge">{{ new_feature.get_status_display }}</span>
+                                        </div>
+                                        {% if new_feature.status in 'pending,rejected' %}
+                                            <button style="position: absolute; top: 20px; right: 20px;" class="btn btn-outline-danger btn-delete-feature" data-feature-id="{{ new_feature.id }}">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% comment %} {% if new_feature.status == 'completed' %}
+                                        <div class="payment-details">
+                                            {% for payment in new_feature.payments.all %}
+                                                {% if payment.is_completed %}
+                                                    <div class="payment-item">
+                                                        <i class="fas fa-receipt"></i>
+                                                        <div>
+                                                            <span class="date">{{ payment.payment_date|date:"Y-m-d H:i" }}</span>
+                                                            <span class="status completed">Completed</span>
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                            {% empty %}
+                                                <div class="no-payments">
+                                                    <i class="fas fa-exclamation-circle"></i>
+                                                    No completed payments found
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %} {% endcomment %}
+                                </div>
+                            {% empty %}
+                                <div class="no-features-added">
+                                    <i class="fas fa-info-circle"></i>
+                                    No additional features added yet
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Add New Features Form -->
+                    <div class="add-features-form">
+                        <h3>Add New Features</h3>
+                        <form id="add-feature-form" method="POST" action="{% url 'add_reservation_feature' booked_package.reservation_number %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="reservation_number" value="{{ booked_package.reservation_number }}">
+
+                            <div class="form-group">
+                                <label>Select Features</label>
+                                <div class="feature-checkboxes">
+                                    {% if reservation_features.count > 0 %}
+                                        {% regroup reservation_features by section as sectioned_features %}
+                                    {% for section in sectioned_features %}
+                                        <h3 style="color: white; font-size: 22px; margin-top: 20px; margin-bottom: 10px;">
+                                            {{ section.grouper }}
+                                        </h3>
+                                        {% for feature in section.list %}
+                                            <div class="form-check"
+                                                style="gap: 10px; display: flex; justify-content: start; align-content: center; border: 1px solid white; border-radius: 8px; padding: 10px; margin-bottom: 10px;">
+                                                <input type="checkbox" 
+                                                    class="form-check-input feature-checkbox" 
+                                                    name="features[]" 
+                                                    style="width: 30px; height: 30px; margin-left: 5px;"
+                                                    value="{{ feature.name }}"
+                                                    data-id="{{ feature.id }}"
+                                                    data-amount="{{ feature.price }}"
+                                                    data-description="New Feature"
+                                                    id="feature-{{ feature.id }}">
+                                                <label class="form-check-label" style="font-size: 20px;" for="feature-{{ feature.id }}">
+                                                    {{ feature.name }} - ${{ feature.price }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    {% endfor %}
+                                    {% else %}
+                                    <div class="no-features">
+                                        <i class="fas fa-info-circle"></i>
+                                        No more features available for selection
+                                    </div>
+                                {% endif %}
+
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn-primary" id="add-features-btn">
+                                <i class="fas fa-plus"></i> Add Selected Features
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Section -->
+            {% if booked_package.build_type in 'initial_payment,midway_payment,final_payment' and booked_package.build_status == 'awaiting_payment' %}
+                <div class="payment-cta card-style">
+                    <div class="payment-message">
+                        <h3>Payment Required</h3>
+                        <p>
+                            Dear {{ booked_package.user.first_name }} {{ booked_package.user.last_name }},
+                            {% if booked_package.build_type == 'initial_payment' %}
+                                your reservation is ready for the initial payment. Please make the initial {{ booked_package.initial_payment_percentage }}% payment to start production.
+                            {% elif booked_package.build_type == 'midway_payment' %}
+                                the car body has been completed. Please make the midway {{ booked_package.midway_payment_percentage }}% payment to proceed.
+                            {% elif booked_package.build_type == 'final_payment' %}
+                                the car build is complete. Please make the final {{ booked_package.final_payment_percentage }}% payment to proceed with quality checks.
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="payment-amount">
+                        <span>Amount Due:</span>
+                        <span class="amount">
+                            {% if booked_package.build_type == 'initial_payment' %}
+                                {{ initial_payment }}
+                            {% elif booked_package.build_type == 'midway_payment' %}
+                                {{ midway_payment }}
+                            {% elif booked_package.build_type == 'final_payment' %}
+                                {{ balance_payment }}
+                            {% else %}
+                                0
+                            {% endif %}
+                            USD
+                        </span>
+                    </div>
+                    <button class="btn-pay-now">
+                        <i class="fas fa-credit-card"></i> Pay Now
+                    </button>
+                </div>
+            {% endif %}
+
+            <!-- Notes Section -->
+            {% if booked_package.build_message and booked_package.build_message != 'None' and booked_package.status != 'delivered' %}
+                <div class="notes-section card-style">
+                    <div class="notes-header">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <h3>Important Note</h3>
+                    </div>
+                    <div class="notes-content">
+                        {{ booked_package.build_message }}
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- Build Images Gallery -->
+            {% with grouped_images=booked_package.images.all|dictsortreversed:"uploaded_at"|group_by_build_type %}
+                {% if grouped_images %}
+                    <div class="gallery-section">
+                        <h2>Build Progress Photos</h2>
+                        <div class="gallery-grid">
+                            {% for build_type, images in grouped_images.items %}
+                                <div class="gallery-group">
+                                    <h4>{{ build_type|build_type_label }}</h4>
+                                    <div class="gallery-items">
+                                        {% for image in images %}
+                                            <div class="gallery-item" data-bs-toggle="modal" data-bs-target="#imageModal" data-image-url="{{ image.image.url }}">
+                                                <img src="{{ image.image.url }}" alt="Build Image">
+                                                <div class="gallery-overlay">
+                                                    <i class="fas fa-search-plus"></i>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Timeline Sidebar -->
+        <div class="timeline-sidebar">
+            <div class="timeline-container card-style">
+                <h2>Build Progress</h2>
+                <div class="timeline">
+                    {% for stage in booked_package.BUILD_TYPE_CHOICES %}
+                        <div class="timeline-step {% if booked_package.BUILD_TYPE_CHOICES_index >= forloop.counter0 %}completed{% elif booked_package.build_type == stage.0 %}current{% endif %}">
+                            <div class="timeline-marker">
+                                {% if booked_package.BUILD_TYPE_CHOICES_index > forloop.counter0 %}
+                                    <i class="fas fa-check"></i>
+                                {% elif booked_package.BUILD_TYPE_CHOICES_index == forloop.counter0 %}
+                                    <i class="fas fa-arrow-right"></i>
+                                {% else %}
+                                    <i class="fas fa-circle"></i>
+                                {% endif %}
+                            </div>
+                            <div class="timeline-content">
+                                <h4>{{ stage.1 }}</h4>
+                                <div class="timeline-meta">
+                                    {% if stage.0 == 'initial_payment' %} 
+                                        <span class="percentage">{{ booked_package.initial_payment_percentage|floatformat:0 }}%</span>
+                                    {% elif stage.0 == 'midway_payment' %} 
+                                        <span class="percentage">{{ booked_package.midway_payment_percentage|floatformat:0 }}%</span>
+                                    {% elif stage.0 == 'final_payment' %} 
+                                        <span class="percentage">{{ booked_package.final_payment_percentage|floatformat:0 }}%</span>
+                                    {% endif %}
+                                    
+                                    {% if booked_package.BUILD_TYPE_CHOICES_index == forloop.counter0 %}
+                                        <span class="status current">{{ booked_package.get_build_status_display }}</span>
+                                    {% elif booked_package.BUILD_TYPE_CHOICES_index > forloop.counter0 %}
+                                        <span class="status completed">Completed</span>
+                                    {% else %}
+                                        <span class="status pending">Pending</span>
+                                    {% endif %}
+                                </div>
+                                
+                                {% for payment in payments %}
+                                    {% if payment.regarding == stage.0  %}
+                                        <div class="payment-info">
+                                            <span class="amount">${{ payment.amount|intcomma }}</span>
+                                            <span class="date">{{ payment.created_at|date:"M d, Y" }}</span>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                                
+                                {% for payment in payments %}
+                                    {% if payment.regarding == 'reserve' and stage.0 == 'order_confirmed' %}
+                                        <div class="payment-info">
+                                            <span class="amount">${{ payment.amount|intcomma }}</span>
+                                            <span class="date">{{ payment.created_at|date:"M d, Y" }}</span>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Full-Screen Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img id="fullScreenImage" src="" alt="Full Screen Image">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment History Modal -->
+<div class="modal fade" id="paymentHistoryModal" tabindex="-1" aria-labelledby="paymentHistoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Payment History</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% if payments %}
+                    <div class="table-responsive">
+                        <table class="payment-history-table">
+                            <thead>
+                                <tr>
+                                    <th>Payment ID</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Regarding</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in payments %}
+                                <tr>
+                                    <td>{{ payment.stripe_payment_id|default:"N/A" }}</td>
+                                    <td>${{ payment.amount|intcomma }}</td>
+                                    <td>
+                                        <span class="status-badge {% if payment.status == 'succeeded' %}success
+                                            {% elif payment.status == 'failed' %}failed
+                                            {% else %}pending{% endif %}">
+                                            {{ payment.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ payment.created_at|date:"M d, Y" }}</td>
+                                    <td>{{ payment.regarding|default:"N/A" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="no-payments">
+                        <i class="fas fa-info-circle"></i>
+                        No payment records found
+                    </div>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block header %}
+<link href="{% static 'css/reservationDetailsPage.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block script %}
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle features section
+    const toggleFeaturesBtn = document.getElementById('toggleFeatures');
+    const featuresContent = document.getElementById('featuresContent');
+    
+    if (toggleFeaturesBtn && featuresContent) {
+        toggleFeaturesBtn.addEventListener('click', function() {
+            const isHidden = !featuresContent.classList.contains('active');
+            featuresContent.classList.toggle('active', isHidden);
+            
+            const toggleText = this.querySelector('.toggle-text');
+            const toggleIcon = this.querySelector('i');
+            
+            if (isHidden) {
+                toggleText.textContent = 'Hide';
+                toggleIcon.classList.remove('fa-chevron-down');
+                toggleIcon.classList.add('fa-chevron-up');
+            } else {
+                toggleText.textContent = 'Show';
+                toggleIcon.classList.remove('fa-chevron-up');
+                toggleIcon.classList.add('fa-chevron-down');
+            }
+        });
+    }
+
+    // Handle feature form submission with AJAX
+    const addFeatureForm = document.getElementById('add-feature-form');
+    if (addFeatureForm) {
+        addFeatureForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('#add-features-btn');
+            const originalBtnText = submitBtn.innerHTML;
+            const selectedFeatures = document.querySelectorAll('.feature-checkbox:checked');
+            
+            if (selectedFeatures.length === 0) {
+                alert('Please select at least one feature');
+                return;
+            }
+
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Adding...';
+                
+                // Create array of selected features
+                const featuresData = Array.from(selectedFeatures).map(checkbox => ({
+                    name: checkbox.value,
+                    id: checkbox.getAttribute('data-id'),
+                    amount: checkbox.getAttribute('data-amount'),
+                    description: checkbox.getAttribute('data-description')
+                }));
+
+                // Add features data to formData
+                formData.append('features_data', JSON.stringify(featuresData));
+
+                const response = await fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        // Reset checkboxes
+                        selectedFeatures.forEach(checkbox => {
+                            checkbox.checked = false;
+                        });
+                        {% comment %} window.location.reload(); {% endcomment %}
+                        window.location.href = `${window.location.pathname}?feature=added`;
+                    } else {
+                        alert(data.message || 'Failed to add features');
+                    }
+                } else {
+                    alert('Failed to add features');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while adding the features');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        });
+    }
+
+    // Handle individual feature payment
+    const payAllForm = document.getElementById('pay-all-features-form');
+    if (payAllForm) {
+        payAllForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Processing...';
+                
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                const formData = new FormData(this);
+                const payload = {
+                    reservation_number: formData.get('reservation_number')
+                };
+                
+                // Initiate payment
+                const initiateResponse = await fetch(this.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const initiateData = await initiateResponse.json();
+                
+                if (!initiateResponse.ok || !initiateData.success) {
+                    throw new Error(initiateData.message || 'Failed to initiate payment');
+                }
+                
+                // Create checkout session
+                const checkoutResponse = await fetch('{% url "create_feature_checkout_session" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify(initiateData.session_data)
+                });
+                
+                const checkoutData = await checkoutResponse.json();
+                
+                if (!checkoutResponse.ok || !checkoutData.success) {
+                    throw new Error(checkoutData.message || 'Failed to create checkout session');
+                }
+                
+                // Redirect to Stripe
+                window.location.href = checkoutData.checkout_url;
+                
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert('Payment failed: ' + error.message);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        });
+    }
+    
+    // Handle individual feature payment forms
+    document.querySelectorAll('.feature-payment-form').forEach(form => {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalBtnText = submitBtn.innerHTML;
+            
+            try {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span> Processing...';
+                
+                const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                const formData = new FormData(this);
+                const payload = {
+                    reservation_number: formData.get('reservation_number'),
+                    feature_id: formData.get('feature_id')
+                };
+                
+                // Initiate payment
+                const initiateResponse = await fetch(this.action, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const initiateData = await initiateResponse.json();
+                
+                if (!initiateResponse.ok || !initiateData.success) {
+                    throw new Error(initiateData.message || 'Failed to initiate payment');
+                }
+                
+                // Create checkout session
+                const checkoutResponse = await fetch('{% url "create_feature_checkout_session" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify(initiateData.session_data)
+                });
+                
+                const checkoutData = await checkoutResponse.json();
+                
+                if (!checkoutResponse.ok || !checkoutData.success) {
+                    throw new Error(checkoutData.message || 'Failed to create checkout session');
+                }
+                
+                // Redirect to Stripe
+                window.location.href = checkoutData.checkout_url;
+                
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert('Payment failed: ' + error.message);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+            }
+        });
+    });
+
+    // Handle build payment button
+    const payNowBtn = document.querySelector('.payment-cta .btn-pay-now');
+    if (payNowBtn) {
+        payNowBtn.addEventListener('click', async function() {
+            try {
+                payNowBtn.disabled = true;
+                payNowBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+                
+                const initiateUrl = "{% url 'initiate_build_payment' %}"
+                const initiateResponse = await fetch(initiateUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        reservation_number: '{{ booked_package.reservation_number }}'
+                    })
+                });
+                
+                const initiateData = await initiateResponse.json();
+                
+                if (!initiateData.success) {
+                    throw new Error(initiateData.message);
+                }
+                
+                const checkoutSessionUrl = "{% url 'create_build_checkout_session' %}"
+                const sessionResponse = await fetch(checkoutSessionUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify(initiateData.session_data)
+                });
+                
+                const sessionData = await sessionResponse.json();
+                
+                if (!sessionData.success) {
+                    throw new Error(sessionData.message);
+                }
+                
+                window.location.href = sessionData.checkout_url;
+                
+            } catch (error) {
+                console.error('Payment error:', error);
+                alert('Payment failed: ' + error.message);
+                
+                payNowBtn.disabled = false;
+                payNowBtn.innerHTML = '<i class="fas fa-credit-card"></i> Pay Now';
+            }
+        });
+    }
+    
+    const imageCards = document.querySelectorAll('.gallery-item');
+    const fullScreenImage = document.getElementById('fullScreenImage');
+
+    imageCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const imageUrl = this.getAttribute('data-image-url');
+            if (fullScreenImage && imageUrl) {
+                fullScreenImage.src = imageUrl;
+            }
+        });
+    });
+
+
+
+    {% comment %} opening of features section on the base of params of url {% endcomment %}
+    const urlParams = new URLSearchParams(window.location.search);
+    const featureAction = urlParams.get('feature');
+    
+    if (featureAction === 'added' || featureAction === 'deleted') {
+        toggleFeaturesBtn.click()
+    }
+});
+
+// JavaScript to handle deletion
+document.querySelectorAll('.btn-delete-feature').forEach(button => {
+    button.addEventListener('click', async function() {
+        const featureId = this.getAttribute('data-feature-id');
+        const reservationNumber = '{{ booked_package.reservation_number }}';
+        
+        if (!confirm('Are you sure you want to delete this feature?')) {
+            return;
+        }
+        
+        this.disabled = true;
+        this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>';
+        
+        try {
+            const response = await fetch(`/reservations/${reservationNumber}/delete-feature/${featureId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Remove the feature card from UI
+                window.location.href = `${window.location.pathname}?feature=deleted`;
+                {% comment %} this.closest('.feature-card').remove(); {% endcomment %}
+                
+                
+                //Show success message
+                {% comment %} showToast('Feature deleted successfully', 'success'); {% endcomment %}
+                
+                // Update any totals or counters if needed
+                {% comment %} window.location.reload();
+                updateSelectedFeaturesTotal(); {% endcomment %}
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            console.error('Delete error:', error);
+            showToast(error.message || 'Failed to delete feature', 'error');
+            this.disabled = false;
+            this.innerHTML = '<i class="fas fa-trash"></i> Delete';
+        }
+    });
+});
+
+// Helper function to show toast messages
+function showToast(message, type = 'success') {
+    toastr[type](message);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,258 @@
+{% extends "public/layout/base.html" %}
+{% load static %}
+{% load humanize %}
+{% block header %}
+<style>
+    body{
+        background-color: #fff !important;
+    }
+    .accordion .accordion-item .accordion-button.collapsed{
+        color: #000 !important;
+    }
+    .accordion .accordion-item{
+        border: 0.5px solid #000 !important;
+    }
+    .accordion .accordion-item .accordion-button.collapsed:before {
+        color: #000 !important;
+    }
+</style>
+{% endblock header %}
+
+{% block content %}
+<section class="bg-half-100 d-table w-100">
+    <div class="container bg-white">
+        <div class="layout-specing bg-white">
+            <div class="row bg-white">
+                <div class="col-md-12 col-lg-12 mt-4">
+                    <div class="card rounded shadow p-4 border-4 bg-white">
+                        <div class="row">
+                        <div class="col-6">
+                            <h1 class="text-light text-uppercase">
+                                {{ items.title }}
+                            </h1>
+                        </div>
+                        <div class="col-6">
+                            <a href="{% url 'index' %}" class="btn btn-sm btn-outline-secondary text-light text-uppercase float-end">
+                                <i class="mdi mdi-arrow-left-thin"></i>Back</a>
+                        </div>
+                    </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="col-md-12 ">
+                                    <h1 class="text-light mt-4">Technical Specs</h1>
+                                    <div class="accordion text-dark" id="accordionExample">
+                                        <!-- Accordion Item 1 -->
+                                        <div class="accordion-item border-1">
+                                            <h2 class="accordion-header" id="headingDimension">
+                                                <button class="accordion-button collapsed text-uppercase" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapseDimension"
+                                                    aria-expanded="false" aria-controls="collapseDimension">
+                                                    Dimensions
+                                                </button>
+                                            </h2>
+                                            <div id="collapseDimension" class="accordion-collapse collapse"
+                                                aria-labelledby="headingDimension" data-bs-parent="#accordionExample">
+                                                <div class="accordion-body bg-white text-light">
+                                                    <p>- Height: 40.5"</p>
+                                                
+                                                    {% if items.title == 'Mark I' %}
+                                                        <p>- Length: 163"</p>
+                                                        <p>- Width: 71" (Intermediate rear) or 78" (Wide rear) or 80" (Extra Wide rear)</p>
+                                                    
+                                                    {% elif items.title == 'Mark II' %}
+                                                        <p>- Length: 163"</p>
+                                                        <p>- Width: 71"</p>
+                                                
+                                                    {% elif items.title == 'Mark IV' %}
+                                                        <p>- Length: 171"</p>  <!-- Updated Length for Mark IV -->
+                                                        <p>- Width: 70.5"</p>
+                                                    {% endif %}
+                                                
+                                                    <p>- Wheelbase: 95"</p>
+                                                    <p>- Front Wheels: Options Available</p>
+                                                    <p>- Rear Wheels: Options Available</p>
+                                                    <p>- Front Tires: Options Available</p>
+                                                    <p>- Rear Tires: Options Available</p>
+                                                    <p>- Fuel Tank: Aluminum 22 Gallons</p>
+                                                </div>
+                                                
+                                            </div>
+                                        </div>
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="heading2">
+                                                <button class="accordion-button collapsed text-uppercase" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false"
+                                                    aria-controls="collapse2">
+                                                    Body
+                                                </button>
+                                            </h2>
+                                            <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2"
+                                                data-bs-parent="#accordionExample">
+                                                <div class="accordion-body bg-white text-light">
+                                                    <p>- Vaccum Infused / Handlaid Fiber Glass or Carbon Fiber </p>
+                                                    <p>- Fiber Glass / Carbon Fiber Roof</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="heading3">
+                                                <button class="accordion-button collapsed text-uppercase" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false"
+                                                    aria-controls="collapse3">
+                                                    Chassis
+                                                </button>
+                                            </h2>
+                                            <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3"
+                                                data-bs-parent="#accordionExample">
+                                                <div class="accordion-body bg-white text-light">
+                                                    <p>- Mig/Tig-welded Tubular Chassis be-spoke designed for GEN-Z40 </p>
+                                                    <p>- Aluminum Skinned</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="heading4">
+                                                <button class="accordion-button collapsed text-uppercase" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false"
+                                                    aria-controls="collapse4">
+                                                    Suspension
+                                                </button>
+                                            </h2>
+                                            <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="heading4"
+                                                data-bs-parent="#accordionExample">
+                                                <div class="accordion-body bg-white text-light">
+                                                    <p>- Front: Ford Production upper control Arm and Spindle, cnc produced
+                                                        lower control arm, adjustable coilover shocks </p>
+                                                    <p>- Rear: Cnc produced uprights and control arm, adjustable coilover shocks
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="heading5">
+                                                <button class="accordion-button collapsed text-uppercase" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false"
+                                                    aria-controls="collapse5">
+                                                    Steering
+                                                </button>
+                                            </h2>
+                                            <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="heading5"
+                                                data-bs-parent="#accordionExample">
+                                                <div class="accordion-body bg-white text-light">
+                                                    <p>- Rack and pinion with Colapsable Steering Column </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="heading6">
+                                                <button class="accordion-button collapsed text-uppercase" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false"
+                                                    aria-controls="collapse6">
+                                                    Brakes
+                                                </button>
+                                            </h2>
+                                            <div id="collapse6" class="accordion-collapse collapse" aria-labelledby="heading6"
+                                                data-bs-parent="#accordionExample">
+                                                <div class="accordion-body bg-white text-light">
+                                                    <p>- Front: Brembo / Wilwood </p>
+                                                    <p>- Rear: Brembo / Wilwood </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="heading9">
+                                                <button class="accordion-button collapsed text-uppercase" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapse9" aria-expanded="false"
+                                                    aria-controls="collapse9">
+                                                    Interior
+                                                </button>
+                                            </h2>
+                                            <div id="collapse9" class="accordion-collapse collapse" aria-labelledby="heading9"
+                                                data-bs-parent="#accordionExample">
+                                                <div class="accordion-body bg-white text-light">
+                                                    <p>- Original Style Dash (Left Hand Drive / Right Hand Drive) - Leather
+                                                        Stiched / Carbon Fiber / Alacantara </p>
+                                                    <p>- Moto-lita 14" Steering Wheel </p>
+                                                    <p>- Original style Seats with Leather or Alcantara </p>
+                                                    <p>- Speed Hut Gauges </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="heading7">
+                                                <button class="accordion-button collapsed text-uppercase" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapse7" aria-expanded="false"
+                                                    aria-controls="collapse7">
+                                                    Drivetrain
+                                                </button>
+                                            </h2>
+                                            <div id="collapse7" class="accordion-collapse collapse" aria-labelledby="heading7"
+                                                data-bs-parent="#accordionExample">
+                                                <div class="accordion-body bg-white text-light">
+                                                    <p>- Recommended Engines: 289, 302, 351W, 427 or Coyote </p>
+                                                    <p>- Transmission: Boxter S (upto 04) or Audi 01E/01X </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="heading8">
+                                                <button class="accordion-button collapsed text-uppercase" type="button"
+                                                    data-bs-toggle="collapse" data-bs-target="#collapse8" aria-expanded="false"
+                                                    aria-controls="collapse8">
+                                                    Exhaust System
+                                                </button>
+                                            </h2>
+                                            <div id="collapse8" class="accordion-collapse collapse" aria-labelledby="heading8"
+                                                data-bs-parent="#accordionExample">
+                                                <div class="accordion-body bg-white text-light">
+                                                    <p>- Bundle of Snakes </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div><!--end col-->
+                                <div class="col-md-12 d-grid">
+                                    <!-- {% url 'lock_your_price_now' items.slug %} -->
+                                    <a href="{% url 'car_details' items.slug %}"
+                                        class="btn btn-lg me-2 btn-success text-light fw-bold text-uppercase mt-4 float-end">
+                                        GET EXCLUSIVE PRICING
+                                    </a>
+                                    <small class="text-light text-sm mb-5 mt-3" style="font-size: 11px;">
+                                        * Reservation today will save your spot and lock your price for either Package "Roller
+                                        or Turnkey Minus"
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="pt-2 col-md-6 mb-5">
+                                {% if items.title == 'Mark I' %}
+                                <img src="{% static 'images/genz/mark1wided.jpg' %}" class="img-fluid rounded shadow mb-5"
+                                    alt="">
+                                {% elif items.title == 'Mark II' %}
+                                <img src="{% static 'images/genz/mark2wided.jpg' %}" class="img-fluid rounded shadow mb-5"
+                                    alt="">
+                                {% elif items.title == 'Mark IV' %}
+                                <img src="{% static 'mk4.jpg' %}" class="img-fluid rounded shadow mb-5"
+                                    alt="">
+                                {% endif %}
+
+
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div><!--end col-->
+            </div><!--end row-->
+        </div>
+    </div><!--end container-->
+</section>
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}

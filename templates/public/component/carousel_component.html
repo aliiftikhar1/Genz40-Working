@@ -1,0 +1,164 @@
+<style>
+    #hero-container{
+        padding: 5rem 0 5rem 0;
+        max-width: 80vw;
+        margin: auto;
+    }
+    .hero-image-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1.5rem;
+        padding: 2rem 1rem;
+    }
+    .car-image-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .car-image {
+        max-width: 100%;
+        width: 120%;
+        transform: translateX(10%);
+        transition: opacity 0.5s ease-in-out;
+    }
+    .custom-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 28px;
+        border: 1px solid #ccc;
+        background: rgba(255, 255, 255, 0.5);
+        color: #000;
+    }
+    .custom-input::placeholder {
+        color: #ccc;
+    }
+    .specs-container {
+        padding: 2rem 0;
+    }
+    .progress {
+        height: 8px;
+        background-color: #333;
+    }
+    .progress-bar {
+        background-color: #28a745;
+    }
+    @media (max-width: 991.98px) {
+        #hero-container{
+        padding: 5rem 1rem 0 1rem;
+        max-width: 100%;
+        margin: auto;
+    }
+        .hero-image-container {
+            flex-direction: column;
+            text-align: center;
+        }
+        .car-image {
+            width: 100%;
+            transform: none;
+        }
+        .car-image-container {
+            margin-top: 0rem;
+        }
+    }
+</style>
+
+<div id="hero-container">
+<div id="car-hero-slider" class="hero-image-container text-white">
+    <!-- Left Text Content -->
+    <div class="col-lg-6 z-index-1">
+        <h1 class="display-3 fw-bold mb-3">Stay true to your<br>essence.</h1>
+        <p class="mb-4" id="description">
+            Since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.
+        </p>
+        <div style="position: relative;">
+            <input id="email-desktop-first" type="email" class="custom-input" placeholder="Email" />
+            <button id="getStartedBtnFirst" class="btn btn-info text-white px-4 rounded-pill d-inline-flex align-items-center" type="submit" style="position:absolute; top:0; right:0; height:100%;">
+                Get Started
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right ms-2" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Right Image Content -->
+    <div class="col-lg-6 car-image-container">
+        <img id="hero-car-image" src="" alt="Car Image" class="img-fluid car-image" />
+    </div>
+</div>
+
+<!-- Car Specs Section -->
+<div class="container pb-4 text-white specs-container">
+    <div class="row text-center">
+        <div class="col-6 col-md-3 mb-4 mb-md-0">
+            <p class="small mb-1">Top Speed</p>
+            <p id="spec-speed" class="fs-3 fw-bold mb-2">--</p>
+            <div class="progress">
+                <div id="bar-speed" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 mb-4 mb-md-0">
+            <p class="small mb-1">Max Power</p>
+            <p id="spec-power" class="fs-3 fw-bold mb-2">--</p>
+            <div class="progress">
+                <div id="bar-power" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3 mb-4 mb-md-0">
+            <p class="small mb-1">Engine</p>
+            <p id="spec-engine" class="fs-3 fw-bold mb-2">--</p>
+            <div class="progress">
+                <div id="bar-engine" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <p class="small mb-1">0 - 60 MPH</p>
+            <p id="spec-acceleration" class="fs-3 fw-bold mb-2">--</p>
+            <div class="progress">
+                <div id="bar-acceleration" class="progress-bar bg-secondary" role="progressbar" style="width: 0%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+    const carData = {{ car_sections|safe }};
+    let currentCar = 0;
+
+    function calculateProgress(value, max = 1000) {
+        let val = parseFloat(value);
+        if (isNaN(val)) return 0;
+        return Math.min(100, (val / max) * 100);
+    }
+
+    function updateCar() {
+        const car = carData[currentCar];
+        const img = document.getElementById('hero-car-image');
+        img.style.opacity = 0;
+
+        setTimeout(() => {
+            img.src = car.image;
+            img.onload = () => { img.style.opacity = 1; };
+
+            document.getElementById('spec-speed').innerText = `${car.top_speed}`;
+            document.getElementById('spec-power').innerText = `${car.max_power}`;
+            document.getElementById('spec-engine').innerText = `${car.engine}`;
+            document.getElementById('spec-acceleration').innerText = `${car.acceleration}`;
+
+            document.getElementById('bar-speed').style.width = `${calculateProgress(car.top_speed, 300)}%`;
+            document.getElementById('bar-power').style.width = `${calculateProgress(car.max_power, 1000)}%`;
+            document.getElementById('bar-engine').style.width = `${calculateProgress(car.engine, 6000)}%`;
+            document.getElementById('bar-acceleration').style.width = `${100 - calculateProgress(car.acceleration, 10)}%`;
+
+            currentCar = (currentCar + 1) % carData.length;
+        }, 200);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateCar();
+        setInterval(updateCar, 4000);
+    });
+</script>

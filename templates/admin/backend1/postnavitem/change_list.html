@@ -1,0 +1,32 @@
+{% extends "admin/backend/postnavitem/change_list.html" %}
+
+{% block content %}
+<style>
+.results .drag-handle {
+    cursor: move;
+}
+</style>
+<div class="module" id="changelist">
+    <form action="" method="post" novalidate>{% csrf_token %}
+        {% if has_add_permission %}
+            <div class="results">
+                <ul>
+                    {% for obj in queryset %}
+                    {{obj}}
+                        <li class="sortable-item" data-id="{{ obj.pk }}">
+                            <span class="drag-handle">☰</span>
+                            <a href="{% url opts|admin_urlname:'change' obj.pk %}">{{ obj }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </form>
+</div>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<script src="{% static 'adminsortable2/js/Sortable.min.js' %}"></script>
+<script src="{% static 'adminsortable2/js/adminsortable2.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,229 @@
+{% extends 'admin/layout/base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% load frontend_custom_filters %}
+
+
+{% block content %}
+<div class="content-wrapper mt-4">
+    <!-- Alerts for messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2><i class="fas fa-upload"></i> Upload Images</h2>
+            <p class="text-muted">
+                <strong>Package:</strong> {{ package.title }} 
+                <span class="badge text-bg-secondary ms-2">{{ package.reservation_number }}</span>
+            </p>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <a href="{% url 'package_detail' package_id=package.id %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Package
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Select Images</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" id="uploadForm">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.non_field_errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mb-3">
+                            <label for="id_build_type" class="form-label">Build Stage</label>
+                            {{ form.build_type }}
+                            {% if form.build_type.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.build_type.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">Select the current stage of the build process.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_images" class="form-label">Upload Images</label>
+                            <div class="input-group">
+                                <input type="file" name="images" id="id_images" multiple accept="image/*" 
+                                       class="form-control {% if form.images.errors %}is-invalid{% endif %}">
+                                <button type="button" class="btn btn-outline-secondary" id="clearImagesBtn">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="form-text">
+                                Select multiple images by holding Ctrl (Windows) or Command (Mac) while selecting.
+                            </div>
+                            {% if form.images.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.images.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_description" class="form-label">Description</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}
+                                <div class="invalid-feedback">
+                                    {% for error in form.description.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">This description will be applied to all uploaded images.</div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" id="uploadBtn">
+                                <i class="fas fa-cloud-upload-alt me-2"></i> Upload Images
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Image Preview</h5>
+                    <span class="badge bg-info" id="imageCount">0 selected</span>
+                </div>
+                <div class="card-body p-0">
+                    <div id="imagePreviewContainer" class="p-3">
+                        <div class="text-center py-5 text-muted">
+                            <i class="fas fa-images mb-3" style="font-size: 3rem;"></i>
+                            <p>Select images to preview them here</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4 border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">Usage Guidelines</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item border-0 ps-0">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Upload images showing the current build stage
+                        </li>
+                        <li class="list-group-item border-0 ps-0">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Make sure images are clear and well-lit
+                        </li>
+                        <li class="list-group-item border-0 ps-0">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Add descriptive notes if needed
+                        </li>
+                        <li class="list-group-item border-0 ps-0">
+                            <i class="fas fa-exclamation-circle text-warning me-2"></i>
+                            Maximum file size: 5MB per image
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageInput = document.getElementById('id_images');
+        const previewContainer = document.getElementById('imagePreviewContainer');
+        const imageCountBadge = document.getElementById('imageCount');
+        const clearBtn = document.getElementById('clearImagesBtn');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadForm = document.getElementById('uploadForm');
+        
+        // Display image previews when files are selected
+        imageInput.addEventListener('change', function() {
+            const files = this.files;
+            
+            if (files.length > 0) {
+                previewContainer.innerHTML = '<div class="row g-3" id="previewGrid"></div>';
+                const previewGrid = document.getElementById('previewGrid');
+                
+                imageCountBadge.textContent = files.length + ' selected';
+                
+                // Show preview for each image
+                Array.from(files).forEach((file, index) => {
+                    if (!file.type.match('image.*')) {
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    const col = document.createElement('div');
+                    col.className = 'col-6 col-md-4';
+                    
+                    reader.onload = function(e) {
+                        col.innerHTML = `
+                            <div class="card h-100">
+                                <img src="${e.target.result}" class="card-img-top" style="height: 150px; object-fit: cover;">
+                                <div class="card-body p-2">
+                                    <p class="card-text small text-truncate">${file.name}</p>
+                                    <p class="card-text small text-muted">${(file.size / 1024).toFixed(1)} KB</p>
+                                </div>
+                            </div>
+                        `;
+                        previewGrid.appendChild(col);
+                    };
+                    
+                    reader.readAsDataURL(file);
+                });
+            } else {
+                // Reset preview if no files
+                previewContainer.innerHTML = `
+                    <div class="text-center py-5 text-muted">
+                        <i class="fas fa-images mb-3" style="font-size: 3rem;"></i>
+                        <p>Select images to preview them here</p>
+                    </div>
+                `;
+                imageCountBadge.textContent = '0 selected';
+            }
+        });
+        
+        // Clear the file input and preview
+        clearBtn.addEventListener('click', function() {
+            imageInput.value = '';
+            // Trigger change event to update preview
+            const event = new Event('change');
+            imageInput.dispatchEvent(event);
+        });
+        
+        // Add loading state to upload button
+        uploadForm.addEventListener('submit', function() {
+            if (imageInput.files.length > 0) {
+                uploadBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Uploading...';
+                uploadBtn.disabled = true;
+            }
+        });
+    });
+</script>
+{% endblock %}

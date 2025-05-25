@@ -1,0 +1,111 @@
+{% extends "public/layout/base.html" %}
+{% load static %}
+{% block header %}
+<style>
+    .li.account-menu:hover .navbar-link {
+        background-color: #4d63ab!important;
+    }
+    .payment-section {
+        margin-bottom: 40px;
+    }
+    .section-title {
+        border-bottom: 1px solid #dee2e6;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        color: #ffffff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="section bg-black">
+    <div class="container">
+        <div class="row">
+            <!-- START SIDEBAR -->
+            <div class="col-lg-4 col-12 mt-4 mt-lg-0 pt-2 pt-lg-0 hide-on-small">
+                {% include "customer/sidebar.html" %}
+            </div><!--end col-->
+            <!-- END SIDEBAR -->
+
+            <div class="col-lg-8 mt-4">
+                <!-- Vehicle Reservation Payments Section -->
+                <div class="payment-section">
+                    <h4 class="section-title">Vehicle Reservation Payments</h4>
+                    <div class="table-responsive shadow rounded">
+                        <table class="table table-center bg-white mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-center border-bottom p-3">Reservation #</th>
+                                    <th class="text-center border-bottom p-3">Package</th>
+                                    <th class="text-center border-bottom p-3">Amount</th>
+                                    <th class="text-center border-bottom p-3">Date</th>
+                                    <th class="text-center border-bottom p-3">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in reservation_payments %}
+                                <tr>
+                                    <td class="text-center p-3">{{ payment.rn_number.reservation_number }}</td>
+                                    <td class="text-center p-3">{{ payment.package_name }}</td>
+                                    <td class="text-center p-3">${{ payment.amount }}</td>
+                                    <td class="text-center p-3">{{ payment.created_at|date:'M d, Y' }}</td>
+                                    <td class="text-center p-3">
+                                        <div class="badge bg-soft-success rounded px-3 py-1">
+                                            Paid
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center p-3">No reservation payments found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Additional Features Payments Section -->
+                <div class="payment-section">
+                    <h4 class="section-title">Additional Features Payments</h4>
+                    <div class="table-responsive shadow rounded">
+                        <table class="table table-center bg-white mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-center border-bottom p-3">Reservation #</th>
+                                    <th class="text-center border-bottom p-3">Feature</th>
+                                    <th class="text-center border-bottom p-3">Amount</th>
+                                    <th class="text-center border-bottom p-3">Date</th>
+                                    <th class="text-center border-bottom p-3">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for feature_payment in new_feature_payments %}
+                                <tr>
+                                    <td class="text-center p-3">{{ feature_payment.reservation_feature.booked_package.reservation_number }}</td>
+                                    <td class="text-center p-3">{{ feature_payment.reservation_feature.features|truncatechars:30 }}</td>
+                                    <td class="text-center p-3">${{ feature_payment.amount }}</td>
+                                    <td class="text-center p-3">{{ feature_payment.payment_date|date:'M d, Y' }}</td>
+                                    <td class="text-center p-3">
+                                        <div class="badge bg-soft-success rounded px-3 py-1">
+                                            Paid
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center p-3">No feature payments found</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div><!--end col-->
+        </div><!--end row-->
+    </div><!--end container-->
+</section><!--end section-->
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}

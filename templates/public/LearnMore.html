@@ -1,0 +1,1188 @@
+{% extends "public/layout/base.html" %}
+{% load static %}
+{% load frontend_custom_filters %}
+{% load humanize %}
+{% block header %}
+<link href="{% static 'css/custom-styles.css' %}" rel="stylesheet">
+<style>
+    /* Base Styles */
+    body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f5f5f5;
+        color: #333;
+        overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-family: 'Playfair Display', serif;
+    }
+
+    /* Top Buttons Responsive */
+    .top-btns-bar {
+        width: 100%;
+        margin: auto;
+        display: flex;
+        z-index: 500;
+        position: fixed;
+        top: 5rem;
+        left: 0;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+    }
+    @media (max-width: 768px) {
+        .top-btns-bar {
+            top: 3.2rem;
+            padding: 6px 2vw;
+        }
+        .prominent-btn {
+            font-size: 0.85rem !important;
+            padding: 6px 10px !important;
+        }
+    }
+    @media (max-width: 576px) {
+        .top-btns-bar {
+            top: 5rem;
+            padding: 4px 1vw;
+        }
+        .prominent-btn {
+            font-size: 0.75rem !important;
+            padding: 5px 6px !important;
+        }
+    }
+
+    /* Hero Section */
+    .hero-section {
+        width: 100%;
+        background: linear-gradient(180deg, #ffffff 0%, #f5f5f5 100%);
+    }
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 4.5rem 0 2rem;
+        }
+    }
+    @media (max-width: 576px) {
+        .hero-section {
+            padding: 3.2rem 0 1.2rem;
+        }
+    }
+
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 700;
+        color: #222;
+    }
+
+    .car-image-container {
+        text-align: center;
+        transition: transform 0.3s ease;
+    }
+    .title-image-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .title-image-container img {
+        width: 100%;
+        max-width: 100%%;
+        height: auto;
+        object-fit: cover;
+        display: block;
+        object-position: bottom;
+        height: 100%;
+    }
+    @media (max-width: 768px) {
+        .title-image-container img {
+            max-height: 220px;
+        }
+    }
+    @media (max-width: 576px) {
+        .title-image-container img {
+            max-height: 140px;
+        }
+    }
+
+    .car-image-container img {
+        width: 100%;
+        max-width: 900px;
+        height: 400px;
+        object-fit: cover;
+        object-position: 0% 47%;
+    }
+    @media (max-width: 768px) {
+        .car-image-container img {
+            height: 220px;
+            max-width: 100%;
+        }
+    }
+    @media (max-width: 576px) {
+        .car-image-container img {
+            height: 120px;
+            max-width: 100%;
+        }
+    }
+
+    /* Description Cards */
+    .description-section {
+        padding: 4rem 0;
+    }
+
+    .description-card {
+        max-width: 850px;
+        margin: auto;
+        background-color: #ffffff;
+        border-radius: 16px;
+        padding: 3rem;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    @media (max-width: 768px) {
+        .description-card {
+            padding: 1.2rem;
+        }
+        .description-card h2 {
+            font-size: 1.1rem;
+        }
+    }
+    @media (max-width: 576px) {
+        .description-card {
+            padding: 0.7rem;
+        }
+        .description-card h2 {
+            font-size: 1rem;
+        }
+    }
+
+    .description-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .description-card h2 {
+        font-size: 1.7rem;
+        line-height: 1.5;
+        font-weight: 400;
+        color: #333;
+    }
+
+    /* Logo Styling */
+    .shoreline-text {
+        font-size: 2.7rem;
+        font-weight: 400;
+        letter-spacing: 2.5px;
+        color: #222;
+    }
+
+    .lm-text {
+        font-style: italic;
+        font-weight: 700;
+    }
+
+    .coupe-text {
+        font-style: italic;
+        font-weight: 400;
+    }
+
+    .lm-inline {
+        font-style: italic;
+    }
+
+    /* Divider */
+    .divider {
+        display: inline-block;
+        margin: 0 1rem;
+        color: #777;
+    }
+
+    /* Car Stats Responsive */
+    .car-stats-section {
+        width: 100%;
+        background: #fff;
+    }
+    .car-stats-flex {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        gap: 2rem;
+    }
+    @media (max-width: 900px) {
+        .car-stats-flex {
+            flex-direction: column-reverse;
+            gap: 1.2rem;
+        }
+        .car-stats-left, .car-stats-right {
+            padding-left: 0;
+            width: 100%;
+            align-items: center;
+        }
+        .car-stats-image {
+            max-width: 100%;
+        }
+    }
+    @media (max-width: 576px) {
+        .car-stats-flex {
+            gap: 0.5rem;
+        }
+        .car-stats-image {
+            max-width: 100%;
+        }
+        .car-stat-main {
+            font-size: 2rem;
+            justify-content: center !important;
+            text-align: center !important;
+            display: flex !important;
+            width: 100%;
+        }
+        .car-stat-value {
+            font-size: 2rem;
+        }
+        .car-stat-unit {
+            font-size: 1rem;
+        }
+        .car-stat-divider {
+            font-size: 1.2rem;
+        }
+        .car-stat-desc {
+            font-size: 0.95rem;
+        }
+        .car-stats-left {
+            align-items: center !important;
+            text-align: center !important;
+        }
+    }
+    .car-stats-left {
+        flex: 1 1 50%;
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+        justify-content: center;
+        align-items: flex-start;
+        padding-left: 2vw;
+    }
+    .car-stat-block {
+        margin-bottom: 0.5rem;
+    }
+    .car-stat-main {
+        font-size: 3.5rem;
+        font-weight: 400;
+        color: #111;
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+    }
+    .car-stat-value {
+        font-size: 3.5rem;
+        font-weight: 400;
+        color: #111;
+        line-height: 1;
+    }
+    .car-stat-unit {
+        font-size: 1.5rem;
+        font-weight: 300;
+        color: #111;
+        margin-left: 0.2rem;
+    }
+    .car-stat-divider {
+        font-size: 2.5rem;
+        font-weight: 300;
+        color: #111;
+        margin: 0 0.5rem;
+    }
+    .car-stat-desc {
+        font-size: 1.1rem;
+        color: #888;
+        margin-top: 0.2rem;
+        font-weight: 400;
+    }
+    .car-stats-btn {
+        margin-top: 1.5rem;
+        font-size: 1.1rem;
+        padding: 12px 32px;
+        border-radius: 6px;
+    }
+    .car-stats-right {
+        flex: 1 1 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .car-stats-image {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .shadow {
+        box-shadow: none !important;
+    }
+
+    .offcanvas.offcanvas-end, .offcanvas.offcanvas-start {
+        width: 420px !important;
+    }
+
+    /* Gallery Item Styling */
+    .gallery-item {
+        margin-bottom: 24px;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0, 1);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .gallery-item:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 16px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .gallery-img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        transition: all 0.5s ease;
+        display: block;
+        border-radius: 12px;
+    }
+
+    .gallery-item-container {
+        position: relative;
+        width: 100%;
+        height: 250px;
+        overflow: hidden;
+        border-radius: 12px;
+    }
+
+    .gallery-item:hover .gallery-img {
+        transform: scale(1.01);
+    }
+
+    .card-body {
+        display: none;
+    }
+
+    .card {
+        border: none;
+        background: none;
+        box-shadow: none;
+    }
+
+    /* Gallery Responsive */
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        padding: 20px 0;
+    }
+    @media (max-width: 992px) {
+        .gallery-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+    @media (max-width: 768px) {
+        .gallery-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+    }
+    @media (max-width: 576px) {
+        .gallery-grid {
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+    }
+
+    .modal-content {
+        border-radius: 16px;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    }
+
+    .modal-header {
+        background-color: #212529;
+        color: white;
+        border-bottom: none;
+        padding: 16px 24px;
+    }
+
+    .modal-img {
+        width: 100%;
+        height: auto;
+        max-height: 80vh;
+        object-fit: contain;
+        background-color: #000;
+        display: block;
+    }
+    @media (max-width: 576px) {
+        .modal-img {
+            max-height: 60vh;
+        }
+    }
+
+    .modal-footer {
+        padding: 16px 24px;
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        background-color: #212529;
+        color: white;
+    }
+
+    .modal-fullscreen .modal-content {
+        border-radius: 0;
+        background-color: #000;
+    }
+
+    .modal-fullscreen .modal-header {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .modal-fullscreen .modal-footer {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .loading {
+        opacity: 0;
+        transform: translateY(15px);
+        transition: opacity 0.4s ease, transform 0.5s ease;
+    }
+
+    .loaded {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .nav-tabs {
+        border-bottom: 2px solid #f1f3f5;
+        margin-bottom: 36px;
+    }
+
+    .nav-tabs .nav-link {
+        margin-bottom: -2px;
+        border: none;
+        color: #6c757d;
+        font-weight: 600;
+        padding: 14px 24px;
+        border-radius: 0;
+        transition: all 0.3s ease;
+    }
+
+    .nav-tabs .nav-link:hover {
+        border-color: transparent;
+        color: #495057;
+    }
+
+    .nav-tabs .nav-link.active {
+        color: #0d6efd;
+        background-color: transparent;
+        border-bottom: 3px solid #0d6efd;
+    }
+
+    .tab-content {
+        padding-top: 10px;
+    }
+
+    .tab-pane {
+        transition: all 0.3s ease;
+    }
+
+    .badge-tab {
+        margin-left: 8px;
+        background-color: #e9ecef;
+        color: #6c757d;
+        font-weight: 500;
+        font-size: 0.75rem;
+        padding: 5px 8px;
+    }
+
+    .nav-link.active .badge-tab {
+        background-color: #0d6efd;
+        color: white;
+    }
+
+    .tab-icon {
+        margin-right: 8px;
+    }
+
+    @media (max-width: 768px) {
+        .gallery-img,
+        .gallery-item-container {
+            height: 200px;
+        }
+        .nav-tabs .nav-link {
+            padding: 16px 4px;
+        }
+    }
+
+    #imageModal .modal-content {
+        width:100%;
+        height:100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        border: none;
+    }
+
+    #imageModal .modal-header {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 1;
+        border: none;
+    }
+
+    #imageModal .modal-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border: none;
+        background: transparent;
+    }
+
+    #imageModal .btn-close {
+        filter: invert(1);
+        opacity: 0.8;
+        transition: opacity 0.2s;
+    }
+
+    #imageModal .btn-close:hover {
+        opacity: 1;
+    }
+
+    #modalImage {
+        transition: transform 0.3s;
+        cursor: zoom-in;
+    }
+
+    #modalImage.zoomed {
+        transform: scale(1.5);
+        cursor: zoom-out;
+    }
+
+    /* Make Technical Specs modal truly full width */
+    #fullscreenModal .modal-dialog {
+        max-width: 100vw;
+        width: 100vw;
+        margin: 0;
+    }
+
+    #fullscreenModal .modal-content {
+        border-radius: 0;
+        width: 100vw;
+        min-height: 100vh;
+        padding: 0;
+    }
+
+    .btn-black, .btn-outline-black {
+        border-radius: 10px;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    }
+
+    .btn-black:hover, .btn-black:focus {
+        background: #fff;
+        color: #111 !important;
+        border: 2px solid #111;
+    }
+
+    .btn-outline-black:hover, .btn-outline-black:focus {
+        background: #111;
+        color: #fff !important;
+    }
+
+    .prominent-btn {
+        color: #111;
+        background: rgba(255, 255, 255, 0.158);
+        border: 2px solid #111;
+        border-radius: 10px;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+        box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+        backdrop-filter: blur(8px);
+        transition: all 0.25s cubic-bezier(.4,0,.2,1);
+        text-transform: uppercase;
+        outline: none;
+    }
+    .prominent-btn:hover, .prominent-btn:focus {
+        background: #111;
+        color: #fff;
+        border-color: #111;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+        text-decoration: none;
+    }
+    @media (max-width: 600px) {
+        .prominent-btn {
+            font-size: 0.95rem;
+            padding: 7px 14px;
+            border-radius: 8px;
+        }
+    }
+
+    /* --- Begin: Custom Responsive & Gallery Styles --- */
+    /* General spacing and font size for smallest screens */
+    @media (max-width: 480px) {
+        .hero-title {
+            font-size: 2.1rem;
+        }
+        .shoreline-text {
+            font-size: 1.5rem;
+        }
+        .description-card {
+            padding: 0.4rem;
+            font-size: 0.97rem;
+        }
+        .car-stats-left {
+            gap: 1.2rem;
+            padding-left: 0;
+            align-items: center;
+            text-align: center;
+        }
+        .car-stat-main,
+        .car-stat-value {
+            font-size: 1.3rem;
+        }
+        .car-stat-desc {
+            font-size: 0.85rem;
+        }
+        .car-stats-btn {
+            width: 100%;
+            padding: 10px;
+            font-size: 1rem;
+        }
+    }
+
+    /* Gallery tweaks for touch & better image display */
+    .gallery-grid {
+        gap: 6px !important;
+        padding: 10px 0 !important;
+    }
+    .gallery-grid-item {
+        border-radius: 14px !important;
+        overflow: hidden;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+        margin-bottom: 8px !important;
+        transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .gallery-grid-item img,
+    .gallery-img {
+        width: 100%;
+        height: 165px !important;
+        border-radius: 14px;
+        object-fit: cover;
+        background: #eee;
+    }
+    @media (max-width: 768px) {
+        .gallery-grid-item img,
+        .gallery-img {
+            height: 130px !important;
+        }
+    }
+    @media (max-width: 480px) {
+        .gallery-grid-item img,
+        .gallery-img {
+            height: 95px !important;
+            min-height: 80px;
+        }
+    }
+
+    /* Gallery tab buttons: easier to tap, no overflow */
+    @media (max-width: 576px) {
+        .nav-tabs {
+            flex-wrap: wrap;
+            font-size: 0.95rem;
+            margin-bottom: 22px;
+        }
+        .nav-tabs .nav-link {
+            padding: 11px 7px;
+            min-width: 0;
+            font-size: 0.98rem;
+        }
+    }
+
+    /* Modal: full width, no cropping */
+    @media (max-width: 576px) {
+        .modal-content,
+        #imageModal .modal-content {
+            border-radius: 0 !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
+            min-height: 100vh !important;
+            padding: 0;
+        }
+        #imageModal .modal-header, #imageModal .modal-footer {
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+        #modalImage {
+            width: 100vw !important;
+            max-width: 100vw !important;
+            max-height: 55vh !important;
+            object-fit: contain;
+            margin: 0 auto;
+        }
+    }
+
+    /* Make buttons and text inputs easier to tap */
+    .prominent-btn,
+    .btn,
+    button {
+        font-size: 1rem;
+    }
+    /* --- End: Custom Responsive & Gallery Styles --- */
+</style>
+{% endblock header %}
+
+{% block content %}
+<div class="container-fluid p-0" style="margin-top:2rem;">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="top-btns-bar">
+            <a href="#exclusive-discount" class="btn btn-outline-black btn-md prominent-btn">
+                Get Exclusive Discount
+            </a>
+            <a href="" data-bs-toggle="modal" data-bs-target="#fullscreenModal" class="btn btn-outline-black btn-md prominent-btn">
+                Technical Specs
+            </a>
+        </div>
+        
+        <section>
+            <div class="">
+                <!-- Title Image -->
+                {% if TitleData.title_image or TitleData.title_image_mobile %}
+                    <div class="title-image-container">
+                        {% if TitleData.title_image %}
+                            <img src="{{ TitleData.title_image }}" alt="Title Image" class="d-none d-md-block">
+                        {% endif %}
+                        {% if TitleData.title_image_mobile %}
+                            <img src="{{ TitleData.title_image_mobile }}" alt="Title Image Mobile" class="d-block d-md-none">
+                        {% endif %}
+                    </div>
+                {% endif %}
+                
+                <!-- Subheading Text -->
+                <div class="logo-container text-center mt-4">
+                    <!-- Dynamic Hero Title -->
+                    <h1 class="hero-title text-center mb-2 mt-2">{{ TitleData.heading }}</h1>
+                    <h2 class="shoreline-text">{{ TitleData.subheading }}</h2>
+                </div>
+            </div>
+        </section>
+
+        <!-- Car Stats Component (Porsche-style) -->
+        <div class="car-stats-section">
+            <div class="car-stats-flex">
+                <div class="car-stats-left">
+                    <div class="car-stat-block">
+                        <div class="car-stat-main">
+                            <span class="car-stat-value">{{ TitleData.acceleration }}</span>
+                            <span class="car-stat-unit">{{ TitleData.acceleration_unit }}</span>
+                        </div>
+                        <div class="car-stat-desc">{{ TitleData.acceleration_desc }}</div>
+                    </div>
+                    <div class="car-stat-block">
+                        <div class="car-stat-main">
+                            <span class="car-stat-value">{{ TitleData.power_kw }}</span>
+                            <span class="car-stat-unit">kW</span>
+                            <span class="car-stat-divider">/</span>
+                            <span class="car-stat-value">{{ TitleData.power_ps }}</span>
+                            <span class="car-stat-unit">PS</span>
+                        </div>
+                        <div class="car-stat-desc">{{ TitleData.power_desc }}</div>
+                    </div>
+                    <div class="car-stat-block">
+                        <div class="car-stat-main">
+                            <span class="car-stat-value">{{ TitleData.top_speed }}</span>
+                            <span class="car-stat-unit">{{ TitleData.top_speed_unit }}</span>
+                        </div>
+                        <div class="car-stat-desc">{{ TitleData.top_speed_desc }}</div>
+                    </div>
+                </div>
+                <div class="car-stats-right">
+                    <img src="{{ TitleData.title_image_front }}" alt="Car Front" class="car-stats-image">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loop Through Combined Data -->
+        {% for item in combined_data %}
+            {% if item.image and item.card %}
+                <!-- Paired Image + Text -->
+                <section class="car-section">
+                    <div class="container">
+                        <div class="car-image-container">
+                            <img src="{{ item.image.url }}" alt="Car Image" class="img-fluid">
+                        </div>
+                    </div>
+                </section>
+                
+                <section class="description-section">
+                    <div class="container">
+                        <div class="description-card">
+                            <h2 class="text-center">{{ item.card.details }}</h2>
+                        </div>
+                    </div>
+                </section>
+                
+            {% elif item.image %}
+                <!-- Orphaned Image -->
+                <section class="car-section">
+                    <div class="container">
+                        <div class="car-image-container">
+                            <img src="{{ item.image.url }}" alt="Car Image" class="img-fluid">
+                        </div>
+                    </div>
+                </section>
+                
+            {% elif item.card %}
+                <!-- Orphaned Text -->
+                <section class="description-section mb-5">
+                    <div class="container">
+                        <div class="description-card">
+                            <h2 class="text-center">{{ item.card.details }}</h2>
+                        </div>
+                    </div>
+                </section>
+            {% endif %}
+        {% endfor %}
+    </section>
+
+    <!-- Gallery Section -->
+    <div class="container">
+        <ul class="nav nav-tabs" id="galleryTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="body-tab" data-bs-toggle="tab" data-bs-target="#body-pane" type="button" role="tab" aria-controls="body-pane" aria-selected="true">
+                    <i class="fas fa-car tab-icon"></i>Body
+                    <span class="badge rounded-pill badge-tab" id="body-count">0</span>
+                </button>
+            </li>
+
+            <li class="nav-item" role="presentation">
+                <button class="nav-link " id="body-tab" data-bs-toggle="tab" data-bs-target="#intermediate-pane" type="button" role="tab" aria-controls="intermediate-pane" aria-selected="true">
+                    <i class="fas fa-car tab-icon"></i>Intemediate
+                    <span class="badge rounded-pill badge-tab" id="intermediate-count">0</span>
+                </button>
+            </li>
+           
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="chassis-tab" data-bs-toggle="tab" data-bs-target="#chassis-pane" type="button" role="tab" aria-controls="chassis-pane" aria-selected="false">
+                    <i class="fas fa-cogs tab-icon"></i>Chassis
+                    <span class="badge rounded-pill badge-tab" id="chassis-count">0</span>
+                </button>
+            </li>
+        </ul>
+        
+        <div class="tab-content" id="galleryTabContent">
+            <div class="tab-pane fade show active" id="body-pane" role="tabpanel" aria-labelledby="body-tab">
+                <div class="gallery-grid" id="body-container"></div>
+            </div>
+           
+            <div class="tab-pane fade" id="chassis-pane" role="tabpanel" aria-labelledby="chassis-tab">
+                <div class="gallery-grid" id="chassis-container"></div>
+            </div>
+
+            <div class="tab-pane fade" id="intermediate-pane" role="tabpanel" aria-labelledby="intermediate-tab">
+                <div class="gallery-grid" id="intermediate-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full-Screen Image Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content bg-black">
+                <div class="modal-header border-0">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex align-items-center justify-content-center p-0">
+                    <img src="" alt="Full Screen Image" class="img-fluid" id="modalImage" style="max-height: 100vh; object-fit: contain;">
+                </div>
+                <div class="modal-footer border-0 justify-content-center bg-black">
+                    <span class="badge bg-light text-dark" id="modalCategory"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section id="exclusive-discount" class="bg-half-100 d-table w-100">
+        {% include "public/LockPriceSection.html" %}
+    </section>
+
+    <!-- Technical Specs Modal -->
+    <div class="modal fade" id="fullscreenModal" tabindex="-1" aria-labelledby="fullscreenModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: ghostwhite; border-bottom: rgb(70, 70, 74); padding-left: 40px; padding-right: 40px;">
+                    <h1 class="modal-title text-dark text-uppercase" id="fullscreenModalLabel">
+                        {{ items.title }}
+                    </h1>
+                    <button type="button" class="btn-close btn btn-icon btn-outline-danger float-end" data-bs-dismiss="modal" aria-label="Close"><i class="mdi mdi-close"></i></button>
+                </div>
+                <div class="modal-body bg-white" style="padding-right: 40px; padding-left: 40px;">
+                    <div class="row">
+                        <div class="col-md-6 text-dark">
+                            <div class="col-md-12">
+                                <h1 class="text-dark mt-4">Technical Specs</h1>
+                                <div class="accordion" id="accordionExample">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="headingDimension">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDimension" aria-expanded="false" aria-controls="collapseDimension">
+                                                Dimensions
+                                            </button>
+                                        </h2>
+                                        <div id="collapseDimension" class="accordion-collapse collapse" aria-labelledby="headingDimension" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Height: 40.5"</p>
+                                                {% if items.title == 'Mark I' %}
+                                                    <p>- Length: 163"</p>
+                                                    <p>- Width: 71" (Intermediate rear) or 78" (Wide rear) or 80" (Extra Wide rear)</p>
+                                                {% elif items.title == 'Mark II' %}
+                                                    <p>- Length: 163"</p>
+                                                    <p>- Width: 71"</p>
+                                                {% elif items.title == 'Mark IV' %}
+                                                    <p>- Length: 171"</p>
+                                                    <p>- Width: 70.5"</p>
+                                                {% endif %}
+                                                <p>- Wheelbase: 95"</p>
+                                                <p>- Front Wheels: Options Available</p>
+                                                <p>- Rear Wheels: Options Available</p>
+                                                <p>- Front Tires: Options Available</p>
+                                                <p>- Rear Tires: Options Available</p>
+                                                <p>- Fuel Tank: Aluminum 22 Gallons</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading2">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false" aria-controls="collapse2">
+                                                Body
+                                            </button>
+                                        </h2>
+                                        <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Vacuum Infused / Handlaid Fiber Glass or Carbon Fiber</p>
+                                                <p>- Fiber Glass / Carbon Fiber Roof</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading3">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                                                Chassis
+                                            </button>
+                                        </h2>
+                                        <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Mig/Tig-welded Tubular Chassis bespoke designed for GEN-Z40</p>
+                                                <p>- Aluminum Skinned</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading4">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false" aria-controls="collapse4">
+                                                Suspension
+                                            </button>
+                                        </h2>
+                                        <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="heading4" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Front: Ford Production upper control Arm and Spindle, CNC produced lower control arm, adjustable coilover shocks</p>
+                                                <p>- Rear: CNC produced uprights and control arm, adjustable coilover shocks</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading5">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false" aria-controls="collapse5">
+                                                Steering
+                                            </button>
+                                        </h2>
+                                        <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="heading5" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Rack and pinion with Collapsible Steering Column</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading6">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false" aria-controls="collapse6">
+                                                Brakes
+                                            </button>
+                                        </h2>
+                                        <div id="collapse6" class="accordion-collapse collapse" aria-labelledby="heading6" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Front: Brembo / Wilwood</p>
+                                                <p>- Rear: Brembo / Wilwood</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading9">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapse9" aria-expanded="false" aria-controls="collapse9">
+                                                Interior
+                                            </button>
+                                        </h2>
+                                        <div id="collapse9" class="accordion-collapse collapse" aria-labelledby="heading9" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Original Style Dash (Left Hand Drive / Right Hand Drive) - Leather Stitched / Carbon Fiber / Alcantara</p>
+                                                <p>- Moto-lita 14" Steering Wheel</p>
+                                                <p>- Original style Seats with Leather or Alcantara</p>
+                                                <p>- Speed Hut Gauges</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading7">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapse7" aria-expanded="false" aria-controls="collapse7">
+                                                Drivetrain
+                                            </button>
+                                        </h2>
+                                        <div id="collapse7" class="accordion-collapse collapse" aria-labelledby="heading7" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Recommended Engines: 289, 302, 351W, 427 or Coyote</p>
+                                                <p>- Transmission: Boxter S (up to 04) or Audi 01E/01X</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header" id="heading8">
+                                            <button class="accordion-button collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapse8" aria-expanded="false" aria-controls="collapse8">
+                                                Exhaust System
+                                            </button>
+                                        </h2>
+                                        <div id="collapse8" class="accordion-collapse collapse" aria-labelledby="heading8" data-bs-parent="#accordionExample">
+                                            <div class="accordion-body bg-white text-dark">
+                                                <p>- Bundle of Snakes</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 d-grid">
+                                <small class="text-dark text-sm mb-5 mt-3" style="font-size: 11px;">
+                                    * Reservation today will save your spot and lock your price for either Package "Roller or Turnkey Minus"
+                                </small>
+                            </div>
+                        </div>
+                        <div class="pt-2 col-md-6 mb-5">
+                            {% if items.title == 'Mark I' %}
+                                <img src="{% static 'images/genz/mark1wided.jpg' %}" class="img-fluid rounded shadow mb-5" alt="">
+                            {% elif items.title == 'Mark II' %}
+                                <img src="{% static 'images/genz/mark2wided.jpg' %}" class="img-fluid rounded shadow mb-5" alt="">
+                            {% elif items.title == 'Mark IV' %}
+                                <img src="{% static 'mk4.jpg' %}" class="img-fluid rounded shadow mb-5" alt="">
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ GalleryImages|json_script:"gallery-images" }}
+
+{% endblock content %}
+
+{% block script %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const images = JSON.parse(document.getElementById('gallery-images').textContent);
+        initGallery(images);
+        updateTabCounts(images);
+        
+        function addModalEvents() {
+            document.querySelectorAll('.gallery-grid-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const img = this.querySelector('img');
+                    const category = this.dataset.category;
+                    
+                    // Set modal content
+                    document.getElementById('modalImage').src = img.src;
+                    document.getElementById('modalCategory').textContent = 
+                        capitalizeFirstLetter(category);
+                    
+                    // Show the modal
+                    const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+                    modal.show();
+
+                    // Optionally reset zoom state if you use zoom
+                    const modalImg = document.getElementById('modalImage');
+                    if (modalImg.classList.contains('zoomed')) {
+                        modalImg.classList.remove('zoomed');
+                    }
+                });
+            });
+
+            // Optional: Zoom functionality for modal image
+            const modalImg = document.getElementById('modalImage');
+            if (modalImg) {
+                modalImg.onclick = function () {
+                    this.classList.toggle('zoomed');
+                };
+            }
+        }
+
+        function initGallery(images) {
+            // Clear all containers
+            document.getElementById('body-container').innerHTML = '';
+            document.getElementById('chassis-container').innerHTML = '';
+            document.getElementById('intermediate-container').innerHTML = '';
+
+            images.forEach(image => {
+                const galleryItem = createGalleryItem(image);
+                const label = (image.label || '').toLowerCase();
+                if (document.getElementById(`${label}-container`)) {
+                    document.getElementById(`${label}-container`).appendChild(galleryItem);
+                }
+            });
+
+            addModalEvents();
+        }
+
+        function createGalleryItem(image) {
+            const item = document.createElement('div');
+            item.className = 'gallery-grid-item';
+            item.dataset.id = image.id;
+            item.dataset.category = image.label;
+            item.style.cursor = 'pointer';
+
+            item.innerHTML = `
+                <img src="${image.url}" class="gallery-grid-img" alt="${capitalizeFirstLetter(image.label)} Image" loading="lazy">
+            `;
+            return item;
+        }
+
+        function updateTabCounts(images) {
+            const counts = {
+                body: images.filter(img => (img.label || '').toLowerCase() === 'body').length,
+                intermediate: images.filter(img => (img.label || '').toLowerCase() === 'intermediate').length,
+                chassis: images.filter(img => (img.label || '').toLowerCase() === 'chassis').length,
+            };
+            document.getElementById('body-count').textContent = counts.body;
+            document.getElementById('intermediate-count').textContent = counts.intermediate;
+            document.getElementById('chassis-count').textContent = counts.chassis;
+        }
+
+        function capitalizeFirstLetter(string) {
+            if (!string) return '';
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        // Optional: Clean up modal image on close
+        const imageModal = document.getElementById('imageModal');
+        if (imageModal) {
+            imageModal.addEventListener('hidden.bs.modal', function () {
+                const modalImg = document.getElementById('modalImage');
+                if (modalImg) {
+                    modalImg.src = '';
+                    modalImg.classList.remove('zoomed');
+                }
+            });
+        }
+    });
+</script>
+{% endblock script %}

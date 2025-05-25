@@ -1,0 +1,407 @@
+<!-- templates/registration/register.html -->
+{% extends "public/layout/base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load frontend_custom_filters %}
+{% block header %}
+<style>
+    body{
+        background-color: #fff !important;
+    }
+    .shadow{
+        box-shadow: 0 0 3px rgba(173,181,189,1)!important
+    }
+
+    #id_phone_number {
+        padding-left: 50px !important;
+    }
+    .form-control{
+        padding-left: 40px !important;
+        padding-right: 40px !important;
+        color: #000 !important;
+        background-color: #fff !important;
+    }
+    
+    /* Password validation styles */
+    .password-requirements {
+        font-size: 0.8rem;
+        margin-top: 5px;
+    }
+    
+    .requirement {
+        color: #dc3545;
+    }
+    
+    .requirement.valid {
+        color: #28a745;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+ <!-- Hero Start -->
+ <section class="bg-home d-flex align-items-center">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 mt-1">
+                <div class="card  p-4 rounded shadow bg-dark" style="width: 50rem; margin: auto;">
+                    <h4 class="card-title text-center text-light">Sign Up</h4>  
+                        <form method="post" id="register-form" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="text" value="{{ country_code }}" name="country" hidden>
+                            <input type="text" value="customer" name="role" hidden>
+                            <div class="row mt-4">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-light">First Name <span class="text-danger">*</span></label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="user" class="fea icon-sm icons position-absolute text-light"></i>
+                                            {{ form.first_name|without_label }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-light">Last Name <span class="text-danger">*</span></label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="user" class="fea icon-sm icons position-absolute text-light"></i>
+                                            {{ form.last_name|without_label }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-light">Email <span class="text-danger">*</span></label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="mail" class="fea icon-sm icons position-absolute text-light"></i>
+                                            {{ form.email|without_label }}
+                                            {% if form.email.errors %}
+                                                <div class="alert alert-danger mt-2">
+                                                    {% for error in form.email.errors %}
+                                                        <p>{{ error }}</p>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-light">Phone Number <span class="text-danger">*</span></label>
+                                        {{form.phone_number.errors}}
+                                        <div class="form-icon position-relative">
+                                            <img class="fea icon-sm icons" src="{{ country_flag_url }}" alt="Country Flag" style="width: 28px; height: 28px; top: 6px !important; left: 12px;">
+                                            {{ form.phone_number|without_label }}
+                                            {% if form.phone_number.errors %}
+                                                <div class="alert alert-danger mt-2">
+                                                    {% for error in form.phone_number.errors %}
+                                                        <p>{{ error }}</p>
+                                                    {% endfor %}
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-light">Password <span class="text-danger">*</span></label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="lock" class="fea icon-sm icons position-absolute text-light"></i>
+                                            <input type="password" id="id_password1" name="password1" class="form-control" required>
+                                            <i data-feather="eye" class="fea icon-sm icons position-absolute text-light password-toggle" style="right: 10px; left: auto; cursor: pointer;"></i>
+                                        </div>
+                                        <div class="password-requirements text-light mt-2">
+                                            <p class="mb-1">Password must contain:</p>
+                                            <div id="length" class="requirement">✓ At least 8 characters</div>
+                                            <div id="uppercase" class="requirement">✓ At least 1 uppercase letter</div>
+                                            <div id="number" class="requirement">✓ At least 1 number</div>
+                                            <div id="special" class="requirement">✓ At least 1 special character</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-light">Confirm Password <span class="text-danger">*</span></label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="lock" class="fea icon-sm icons position-absolute text-light"></i>
+                                            <input type="password" id="id_password2" name="password2" class="form-control" required>
+                                            <i data-feather="eye" class="fea icon-sm icons position-absolute text-light confirm-password-toggle" style="right: 10px; left: auto; cursor: pointer;"></i>
+                                        </div>
+                                        <div id="password-match" class="mt-1 text-light" style="font-size: 0.8rem;"></div>
+                                    </div>
+                                </div>
+
+                              
+                                <div class="col-md-12 mb-2">
+                                    <label class="form-check-label text-light" for="flexCheckDefault">By continuing, you agree to our  <a href="{% url 'privacy_policy' %}" target="_blank" class="text-primary text-decoration-underline">Privacy Policy</a></label>
+                                </div>
+
+                                <div class="col-md-12 mb-0">
+                                    <div class="d-grid">
+                                        <button type="submit" id="submit-btn" class="btn btn-success" disabled>Sign Up
+                                            <span class="spinner-border spinner-border-sm" id="pro" role="status" aria-hidden="true" style="display: none;"></span>
+                                        </button>
+                                    </div>
+                                    <div class="mx-auto">
+                                        <p class="mb-0 mt-3"><small class=" text-light me-2">Already have an account ?</small><a href="{% url 'customer_login' %}" class="text-primary fw-bold text-decoration-underline">Login</a></p>
+                                    </div>
+                                </div><!--end col-->
+                            </div>
+                            <!--end row-->
+                        </form><!--end form-->
+                </div>
+            </div>
+        </div>
+    </div> <!--end container-->
+</section>
+{% endblock content %}
+
+{% block script %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("{{ form.email.id_for_label }}").removeAttribute("placeholder");
+        document.getElementById("{{ form.first_name.id_for_label }}").removeAttribute("placeholder");
+        document.getElementById("{{ form.last_name.id_for_label }}").removeAttribute("placeholder");
+        document.getElementById("{{ form.phone_number.id_for_label }}").removeAttribute("placeholder");
+        
+        // Password toggle functionality
+        const passwordToggle = document.querySelector('.password-toggle');
+        const passwordField = document.getElementById("id_password1");
+        
+        if (passwordToggle && passwordField) {
+            passwordToggle.addEventListener('click', function() {
+                // Toggle between password and text type
+                const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordField.setAttribute('type', type);
+                
+                // Toggle the eye icon
+                if (type === 'password') {
+                    this.setAttribute('data-feather', 'eye');
+                } else {
+                    this.setAttribute('data-feather', 'eye-off');
+                }
+                
+                // Re-initialize feather icons to update the icon
+                feather.replace();
+            });
+        }
+        
+        // Confirm Password toggle functionality
+        const confirmPasswordToggle = document.querySelector('.confirm-password-toggle');
+        const confirmPasswordField = document.getElementById("id_password2");
+        
+        if (confirmPasswordToggle && confirmPasswordField) {
+            confirmPasswordToggle.addEventListener('click', function() {
+                // Toggle between password and text type
+                const type = confirmPasswordField.getAttribute('type') === 'password' ? 'text' : 'password';
+                confirmPasswordField.setAttribute('type', type);
+                
+                // Toggle the eye icon
+                if (type === 'password') {
+                    this.setAttribute('data-feather', 'eye');
+                } else {
+                    this.setAttribute('data-feather', 'eye-off');
+                }
+                
+                // Re-initialize feather icons to update the icon
+                feather.replace();
+            });
+        }
+        
+        // Password validation
+        const passwordInput = document.getElementById('id_password1');
+        const confirmPasswordInput = document.getElementById('id_password2');
+        const submitButton = document.getElementById('submit-btn');
+        const passwordMatch = document.getElementById('password-match');
+        
+        // Password requirement elements
+        const lengthReq = document.getElementById('length');
+        const uppercaseReq = document.getElementById('uppercase');
+        const numberReq = document.getElementById('number');
+        const specialReq = document.getElementById('special');
+        
+        function validatePassword() {
+            const password = passwordInput.value;
+            
+            // Check length
+            if(password.length >= 8) {
+                lengthReq.classList.add('valid');
+            } else {
+                lengthReq.classList.remove('valid');
+            }
+            
+            // Check uppercase
+            if(/[A-Z]/.test(password)) {
+                uppercaseReq.classList.add('valid');
+            } else {
+                uppercaseReq.classList.remove('valid');
+            }
+            
+            // Check number
+            if(/[0-9]/.test(password)) {
+                numberReq.classList.add('valid');
+            } else {
+                numberReq.classList.remove('valid');
+            }
+            
+            // Check special character
+            if(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+                specialReq.classList.add('valid');
+            } else {
+                specialReq.classList.remove('valid');
+            }
+            
+            checkFormValidity();
+        }
+        
+        function checkPasswordMatch() {
+            if(confirmPasswordInput.value === '') {
+                passwordMatch.textContent = '';
+                passwordMatch.classList.remove('text-success', 'text-danger');
+            } else if(passwordInput.value === confirmPasswordInput.value) {
+                passwordMatch.textContent = 'Passwords match';
+                passwordMatch.classList.add('text-success');
+                passwordMatch.classList.remove('text-danger');
+            } else {
+                passwordMatch.textContent = 'Passwords do not match';
+                passwordMatch.classList.add('text-danger');
+                passwordMatch.classList.remove('text-success');
+            }
+            
+            checkFormValidity();
+        }
+        
+        function checkFormValidity() {
+            const password = passwordInput.value;
+            const passwordsMatch = passwordInput.value === confirmPasswordInput.value && confirmPasswordInput.value !== '';
+            const validLength = password.length >= 8;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            
+            if(validLength && hasUppercase && hasNumber && hasSpecial && passwordsMatch) {
+                submitButton.disabled = false;
+            } else {
+                submitButton.disabled = false;
+            }
+        }
+        
+        passwordInput.addEventListener('input', validatePassword);
+        confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+        passwordInput.addEventListener('input', checkPasswordMatch);
+    });
+</script>
+<script>
+$(document).ready(function() {
+    setTimeout(function() {
+        document.querySelector('.alert').remove();
+    }, 5000);
+});
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let phoneInput = document.getElementById("{{ form.phone_number.id_for_label }}"); // Get the form field
+    
+        if (phoneInput) {
+            phoneInput.addEventListener("input", function (e) {
+                let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+    
+                if (value.length > 10) value = value.substring(0, 10); // Limit to 10 digits
+    
+                let formattedValue = value;
+    
+                if (value.length > 6) {
+                    formattedValue = `(${value.substring(0, 3)}) ${value.substring(3, 6)}-${value.substring(6)}`;
+                } else if (value.length > 3) {
+                    formattedValue = `(${value.substring(0, 3)}) ${value.substring(3)}`;
+                } else if (value.length > 0) {
+                    formattedValue = `(${value}`;
+                }
+    
+                e.target.value = formattedValue;
+            });
+        }
+    });
+</script>
+<script>
+    // Password validation function
+    function validatePasswordPattern(password) {
+        // Check length
+        if(password.length < 8) {
+            return "Password must be at least 8 characters long";
+        }
+        
+        // Check uppercase
+        if(!/[A-Z]/.test(password)) {
+            return "Password must contain at least 1 uppercase letter";
+        }
+        
+        // Check number
+        if(!/[0-9]/.test(password)) {
+            return "Password must contain at least 1 number";
+        }
+        
+        // Check special character
+        if(!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+            return "Password must contain at least 1 special character";
+        }
+        
+        return null; // No error
+    }
+
+    $("#register-form").submit(function (e) {
+        e.preventDefault();
+        
+        // Get password values
+        const password = $('#id_password1').val();
+        const confirmPassword = $('#id_password2').val();
+        
+        // Validate password pattern
+        const passwordError = validatePasswordPattern(password);
+        if (passwordError) {
+            toastr.error(passwordError);
+            return false;
+        }
+        
+        // Check if passwords match
+        if (password !== confirmPassword) {
+            toastr.error("Passwords do not match");
+            return false;
+        }
+        
+        // If validation passes, proceed with form submission
+        var data = new FormData($('#register-form').get(0));
+        $('#pro').show();
+        
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'customer_register' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response['message']);
+                    redirectWithDelay("{% url 'customer_login' %}");
+                    $('#login-form')[0].reset();
+                } else {
+                    toastr.error(response['message']);
+                }
+                $('#pro').hide();
+            },
+            error: function (response) {
+                if (!response.is_success) {
+                    toastr.error(response['message']);
+                }
+                $('#pro').hide();
+            }
+        });
+    });
+</script>
+{% endblock script %}

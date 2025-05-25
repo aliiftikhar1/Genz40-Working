@@ -1,0 +1,415 @@
+{% extends 'admin/layout/base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block header %}
+<link rel="stylesheet" href="{% static 'admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+<link rel="stylesheet" href="{% static 'admin/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+<style>
+    .form-group.required label:after {
+        content: " *";
+        color: red;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1>Dynamic Packages</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">Packages</li>
+          </ol>
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+
+          <!-- View Package Modal -->
+          <div class="modal fade" id="viewPackageModal" tabindex="-1" role="dialog" aria-labelledby="viewPackageModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header bg-info">
+                  <h5 class="modal-title" id="viewPackageModalLabel">Package Details</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="font-weight-bold">Package Name:</label>
+                        <p class="form-control-static" id="viewName"></p>
+                      </div>
+                      <div class="form-group">
+                        <label class="font-weight-bold">Package Type:</label>
+                        <p class="form-control-static" id="viewPackageType"></p>
+                      </div>
+                      <div class="form-group">
+                        <label class="font-weight-bold">Car Model:</label>
+                        <p class="form-control-static" id="viewCarModel"></p>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="font-weight-bold">Base Amount:</label>
+                        <p class="form-control-static" id="viewBaseAmount"></p>
+                      </div>
+                      <div class="form-group">
+                        <label class="font-weight-bold">Discount Amount:</label>
+                        <p class="form-control-static" id="viewDiscountAmount"></p>
+                      </div>
+                      <div class="form-group">
+                        <label class="font-weight-bold">Reserve Amount:</label>
+                        <p class="form-control-static" id="viewReserveAmount"></p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="font-weight-bold">Description:</label>
+                    <div class="card card-body bg-light" id="viewDescription"></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="font-weight-bold">Created At:</label>
+                        <p class="form-control-static" id="viewCreatedAt"></p>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label class="font-weight-bold">Last Updated:</label>
+                        <p class="form-control-static" id="viewUpdatedAt"></p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add/Edit Package Modal -->
+          <div class="modal fade" id="packageFormModal" tabindex="-1" role="dialog" aria-labelledby="packageFormModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header bg-primary">
+                  <h5 class="modal-title" id="packageFormModalLabel">Add New Package</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <form id="packageForm" method="post" action="">
+                  {% csrf_token %}
+                  <input type="hidden" id="packageId" name="id" value="">
+                  <div class="modal-body">
+                    <div class="form-group required">
+                      <label for="packageName">Package Name</label>
+                      <input type="text" class="form-control" id="packageName" name="name" required>
+                    </div>
+                    <div class="form-group required">
+                      <label for="packageType">Package Type</label>
+                      <select class="form-control" id="packageType" name="package_type" required>
+                        <option value="">Select Package Type</option>
+                        {% for value, display in package_types %}
+                        <option value="{{ value }}">{{ display }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group required">
+                      <label for="carModel">Car Model</label>
+                      <select class="form-control" id="carModel" name="car_model" required>
+                        <option value="">Select Car Model</option>
+                        {% for car in car_models %}
+                        <option value="{{ car.id }}">{{ car.title }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="form-group required">
+                      <label for="packageDescription">Description</label>
+                      <textarea class="form-control" id="packageDescription" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="form-group required">
+                          <label for="baseAmount">Base Amount</label>
+                          <input type="number" step="0.01" class="form-control" id="baseAmount" name="baseAmount" required>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group required">
+                          <label for="discountAmount">Discount Amount</label>
+                          <input type="number" step="0.01" class="form-control" id="discountAmount" name="discountAmount" required>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group required">
+                          <label for="reserveAmount">Reserve Amount</label>
+                          <input type="number" step="0.01" class="form-control" id="reserveAmount" name="reserveAmount" required>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Package</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Delete Confirmation Modal -->
+          <div class="modal fade" id="deletePackageModal" tabindex="-1" role="dialog" aria-labelledby="deletePackageModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header bg-danger">
+                  <h5 class="modal-title" id="deletePackageModalLabel">Confirm Delete</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <p>Are you sure you want to delete this package? This action cannot be undone.</p>
+                  <p class="font-weight-bold" id="packageToDelete"></p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                  <button type="button" class="btn btn-danger" id="confirmDelete">Delete</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-6 col-sm-6">
+                  <button class="btn btn-sm btn-primary" id="addPackageBtn">
+                    <i class="fas fa-plus"></i> Add Package
+                  </button>
+                </div>
+                <div class="col-6 col-sm-6">
+                  <div class="input-group input-group-sm mb-2 float-right" style="width: 300px;">
+                    <input type="text" name="table_search" id="myInputTextField" class="form-control float-right" placeholder="Search...">
+                    <div class="input-group-append">
+                      <button type="submit" class="btn btn-default" disabled><i class="fas fa-search"></i></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <table id="package_tbl" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Package Type</th>
+                  <th>Car Model</th>
+                  <th>Base Amount</th>
+                  <th>Discount Amount</th>
+                  <th>Reserve Amount</th>
+                  <th>Created At</th>
+                  <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for package in packages %}
+                <tr>
+                  <td>{{ package.name }}</td>
+                  <td>{{ package.get_package_type_display }}</td>
+                  <td>{{ package.car_model }}</td>
+                  <td>{{ package.baseAmount }}</td>
+                  <td>{{ package.discountAmount }}</td>
+                  <td>{{ package.reserveAmount }}</td>
+                  <td>{{ package.created_at|date:"Y-m-d" }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-info view-package" 
+                            title="View"
+                            data-id="{{ package.id }}"
+                            data-name="{{ package.name }}"
+                            data-package-type="{{ package.get_package_type_display }}"
+                            data-car-model="{{ package.car_model }}"
+                            data-description="{{ package.description }}"
+                            data-base-amount="{{ package.baseAmount }}"
+                            data-discount-amount="{{ package.discountAmount }}"
+                            data-reserve-amount="{{ package.reserveAmount }}"
+                            data-created-at="{{ package.created_at|date:'Y-m-d H:i' }}"
+                            data-updated-at="{{ package.updated_at|date:'Y-m-d H:i' }}">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-warning edit-package" 
+                            title="Edit"
+                            data-id="{{ package.id }}"
+                            data-name="{{ package.name }}"
+                            data-package-type="{{ package.package_type }}"
+                            data-car-model="{{ package.car_model.id }}"
+                            data-description="{{ package.description }}"
+                            data-base-amount="{{ package.baseAmount }}"
+                            data-discount-amount="{{ package.discountAmount }}"
+                            data-reserve-amount="{{ package.reserveAmount }}">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger delete-package" 
+                            title="Delete"
+                            data-id="{{ package.id }}"
+                            data-name="{{ package.name }}">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+{% endblock %}
+
+{% block javascript %}
+<!-- DataTables -->
+<script src="{% static 'admin/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'admin/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'admin/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'admin/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'admin/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    // Initialize DataTable
+    oTable = $('#package_tbl').DataTable({
+        "bPaginate": true,
+        "bLengthChange": false,
+        "bFilter": true,
+        "bInfo": true,
+        "ordering": false,
+        "searching": true,
+        "bAutoWidth": false,
+        "dom": 'lrtip',
+        "responsive": true,
+        "oLanguage": { "sSearch": "", "searchPlaceholder": "Search..." },
+    });
+
+    $('#myInputTextField').keyup(function(){
+      oTable.search($(this).val()).draw();
+    });
+
+    // Add Package Button Click
+    $('#addPackageBtn').click(function() {
+        $('#packageForm')[0].reset();
+        $('#packageId').val('');
+        $('#packageFormModalLabel').text('Add New Package');
+        $('#packageForm').attr('action', "{% url 'package_add' %}");
+        $('#packageFormModal').modal('show');
+    });
+
+    // View Package Button Click
+    $('.view-package').click(function() {
+        $('#viewName').text($(this).data('name'));
+        $('#viewPackageType').text($(this).data('package-type'));
+        $('#viewCarModel').text($(this).data('car-model'));
+        $('#viewDescription').text($(this).data('description'));
+        $('#viewBaseAmount').text($(this).data('base-amount'));
+        $('#viewDiscountAmount').text($(this).data('discount-amount'));
+        $('#viewReserveAmount').text($(this).data('reserve-amount'));
+        $('#viewCreatedAt').text($(this).data('created-at'));
+        $('#viewUpdatedAt').text($(this).data('updated-at'));
+        $('#viewPackageModal').modal('show');
+    });
+
+    // Edit Package Button Click
+    $('.edit-package').click(function() {
+        var packageId = $(this).data('id');
+        $('#packageId').val(packageId);
+        $('#packageName').val($(this).data('name'));
+        $('#packageType').val($(this).data('package-type'));
+        $('#carModel').val($(this).data('car-model'));
+        $('#packageDescription').val($(this).data('description'));
+        $('#baseAmount').val($(this).data('base-amount'));
+        $('#discountAmount').val($(this).data('discount-amount'));
+        $('#reserveAmount').val($(this).data('reserve-amount'));
+        
+        $('#packageFormModalLabel').text('Edit Package');
+        $('#packageForm').attr('action', "{% url 'package_edit' 0 %}".replace('0', packageId));
+        $('#packageFormModal').modal('show');
+    });
+
+    // Delete Package Button Click
+    $('.delete-package').click(function() {
+        var packageId = $(this).data('id');
+        var packageName = $(this).data('name');
+        $('#packageToDelete').text(packageName);
+        $('#confirmDelete').data('id', packageId);
+        $('#deletePackageModal').modal('show');
+    });
+
+    // Confirm Delete Button Click
+    $('#confirmDelete').click(function() {
+        var packageId = $(this).data('id');
+        $.ajax({
+            url: "{% url 'package_delete' 0 %}".replace('0', packageId),
+            type: 'POST',
+            data: {
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if(response.success) {
+                    $('#deletePackageModal').modal('hide');
+                    location.reload();
+                } else {
+                    alert('Error deleting package: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('An error occurred: ' + error);
+            }
+        });
+    });
+
+    // Package Form Submission
+    $('#packageForm').submit(function(e) {
+        e.preventDefault();
+        var form = $(this);
+        var formData = form.serialize();
+        
+        $.ajax({
+            url: form.attr('action'),
+            type: 'POST',
+            data: formData,
+            success: function(response) {
+                if(response.success) {
+                    $('#packageFormModal').modal('hide');
+                    location.reload();
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('An error occurred: ' + error);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

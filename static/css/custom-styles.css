@@ -1,0 +1,365 @@
+    .btn.btn-outline-light {
+        border-color: #fff !important;
+    }
+
+    .title-top {
+        position: absolute;
+        top: 100%;
+        /* Adjust this value to control the distance from the top */
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        /* Ensure visibility over the image */
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        /* Optional for better contrast */
+        z-index: 10;
+        /* Ensures it stays above the background */
+    }
+
+    .bottom-row {
+        position: absolute;
+        bottom: 11%;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+    }
+
+    .modal.modal-fullscreen .modal-dialog {
+        transform: translateY(100%);
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .modal.modal-fullscreen.show .modal-dialog {
+        transform: translateY(0);
+    }
+
+    /* Add animation for modal */
+    .modal.fade .modal-dialog {
+        transform: translateY(100%);
+        transition: transform 0.4s ease-in-out;
+    }
+
+    .modal.show .modal-dialog {
+        transform: translateY(0);
+    }
+
+    .modal-title {
+        color: black !important;
+    }
+
+    .btn-close {
+        background-color: #e43f52 !important;
+        opacity: 1 !important;
+        color: #fff !important;
+    }
+
+    .text-dark {
+        color: #000 !important;
+    }
+
+    .accordion .accordion-item .accordion-button.collapsed {
+        color: #000 !important;
+    }
+
+    .accordion .accordion-item .accordion-button.collapsed:before {
+        color: #000 !important;
+    }
+
+    .accordion .accordion-item {
+        border: 0.5px solid gray !important;
+    }
+
+    .transition-all {
+        transition: all 0.5s ease-in-out;
+    }
+
+    #sideContent {
+        position: absolute;
+        top: 75px;
+        right: 0;
+        height: calc(100vh - 75px);
+        z-index: 10;
+        overflow-y: auto;
+        display: none;
+        background-color: #fff;
+        width: 25%;
+        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    #sideContent.open {
+        transform: translateX(0);
+        /* Slide into view */
+    }
+
+    /* For tablets and iPads (screen width between 768px and 1024px) */
+    @media (max-width: 1024px) and (min-width: 768px) {
+        #sideContent {
+            top: 75px;
+            /* Adjust top height for tablets */
+            width: 40%;
+            height: calc(100vh - 75px);
+            /* Adjust height */
+        }
+    }
+
+    /* For mobile devices (screen width less than 768px) */
+    @media (max-width: 767px) {
+        #sideContent {
+            top: 75px;
+            /* Adjust top height for mobiles */
+            width: 80%;
+            height: 100vh;
+            /* height: calc(100vh - 75px); */
+            /* Adjust height */
+        }
+    }
+
+    /* Additional fine-tuning for smaller phones or portrait modes */
+    @media (max-width: 480px) {
+        #sideContent {
+            top: 75px;
+            /* Further reduce top height for smaller phones */
+            width: 100%;
+            height: calc(100vh - 200px);
+        }
+    }
+
+    body.side-content-open {
+        overflow: hidden;
+        /* Prevent scrolling when side content is open */
+    }
+
+    /* Show sidebar with proper display */
+    #sideContent.show {
+        display: block !important;
+    }
+
+    .thumbnail-container {
+        margin-top: 15px;
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .thumbnail {
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: border-color 0.3s;
+    }
+
+    .thumbnail.active {
+        border-color: #007bff;
+    }
+
+    .thumbnail img {
+        height: 80px;
+        width: 80px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+
+    /* .carousel-inner img {
+      height: 200px;
+      object-fit: cover;
+    } */
+
+    .thumbnail img:hover {
+        border-color: black;
+    }
+
+    .hero {
+        width: 100%;
+        text-align: center;
+    }
+
+    .hero img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+    }
+
+    .specs {
+        display: flex;
+        justify-content: space-around;
+        text-align: left;
+        /* margin: 20px 0; */
+    }
+
+    .specs div {
+        flex: 1;
+        padding: 10px;
+        /* border-right: 1px solid #555; */
+    }
+
+    .specs div:last-child {
+        border-right: none;
+    }
+
+    .specs h2 {
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    .specs p {
+        font-size: 1rem;
+        margin: 0;
+        color: #bbb;
+    }
+
+    .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .actions button {
+        background: none;
+        border: 1px solid #fff;
+        padding: 15px;
+        font-size: 1rem;
+        text-align: left;
+        color: #fff;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background-color 0.3s;
+    }
+
+    .actions button:hover {
+        background-color: #333;
+    }
+
+    .actions button span {
+        font-size: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .hero h1 {
+            font-size: 1.5rem;
+        }
+
+        .hero p {
+            font-size: 1rem;
+        }
+
+        .specs {
+            flex-direction: column;
+        }
+
+        .specs div {
+            border-right: none;
+            /* border-bottom: 1px solid #555; */
+        }
+
+        .specs div:last-child {
+            border-bottom: none;
+        }
+    }
+
+    .wrapper {
+        cursor: help;
+        z-index: 1;
+        position: relative;
+        text-align: left;
+        width: 100%;
+        -webkit-transform: translateZ(0);
+        
+        /* webkit flicker fix */
+        -webkit-font-smoothing: antialiased;
+        /* webkit text rendering fix */
+    }
+
+    .wrapper .tooltip {
+       background-color:#fff; 
+        border: 1px solid rgb(59 130 246 / .5) !important;
+        top: 120%;
+        color: #000;
+        display: block;
+        /* left: -20px; */
+        margin-bottom: 15px;
+        opacity: 0;
+        padding: 10px;
+        pointer-events: none;
+        position: absolute;
+        width: 100%;
+        -webkit-transform: translateY(10px);
+        -moz-transform: translateY(10px);
+        -ms-transform: translateY(10px);
+        -o-transform: translateY(10px);
+        transform: translateY(10px);
+        -webkit-transition: all .25s ease-out;
+        -moz-transition: all .25s ease-out;
+        -ms-transition: all .25s ease-out;
+        -o-transition: all .25s ease-out;
+        transition: all .25s ease-out;
+        -webkit-box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.28);
+        -moz-box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.28);
+        -ms-box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.28);
+        -o-box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.28);
+        box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.28);
+    }
+
+    /* This bridges the gap so you can mouse into the tooltip without it disappearing */
+    .wrapper .tooltip:before {
+        bottom: -20px;
+        content: " ";
+        display: block;
+        height: 20px;
+        left: 0;
+        position: absolute;
+        width: 100%;
+    }
+
+    /* CSS Triangles - see Trevor's post */
+    /* .wrapper .tooltip:after {
+border-left: solid transparent 10px;
+border-right: solid transparent 10px;
+border-top: solid #1496bb 10px;
+top: -11px;
+content: " ";
+height: 0;
+left: 2%;
+margin-left: -13px;
+position: absolute;
+width: 0;
+} */
+
+    .wrapper:hover .tooltip {
+        opacity: 1;
+        pointer-events: auto;
+        -webkit-transform: translateY(0px);
+        -moz-transform: translateY(0px);
+        -ms-transform: translateY(0px);
+        -o-transform: translateY(0px);
+        transform: translateY(0px);
+    }
+
+    /* IE can just show/hide with no transition */
+    .lte8 .wrapper .tooltip {
+        display: none;
+    }
+
+    .lte8 .wrapper:hover .tooltip {
+        display: block;
+    }
+
+    .input-group-prepend {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+}
+
+.input-group .form-control {
+  padding-left: 50px; /* Adjust spacing to accommodate the flag */
+}
+.input-group-text {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+}

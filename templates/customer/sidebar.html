@@ -1,0 +1,74 @@
+{% load static %}
+<div class="sidebar sticky-bar p-4 rounded shadow">
+    <div class="widget mt-4">
+        <ul class="list-unstyled sidebar-nav mb-0" id="navmenu-nav">
+            <li class="navbar-item account-menu px-0 {% if request.resolver_match.url_name == 'my_vehicles' %}active{% endif %}">
+                <a href="{% url 'my_vehicles' %}" class="d-flex rounded shadow align-items-center py-2 px-4 navbar-link">
+                    <span class="h4 mb-0"><i class="uil uil-dashboard"></i></span>
+                    <h6 class="mb-0 ms-2">My Vehicles</h6>
+                </a>
+            </li>
+
+            {% if request.user.role == 'customer' %}
+            <li class="navbar-item account-menu px-0 {% if request.resolver_match.url_name == 'my_configurations' %}active{% endif %}">
+                <a href="{% url 'my_configurations' %}" class="d-flex rounded shadow align-items-center py-2 px-4 navbar-link">
+                    <span class="h4 mb-0"><i class="uil uil-document-info"></i></span>
+                    <h6 class="mb-0 ms-2">Saved Configurations</h6>
+                </a>
+            </li>
+            {% comment %} <li class="navbar-item account-menu px-0 {% if request.resolver_match.url_name == 'my_package_bookings' %}active{% endif %}">
+                <a href="{% url 'my_package_bookings' %}" class="d-flex rounded shadow align-items-center py-2 px-4 navbar-link">
+                    <span class="h4 mb-0"><i class="uil uil-document-info"></i></span>
+                    <h6 class="mb-0 ms-2">Reservations</h6>
+                </a>
+            </li> {% endcomment %}
+            {% endif %}
+            <li class="navbar-item account-menu px-0 mt-2 {% if request.resolver_match.url_name == 'profile_settings' %}active{% endif %}">
+                <a href="{% url 'profile_settings' %}" class="navbar-link d-flex rounded shadow align-items-center py-2 px-4">
+                    <span class="h4 mb-0"><i class="uil uil-user"></i></span>
+                    <h6 class="mb-0 ms-2">Profile Settings</h6>
+                </a>
+            </li>
+            
+            <li class="navbar-item account-menu px-0 mt-2 {% if request.resolver_match.url_name == 'payment_history' %}active{% endif %}">
+                <a href="{% url 'payment_history' %}" class="navbar-link d-flex rounded shadow align-items-center py-2 px-4">
+                    <span class="h4 mb-0"><i class="uil uil-transaction"></i></span>
+                    <h6 class="mb-0 ms-2">Payments</h6>
+                </a>
+            </li>
+            
+            <li class="navbar-item account-menu px-0 mt-2 {% if request.resolver_match.url_name == 'customer_message' %}active{% endif %}">
+                <a href="{% url 'customer_message' %}" class="navbar-link d-flex rounded shadow align-items-center py-2 px-4">
+                    <span class="h4 mb-0"><i class="uil uil-comment"></i></span>
+                    <h6 class="mb-0 ms-2">Chat Support</h6>
+                </a>
+            </li>
+
+            {% comment %} <li class="navbar-item account-menu px-0 mt-2 {% if request.resolver_match.url_name == 'customer_community_message' %}active{% endif %}">
+                <a href="{% url 'customer_community_message' %}" class="navbar-link d-flex rounded shadow align-items-center py-2 px-4">
+                    <span class="h4 mb-0"><i class="uil uil-envelope-star"></i></span>
+                    <h6 class="mb-0 ms-2">Community Chats</h6>
+                </a>
+            </li> {% endcomment %}
+            
+            
+            
+            <li class="navbar-item account-menu px-0 mt-2">
+                <a href="{% url 'logout' %}" class="navbar-link d-flex rounded shadow align-items-center py-2 px-4">
+                    <span class="h4 mb-0"><i class="uil uil-lock"></i></span>
+                    <h6 class="mb-0 ms-2">Logout</h6>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="widget mt-4 pt-2">
+        <h5 class="widget-title">Follow me :</h5>
+        <ul class="list-unstyled social-icon social mb-0 mt-4">
+            <li class="list-inline-item mb-0"><a href="http://facebook.com/genzsportscars" class="rounded" target="_blank"><i data-feather="facebook" class="fea icon-sm fea-social"></i></a></li>
+                <li class="list-inline-item mb-0"><a href="http://instagram.com/genz40_official" class="rounded" target="_blank"><i data-feather="instagram" class="fea icon-sm fea-social"></i></a></li>
+                <!-- <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded"><i data-feather="twitter" class="fea icon-sm fea-social"></i></a></li>
+                <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded"><i data-feather="linkedin" class="fea icon-sm fea-social"></i></a></li> -->
+        </ul><!--end icon-->
+    </div>
+</div>

@@ -1,0 +1,1353 @@
+{% extends "public/layout/base.html" %}
+{% load static %}
+{% load frontend_custom_filters %}
+
+{% block header %}
+<style>
+/* ----------------------------------------
+   GLOBAL & REUSABLE STYLES
+   ---------------------------------------- */
+
+/* Container defaults */
+.container, .container-fluid-index {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+.container-fluid-index {
+  padding-left: 100px !important;
+  padding-right: 100px !important;
+}
+
+/* Hero section spacing on larger devices */
+@media (min-width: 992px) {
+  .hero-section {
+    margin-bottom: 100px; /* extra bottom spacing on desktop */
+  }
+}
+
+/* For mobile (width < 768px) we let content flow naturally */
+@media (max-width: 767.98px) {
+  .hero-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 40px; /* optional smaller spacing */
+  }
+  /* Example: adjusts .d-block.d-md-none images on mobile */
+  .d-block.d-md-none img {
+    width: 100% !important;
+    max-height: 80px !important;
+    object-fit: cover;
+  }
+}
+
+/* Desktop hidden / Mobile visible sections */
+.mobile-section {
+  display: none;
+}
+@media (max-width: 767.98px) {
+  .mobile-section {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    width: 100%;
+    padding: 20px;
+  }
+}
+
+/* Desktop visible / Mobile hidden sections 
+   (controlled by .d-none.d-md-block and .d-block.d-md-none classes)
+*/
+.desktop-section {
+  /* By default, displayed on md+ screens; hidden for mobile. */
+}
+
+/*
+  .hero-image container style
+  Now includes min-height so the background image 
+  is visible on iPads and desktops.
+*/
+.hero-image {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px; /* ensures the background has space to show */
+}
+.hero-image img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+/* For your custom image container (mobile usage) */
+.image-container {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.image-container img {
+  width: 100%;
+  height: auto;
+  min-height: 180px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+/* iPhone 14 Pro Max fix */
+@media screen and (max-width: 430px) {
+  .image-container img {
+    min-height: 200px;
+  }
+}
+
+/* 
+   WHITE BOX 
+   - fluid width on all devices
+   - margin-top changes by breakpoint
+*/
+.white-box {
+  width: 100%; /* fluid width for all screens */
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column; /* for mobile in general */
+  padding: 20px;
+  margin-top: 10px; /* base spacing */
+}
+.white-box .title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #000;
+  margin-bottom: 5px;
+}
+.white-box .discount {
+  font-size: 1rem;
+  color: #777;
+  text-decoration: line-through;
+}
+.white-box .description {
+  font-size: 1.25rem;
+  color: #000000;
+}
+/* Desktop-specific .white-box adjustments */
+@media (min-width: 768px) {
+  .white-box {
+    flex-direction: row; /* side-by-side layout on desktop */
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px; /* increased top margin for desktop */
+  }
+}
+
+/* Common form-control styling (community form, etc.) */
+.form-control {
+  color: #fff !important;
+  padding: .675rem .75rem;
+  font-size: 16px !important;
+  background-color: transparent !important;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+}
+.form-icon .icons {
+  top: 16px !important;
+  color: #fff;
+}
+
+/* Buttons and input fields for "GET STARTED" forms */
+.custom-input {
+  width: 250px;
+  height: 50px;
+  padding: 10px 15px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  color: #000;
+  background-color: #fff;
+  box-shadow: none;
+}
+.custom-input::placeholder {
+  color: #ccc;
+  font-size: 16px;
+}
+.custom-button {
+  height: 50px;
+  background-color: #28a745;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border: none;
+  padding: 0 20px;
+  margin-left: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  text-transform: uppercase;
+}
+.custom-button:hover {
+  background-color: #218838;
+}
+
+/* Subscribe form */
+.subcribe-form form {
+  max-width: 450px;
+  margin: 0;
+}
+
+/* Additional small utilities */
+.title-heading .heading.heading-lg {
+  font-size: 24px !important;
+}
+.title-font {
+  font-size: 25px !important;
+}
+a.text-light:focus,
+a.text-light:hover {
+  color: #000 !important;
+}
+</style>
+{% endblock header %}
+
+{% block content %}
+<!-- Section 1 -->
+<!-- Desktop Section (Hidden on Mobile) -->
+<div class="desktop-section d-none d-md-block">
+    <section class="hero-section position-relative mt-5">
+        <div class="container text-center pt-4 pb-0">
+            <h5 class="heading text-success fw-bold text-uppercase">{{ section_1.tag }}</h5>
+            <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">{{ section_1.title }}</h4>
+        </div>
+
+        <!-- The container now has a min-height so the background image 
+             can show up on iPad/desktop -->
+        <div class="hero-image position-relative"
+             style="background: url('{{ section_1.web_image.url }}') center center/contain no-repeat;">
+        </div>
+
+        <div class="container position-relative mb-3">
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                    <div class="white-box">
+                        <div class="text-left">
+                            <!-- <p class="title">
+                                Builder Package Starting at 
+                                <span class="discount" style="font-size: 0.85rem;">
+                                    {{ section_1.title_data }}
+                                </span>
+                                {{ section_1.subtitle }}
+                            </p> -->
+                            <p class="description">Lock your exclusive discount by signing up today.</p>
+
+                            {% for item in nav_items %}
+                                {% if forloop.first %}
+                                <div class="row align-items-center">
+                                    <div class="col-auto">
+                                        <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                                           class="text-primary fw-bold text-uppercase">
+                                            Learn More
+                                        </a>
+                                    </div>
+                                    <div class="col-auto">
+                                        <span class="border-start border-2 mx-1 mt-1 d-inline-block" style="height: 20px;"></span>
+                                    </div>
+                                    <div class="col-auto">
+                                        <a href="{% url 'tech_specs' item.slug %}" 
+                                           class="text-primary fw-bold text-uppercase">
+                                            Technical Specs
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <!-- "Get Started" Form -->
+                        <form method="POST">
+                            <div style="display: flex; align-items: center;">
+                                <input name="email" id="email-desktop-first" type="email"
+                                       class="custom-input" placeholder="Email" required>
+                                <button type="submit" class="custom-button" id="getStartedBtnFirst">
+                                    GET STARTED
+                                </button>
+                            </div>
+                        </form>
+                    </div><!-- white-box end -->
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Mobile Section (Hidden on Desktop) -->
+<div class="mobile-section d-block d-md-none pt-4">
+    <div class="container text-center pt-4">
+        <h5 class="heading text-success fw-bold text-uppercase pt-4">
+            {{ section_1.tag }}
+        </h5>
+        <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">
+            {{ section_1.title }}
+        </h4>
+    </div>
+
+    <div class="image-container">
+        <img src="{{ section_1.image.url }}" alt="Mobile Image">
+    </div>
+
+    <div class="white-box text-center">
+        <!-- <p class="fw-bold text-black mb-1"
+           style="font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            Builder Package Starting at
+            <span class="text-decoration-line-through text-muted" style="font-size: 0.75rem;">
+                {{ section_1.title_data }}
+            </span>
+            {{ section_1.subtitle }}
+        </p> -->
+        <p class="description" style="font-size: 0.85rem;">
+            Lock your exclusive discount by signing up today.
+        </p>
+
+        <form class="w-100">
+            <div class="md:d-grid gap-2 w-100">
+                <input type="email" id="email-mobile-mfirst" name="email" class="form-control"
+                       required placeholder="Email Address"
+                       style="color: #000 !important; font-size: 1rem;
+                              height: 50px; border: 1px solid #ccc; text-align: left;">
+
+                {% for item in nav_items %}
+                {% if forloop.first %}
+
+                <button id="getStartedBtnMfirst" type="submit" class="btn btn-success w-100 mt-2 mb-3"
+                        style="height: 50px; font-size: 1rem; font-weight: bold;
+                               background-color: #28a745; border: none;">
+                    GET STARTED
+                </button>
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                           class="text-primary text-uppercase">
+                            Learn More
+                        </a>
+                    </div>
+                    <div class="col-auto">
+                        <span class="border-start border-2 mx-1 mt-1 d-inline-block" style="height: 20px;"></span>
+                    </div>
+                    <div class="col-auto">
+                        <a href="{% url 'tech_specs' item.slug %}" 
+                           class="text-primary text-uppercase">
+                            Technical Specs
+                        </a>
+                    </div>
+                </div>
+
+                {% endif %}
+                {% endfor %}
+            </div>
+        </form>
+    </div>
+
+    <!-- {% for item in nav_items %}
+    {% if forloop.first %}
+    <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+   class="fw-bold text-uppercase d-block text-center mt-2"
+   style="color: #2ECA8B; text-decoration: none; font-size: 0.85rem; transition: all 0.3s ease-in-out;"
+   onmouseover="this.style.color='#28a745'; this.style.textDecoration='underline';" 
+   onmouseout="this.style.color='#2ECA8B'; this.style.textDecoration='none';">
+   Learn More
+</a>
+
+    {% endif %}
+    {% endfor %} -->
+</div>
+
+<!-- Section 2 -->
+<!-- Desktop Section (Hidden on Mobile) -->
+<div class="desktop-section d-none d-md-block">
+    <section class="hero-section position-relative">
+        <div class="container text-center pt-2 pb-0">
+            <h5 class="heading text-success fw-bold text-uppercase">{{ section_2.tag }}</h5>
+            <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">
+                {{ section_2.title }}
+            </h4>
+        </div>
+
+        <div class="hero-image position-relative"
+             style="background: url('{{ section_2.web_image.url }}') center center/contain no-repeat;">
+        </div>
+
+        <div class="container position-relative mb-3">
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                    <div class="white-box">
+                        <div class="text-left">
+                            <!-- <p class="title">
+                                Builder Package Starting at
+                                <span class="text-decoration-line-through text-muted"
+                                      style="font-size: 0.75rem;">
+                                    {{ section_2.title_data }}
+                                </span>
+                                {{ section_2.subtitle }}
+                            </p> -->
+                            <p class="description">Lock your exclusive discount by signing up today.</p>
+
+                            {% for item in nav_items %}
+                            {% if forloop.counter == 2 %}
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                                       class="text-primary fw-bold text-uppercase">
+                                        Learn More
+                                    </a>
+                                </div>
+                                <div class="col-auto">
+                                    <span class="border-start border-2 mx-1 mt-1 d-inline-block" style="height: 20px;"></span>
+                                </div>
+                                <div class="col-auto">
+                                    <a href="{% url 'tech_specs' item.slug %}" 
+                                       class="text-primary fw-bold text-uppercase">
+                                        Technical Specs
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                               class="text-primary fw-bold text-uppercase d-block mt-1"
+                               style="text-decoration: none; font-size: 1rem; transition: all 0.3s ease-in-out;"
+                               onmouseover="this.style.textDecoration='underline';"
+                               onmouseout="this.style.textDecoration='none';">
+                                Learn More
+                            </a> -->
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div style="display: flex; align-items: center;">
+                                <input name="email" id="email-desktop-second" type="email"
+                                       class="custom-input form-control p-2 border rounded" 
+                                       placeholder="Email" required>
+                                
+                                {% for item in nav_items %}
+                                    {% if forloop.counter == 2 %}
+                                        <button type="submit" id="getStartedBtnSecond" class="custom-button btn btn-success">
+                                            GET STARTED
+                                        </button>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </form>
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Mobile Section (Hidden on Desktop) -->
+<div class="mobile-section d-block d-md-none">
+    <div class="container text-center">
+        <h5 class="heading text-success fw-bold text-uppercase">{{ section_2.tag }}</h5>
+        <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">
+            {{ section_2.title }}
+        </h4>
+    </div>
+
+    <div class="image-container">
+        <img src="{{ section_2.image.url }}" alt="Mobile Image">
+    </div>
+
+    <div class="white-box">
+        <!-- <p class="fw-bold text-black mb-1"
+           style="font-size: 1rem; white-space: nowrap;
+                  overflow: hidden; text-overflow: ellipsis;">
+            Builder Package Starting at
+            <span class="text-decoration-line-through text-muted"
+                  style="font-size: 0.75rem;">
+                {{ section_2.title_data }}
+            </span>
+            {{ section_2.subtitle }}
+        </p> -->
+        <p class="description" style="font-size: 0.85rem;">
+            Lock your exclusive discount by signing up today.
+        </p>
+
+        <form class="w-100">
+            <div class="md:d-grid gap-2 w-100">
+                <input type="email" id="email-mobile-msecond" name="email"
+                       class="form-control" required placeholder="Email Address"
+                       style="color: #000 !important; font-size: 1rem;
+                              height: 50px; border: 1px solid #ccc; text-align: left;">
+
+                {% for item in nav_items %}
+                {% if forloop.counter == 2 %}
+                <button id="getStartedBtnMsecond" type="submit"
+                        class="btn btn-success w-100 mt-2 mb-3"
+                        style="height: 50px; font-size: 1rem; font-weight: bold;
+                               background-color: #28a745; border: none;">
+                    GET STARTED
+                </button>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </form>
+
+        {% for item in nav_items %}
+    {% if forloop.counter == 2 %}
+    <div class="row align-items-center">
+        <div class="col-auto">
+            <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+               class="text-primary text-uppercase">
+                Learn More
+            </a>
+        </div>
+        <div class="col-auto">
+            <span class="border-start border-2 mx-1 mt-1 d-inline-block" style="height: 20px;"></span>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'tech_specs' item.slug %}" 
+               class="text-primary text-uppercase">
+                Technical Specs
+            </a>
+        </div>
+    </div>
+
+    {% endif %}
+    {% endfor %}
+    </div>
+
+    
+</div>
+
+<!-- Section 3 -->
+<!-- Desktop Section (Hidden on Mobile) -->
+<div class="desktop-section d-none d-md-block">
+    <section class="hero-section position-relative">
+        <div class="container text-center pt-2 pb-0">
+            <h5 class="heading text-success fw-bold text-uppercase">{{ section_3.tag }}</h5>
+            <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">
+                {{ section_3.title }}
+            </h4>
+        </div>
+
+        <div class="hero-image position-relative"
+             style="background: url('{{ section_3.web_image.url }}') center center/contain no-repeat;">
+        </div>
+
+        <div class="container position-relative mb-3">
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                    <div class="white-box">
+                        <div class="text-left">
+                            <!-- <p class="title">
+                                Builder Package Starting at
+                                <span class="discount" style="font-size: 0.85rem;">
+                                    {{ section_3.title_data }}
+                                </span>
+                                {{ section_3.subtitle }}
+                            </p> -->
+                            <p class="description">
+                                Lock your exclusive discount by signing up today.
+                            </p>
+
+                            {% for item in nav_items %}
+                            {% if forloop.counter == 3 %}
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                                       class="text-primary fw-bold text-uppercase">
+                                        Learn More
+                                    </a>
+                                </div>
+                                <div class="col-auto">
+                                    <span class="border-start border-2 mx-1 mt-1 d-inline-block" style="height: 20px;"></span>
+                                </div>
+                                <div class="col-auto">
+                                    <a href="{% url 'tech_specs' item.slug %}" 
+                                       class="text-primary fw-bold text-uppercase">
+                                        Technical Specs
+                                    </a>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+
+                        <!-- "Get Started" Form -->
+                        <form method="POST">
+                            <div style="display: flex; align-items: center;">
+                                <input name="email" id="email-desktop-third" type="email"
+                                       class="custom-input" placeholder="Email" required>
+                                <button type="submit" class="custom-button" id="getStartedBtnThird">
+                                    GET STARTED
+                                </button>
+                            </div>
+                        </form>
+                    </div><!-- white-box end -->
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Mobile Section (Hidden on Desktop) -->
+<div class="mobile-section d-block d-md-none">
+    <div class="container text-center">
+        <h5 class="heading text-success fw-bold text-uppercase">
+            {{ section_3.tag }}
+        </h5>
+        <h4 class="heading heading-lg mb-1 fw-bold text-white title-dark text-uppercase">
+            {{ section_3.title }}
+        </h4>
+    </div>
+
+    <div class="image-container">
+        <img src="{{ section_3.image.url }}" alt="Mobile Image">
+    </div>
+
+    <div class="white-box">
+        <!-- <p class="fw-bold text-black mb-1"
+           style="font-size: 1rem; white-space: nowrap;
+                  overflow: hidden; text-overflow: ellipsis;">
+            Builder Package Starting at
+            <span class="text-decoration-line-through text-muted"
+                  style="font-size: 0.75rem;">
+                {{ section_3.title_data }}
+            </span>
+            {{ section_3.subtitle }}
+        </p> -->
+        <p class="description" style="font-size: 0.85rem;">
+            Lock your exclusive discount by signing up today.
+        </p>
+
+        <form class="w-100">
+            <div class="md:d-grid gap-2 w-100">
+                <input type="email" id="email-mobile-mthird" name="email"
+                       class="form-control" required placeholder="Email Address"
+                       style="color: #000 !important; font-size: 1rem;
+                              height: 50px; border: 1px solid #ccc; text-align: left;">
+
+                {% for item in nav_items %}
+                {% if forloop.counter == 3 %}
+                <button id="getStartedBtnMthird" type="submit"
+                        class="btn btn-success w-100 mt-2 mb-3"
+                        style="height: 50px; font-size: 1rem; font-weight: bold;
+                               background-color: #28a745; border: none;">
+                    GET STARTED
+                </button>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </form>
+
+        {% for item in nav_items %}
+        {% if forloop.counter == 3 %}
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <a href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                   class="text-primary text-uppercase">
+                    Learn More
+                </a>
+            </div>
+            <div class="col-auto">
+                <span class="border-start border-2 mx-1 mt-1 d-inline-block" style="height: 20px;"></span>
+            </div>
+            <div class="col-auto">
+                <a href="{% url 'tech_specs' item.slug %}" 
+                   class="text-primary text-uppercase">
+                    Technical Specs
+                </a>
+            </div>
+        </div>
+    
+        {% endif %}
+        {% endfor %}
+    </div>
+
+   
+</div>
+
+<!-- Community Form (Desktop) -->
+<section class="section bg-black d-none d-lg-block">
+    <div class="container-fluid">
+        <div class="row align-items-start">
+            <div class="col-md-1"></div>
+            <div class="col-md-4">
+                <div class="section-title me-lg-4">
+                    <h4 class="title title-light mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>
+                    <h4 class="title mb-4 text-center d-lg-none">JOIN GEN-Z COMMUNITY</h4>
+                    <p class="text-white para-dark para-desc mb-0">
+                        Interested in GEN-Z 40? Join the most sort out community of
+                        Builders & Enthusiats. Ask questions, and share your experience.
+                    </p>
+                    <div class="mt-4 pt-2">
+                        <h6 class="mb-4">WHAT ELSE YOU GET?</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Exclusive Offers
+                            </li>
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Build & Technical Support
+                            </li>
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Live Chat with Member & Group Experts
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-4">
+                <div class="card rounded shadow border-0 bg-black">
+                    <div class="card-body pt-0">
+                        <div class="section-title">
+                            <h4 class="title title-light text-center">BECOME A MEMBER</h4>
+                            <form method="post" id="community-form" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" value="{{ random_password }}" name="password1">
+                                <input type="hidden" value="{{ random_password }}" name="password2">
+                                <input type="hidden" value="{{ country_code }}" name="country">
+                                <input type="hidden" value="customer" name="role">
+                                <div class="row mt-4">
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label text-white text-uppercase">
+                                                First Name <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="user"
+                                                   class="fea icon-sm icons text-white"></i>
+                                                <input name="first_name" id="first_name" type="text"
+                                                       class="form-control ps-5 bg-transparent text-white"
+                                                       placeholder="First Name" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label text-white text-uppercase">
+                                                Last Name <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="user" class="fea icon-sm icons"></i>
+                                                <input name="last_name" id="last_name" type="text"
+                                                       class="form-control ps-5" placeholder="Last Name" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label text-white text-uppercase">
+                                                Email <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="mail" class="fea icon-sm icons"></i>
+                                                <input type="email" id="email" class="form-control ps-5"
+                                                       placeholder="Email" name="email" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label text-white text-uppercase">
+                                                Phone Number
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <img class="fea icon-sm icons"
+                                                     src="{{ country_flag_url }}"
+                                                     alt="Country Flag"
+                                                     style="width: 28px; height: 28px; top: 10px !important; left: 12px;">
+                                                <input name="phone_number" id="phone_number" type="text"
+                                                       class="form-control ps-5" placeholder="Phone Number">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-2">
+                                        <label class="form-check-label text-white">
+                                            By continuing, you agree to our
+                                            <a href="{% url 'privacy_policy' %}" target="_blank"
+                                               class="text-primary">
+                                                Privacy Policy
+                                            </a>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-12 mb-0">
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-success">
+                                                Join now
+                                                <span class="spinner-border spinner-border-sm" id="pro"
+                                                      role="status" aria-hidden="true"
+                                                      style="display: none;"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div><!-- row end -->
+                            </form>
+                        </div><!-- section-title end -->
+                    </div><!-- card-body end -->
+                </div><!-- card end -->
+            </div>
+        </div><!-- row end -->
+    </div><!-- container-fluid end -->
+</section>
+
+<!-- Community Form (Mobile) -->
+<section class="section bg-black d-lg-none">
+    <div class="container">
+        <div class="row align-items-start">
+            <div class="col-md-6">
+                <div class="section-title me-lg-4">
+                    <h4 class="title title-dark mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>
+                    <h4 class="title title-dark mb-4 text-center d-lg-none">JOIN GEN-Z COMMUNITY</h4>
+                    <p class="text-white para-dark para-desc mb-0">
+                        Interested in GEN-Z 40? Join the most sort out community of
+                        Builders & Enthusiats. Ask questions, and share your experience.
+                    </p>
+                    <div class="mt-4 pt-2">
+                        <h6 class="title-dark mb-4">WHAT ELSE YOU GET?</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Exclusive Offers
+                            </li>
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Build & Technical Support
+                            </li>
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Live Chat with Member & Group Experts
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mt-4">
+                <div class="card rounded shadow border-0 bg-black">
+                    <div class="card-body p-0">
+                        <form method="post" id="community-form-mobile" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" value="{{ random_password }}" name="password1">
+                            <input type="hidden" value="{{ random_password }}" name="password2">
+                            <input type="hidden" value="{{ country_code }}" name="country">
+                            <input type="hidden" value="customer" name="role">
+                            <div class="row mt-4">
+                                <div class="col-md-12 ">
+                                    <div class="mb-3">
+                                        <label class="form-label text-white text-uppercase">
+                                            First Name <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="user" class="fea icon-sm icons text-white"></i>
+                                            <input name="first_name" id="first_name" type="text"
+                                                   class="ps-5 bg-transparent text-white"
+                                                   style="width: 100%; padding: 12px; font-size: 14px;
+                                                          border: 1px solid #ccc; border-radius: 5px;
+                                                          outline: none; margin-bottom: 10px;"
+                                                   placeholder="First Name" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label text-white text-uppercase">
+                                            Last Name <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="user" class="fea icon-sm icons"></i>
+                                            <input name="last_name" id="last_name" type="text"
+                                                   class="ps-5 text-white"
+                                                   style="width: 100%; padding: 12px; font-size: 14px;
+                                                          border: 1px solid #ccc; border-radius: 5px;
+                                                          outline: none; margin-bottom: 10px;
+                                                          background-color: black;"
+                                                   placeholder="Last Name" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label text-white text-uppercase">
+                                            Email <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="mail" class="fea icon-sm icons"></i>
+                                            <input type="email" id="email" class="ps-5 text-white"
+                                                   placeholder="Email"
+                                                   style="width: 100%; padding: 12px; font-size: 14px;
+                                                          border: 1px solid #ccc; border-radius: 5px;
+                                                          outline: none; margin-bottom: 10px;
+                                                          background-color: black;"
+                                                   name="email" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label text-white text-uppercase">
+                                            Phone Number
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <img class="fea icon-sm icons"
+                                                 src="{{ country_flag_url }}"
+                                                 alt="Country Flag"
+                                                 style="width: 28px; height: 28px; top: 10px !important; left: 12px;">
+                                            <input name="phone_number" id="phone_number_mobile" type="text"
+                                                   class="ps-5 text-white"
+                                                   placeholder="Phone Number"
+                                                   style="width: 100%; padding: 12px; font-size: 14px;
+                                                          border: 1px solid #ccc; border-radius: 5px;
+                                                          outline: none; margin-bottom: 10px;
+                                                          background-color: black;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mb-2">
+                                    <label class="form-check-label text-white">
+                                        By continuing, you agree to our
+                                        <a href="{% url 'privacy_policy' %}" target="_blank"
+                                           class="text-primary">
+                                            Privacy Policy
+                                        </a>
+                                    </label>
+                                </div>
+                                <div class="col-md-12 mb-0">
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-success">
+                                            Join now
+                                            <span class="spinner-border spinner-border-sm" id="pro_mob"
+                                                  role="status" aria-hidden="true"
+                                                  style="display: none;"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div><!-- row end -->
+                        </form>
+                    </div><!-- card-body end -->
+                </div><!-- card end -->
+            </div>
+        </div><!-- row end -->
+    </div><!-- container end -->
+</section>
+
+<!-- Subscribe (Desktop) -->
+<section class="section bg-black d-none d-lg-block"
+         style="border-top: 0.9px solid #cacaca;">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-md-1"></div>
+            <div class="col-lg-4">
+                <div class="section-title mb-4 pb-2">
+                    <h4 class="title text-white title-dark mb-4 text-uppercase">
+                        Be a part of our journey
+                    </h4>
+                    <h5 class="text-white para-dark">
+                        Get all the relevant news and updates about
+                        <span class="text-success fw-bold logo-font">GEN-Z</span>
+                        Vehicles delivered to your inbox.
+                    </h5>
+                </div>
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-4 mt-4">
+                <div class="subcribe-form">
+                    <form method="POST" id="subscribe-form">
+                        {% csrf_token %}
+                        <input name="email" id="email" type="email"
+                               class="border shadow rounded-pill text-dark"
+                               placeholder="Your email :" required>
+                        <button type="submit" class="btn btn-pills btn-success"
+                                id="newssubscribebtn">
+                            Subscribe
+                            <span class="spinner-border spinner-border-sm" id="pro1"
+                                  role="status" aria-hidden="true"
+                                  style="display: none;"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div><!-- row end -->
+    </div><!-- container-fluid end -->
+</section>
+
+<!-- Subscribe (Mobile) -->
+<section class="section bg-black d-lg-none"
+         style="border-top: 0.9px solid #cacaca;">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="section-title mb-4 pb-2">
+                    <h4 class="title text-white title-dark mb-4 text-uppercase">
+                        Be a part of our journey
+                    </h4>
+                    <h5 class="text-white para-dark">
+                        Get all the relevant news and updates about
+                        <span class="text-success fw-bold logo-font">GEN-Z</span>
+                        Vehicles delivered to your inbox.
+                    </h5>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-8 mt-4">
+                <div class="subcribe-form">
+                    <form method="POST" id="subscribe-form-mobile">
+                        {% csrf_token %}
+                        <input name="email" id="email" type="email"
+                               class="rounded-pill shadow"
+                               placeholder="Your email :" required
+                               style="background-color: #fff !important;">
+                        <button type="submit" class="btn btn-pills btn-success"
+                                style="width:30%" id="newssubscribebtn">
+                            Subscribe
+                            <span class="spinner-border spinner-border-sm" id="pro1"
+                                  role="status" aria-hidden="true"
+                                  style="display: none;"></span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div><!-- row end -->
+    </div><!-- container end -->
+</section>
+
+{% endblock content %}
+
+{% block script %}
+
+<script>
+    document.getElementById("phone_number").addEventListener("input", function (e) {
+        let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+    
+        if (value.length > 10) value = value.substring(0, 10); // Limit to 10 digits
+    
+        let formattedValue = value;
+    
+        if (value.length > 6) {
+            formattedValue = `(${value.substring(0, 3)}) ${value.substring(3, 6)}-${value.substring(6)}`;
+        } else if (value.length > 3) {
+            formattedValue = `(${value.substring(0, 3)}) ${value.substring(3)}`;
+        } else if (value.length > 0) {
+            formattedValue = `(${value}`;
+        }
+    
+        e.target.value = formattedValue;
+    });
+</script>
+<script>
+    document.getElementById("phone_number_mobile").addEventListener("input", function (e) {
+        let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+    
+        if (value.length > 10) value = value.substring(0, 10); // Limit to 10 digits
+    
+        let formattedValue = value;
+    
+        if (value.length > 6) {
+            formattedValue = `(${value.substring(0, 3)}) ${value.substring(3, 6)}-${value.substring(6)}`;
+        } else if (value.length > 3) {
+            formattedValue = `(${value.substring(0, 3)}) ${value.substring(3)}`;
+        } else if (value.length > 0) {
+            formattedValue = `(${value}`;
+        }
+    
+        e.target.value = formattedValue;
+    });
+</script>
+<!-- Ajax request for community form -->
+
+<script>
+    $("#community-form").submit(function (e) {
+        e.preventDefault();
+        var data = new FormData($('#community-form').get(0));
+        $('#pro').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'customer_register_community' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response.message);
+                } else {
+                    toastr.error(response.message);
+                }
+                $('#community-form')[0].reset();
+                $('#pro').hide();
+            },
+            error: function (response) {
+                alert(response["error"]);
+                $('#pro').hide();
+            }
+        });
+    });
+</script>
+<script>
+    $("#community-form-mobile").submit(function (e) {
+        e.preventDefault();
+        var data = new FormData($('#community-form-mobile').get(0));
+        $('#pro_mob').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'customer_register_community' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response.message);
+                } else {
+                    toastr.error(response.message);
+                }
+                $('#community-form-mobile')[0].reset();
+                $('#pro_mob').hide();
+            },
+            error: function (response) {
+                alert(response["error"]);
+                $('#pro_mob').hide();
+            }
+        });
+    });
+</script>
+<!-- Ajax request for subscribe form (desktop) -->
+<script>
+    $("#subscribe-form").submit(function (e) {
+        e.preventDefault();
+        var data = new FormData($('#subscribe-form').get(0));
+        $('#pro1').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'subscribe' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response.message);
+                } else {
+                    toastr.error(response.message);
+                }
+                $('#subscribe-form')[0].reset();
+                $('#pro1').hide();
+            },
+            error: function (response) {
+                alert(response["error"]);
+                $('#pro1').hide();
+            }
+        });
+    });
+</script>
+
+<!-- Ajax request for subscribe form (mobile) -->
+<script>
+    $("#subscribe-form-mobile").submit(function (e) {
+        e.preventDefault();
+        var data = new FormData($('#subscribe-form-mobile').get(0));
+        $('#pro1').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'subscribe' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response.message);
+                } else {
+                    toastr.error(response.message);
+                }
+                $('#subscribe-form-mobile')[0].reset();
+                $('#pro1').hide();
+            },
+            error: function (response) {
+                alert(response["error"]);
+                $('#pro1').hide();
+            }
+        });
+    });
+</script>
+
+<!-- "Get Started" button scripts -->
+<script>
+    function mailChimpSubscribe(email) {
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'subscribe' %}",
+            data: {"email": email},
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken') // only needed if CSRF is enforced
+            },
+            success: function (response) {
+                // silent success or handle as needed
+            },
+            error: function (response) {
+                // silent error or handle as needed
+            }
+        });
+    }
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Section 1
+    document.getElementById("getStartedBtnFirst").addEventListener("click", function (event) {
+        event.preventDefault();
+        let emailInput = document.getElementById("email-desktop-first").value.trim();
+        let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(emailInput)) {
+            toastr.error("Please enter a valid email address.");
+            return;
+        }
+        mailChimpSubscribe(emailInput);
+
+        let nextPageUrl;
+        {% for item in nav_items %}
+        {% if forloop.first %}
+        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+        {% endif %}
+        {% endfor %}
+        window.location.href = "discount"+ nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+    });
+
+    document.getElementById("getStartedBtnMfirst").addEventListener("click", function (event) {
+        event.preventDefault();
+        let emailInput = document.getElementById("email-mobile-mfirst").value.trim();
+        let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(emailInput)) {
+            toastr.error("Please enter a valid email address.");
+            return;
+        }
+        mailChimpSubscribe(emailInput);
+
+        let nextPageUrl;
+        {% for item in nav_items %}
+        {% if forloop.first %}
+        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+        {% endif %}
+        {% endfor %}
+        window.location.href = "discount"+ nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+    });
+
+    // Section 2
+    document.getElementById("getStartedBtnSecond").addEventListener("click", function (event) {
+        event.preventDefault();
+        let emailInput = document.getElementById("email-desktop-second").value.trim();
+        let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(emailInput)) {
+            toastr.error("Please enter a valid email address.");
+            return;
+        }
+        mailChimpSubscribe(emailInput);
+
+        let nextPageUrl;
+        {% for item in nav_items %}
+        {% if forloop.counter == 2 %}
+        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+        {% endif %}
+        {% endfor %}
+       window.location.href = "discount"+ nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+    });
+
+    document.getElementById("getStartedBtnMsecond").addEventListener("click", function (event) {
+        event.preventDefault();
+        let emailInput = document.getElementById("email-mobile-msecond").value.trim();
+        let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(emailInput)) {
+            toastr.error("Please enter a valid email address.");
+            return;
+        }
+        mailChimpSubscribe(emailInput);
+
+        let nextPageUrl;
+        {% for item in nav_items %}
+        {% if forloop.counter == 2 %}
+        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+        {% endif %}
+        {% endfor %}
+       window.location.href = "discount"+ nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+    });
+
+    // Section 3
+    document.getElementById("getStartedBtnThird").addEventListener("click", function (event) {
+        event.preventDefault();
+        let emailInput = document.getElementById("email-desktop-third").value.trim();
+        let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(emailInput)) {
+            toastr.error("Please enter a valid email address.");
+            return;
+        }
+        mailChimpSubscribe(emailInput);
+
+        let nextPageUrl;
+        {% for item in nav_items %}
+        {% if forloop.counter == 3 %}
+        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+        {% endif %}
+        {% endfor %}
+       window.location.href = "discount"+ nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+    });
+
+    document.getElementById("getStartedBtnMthird").addEventListener("click", function (event) {
+        event.preventDefault();
+        let emailInput = document.getElementById("email-mobile-mthird").value.trim();
+        let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(emailInput)) {
+            toastr.error("Please enter a valid email address.");
+            return;
+        }
+        mailChimpSubscribe(emailInput);
+
+        let nextPageUrl;
+        {% for item in nav_items %}
+        {% if forloop.counter == 3 %}
+        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+        {% endif %}
+        {% endfor %}
+       window.location.href = "discount"+ nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+    });
+</script>
+{% endblock script %}

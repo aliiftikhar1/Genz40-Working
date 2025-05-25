@@ -1,0 +1,88 @@
+{% extends "public/layout/base.html" %}
+{% load static %}
+{% block header %}
+<style>
+    .timeline-page .timeline-item .date-label-left:after {
+
+        background-color: #2eca8b!important;
+    }
+    .timeline-page .timeline-item .duration-right:after {
+        background-color: #2eca8b!important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+        <!-- STart -->
+        <section class="section">
+            <div class="container">
+                <div class="row">
+                    <!-- Start -->
+                    <div class="col-lg-6 col-md-6 mt-2">
+                        <div class="card blog blog-detail border-0 shadow rounded bg-black">
+                            <div class="widget mt-4">
+                                <div class="mt-4">
+                                    <div class="d-flex">
+                                        <!-- <img src="{% static 'images/blog/01.jpg' %}" class="avatar avatar-small rounded" style="width: auto;" alt=""> -->
+                                        <div class="flex-1 ms-3">
+                                            <span><a href="{% url 'my_vehicles' %}"><i class="uil uil-arrow-left"></i>Back</a></span>
+                                            <h3 class="d-block py-2 rounded shadow mb-0">
+                                                Salman's GEN-Z - MARK I
+                                            </h3>
+                                            <!-- <a href="javascript:void(0)" class="d-block title text-dark">Consultant Business</a> -->
+                                            <span class="">RN081220241001</span>
+                                        </div>
+                                    </div>
+
+                                   
+                                </div>
+                            </div>
+                            <img src="{% static 'images/blog/01.jpg' %}" class="img-fluid rounded-top" alt="">
+                            <div class="card-body content">
+                                <h4>Your GEN-Z - MARK I is Reserved</h4>
+                                <p class=" mt-1">You will be notify to complete your GEN-Z - MARK I configuration as production nears 
+                            </div>
+                        </div>
+</div>
+                    <div class="col-lg-6 col-md-6 mt-4">
+                        <!-- <div class="layout-specing"> -->
+                            <!-- <div class="d-md-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Timeline Page</h5>
+                            </div> -->
+                        
+                            <div class="main-icon rounded-pill text-primary text-center mt-4 pt-2">
+                                <i data-feather="star" class="fea icon-md-sm"></i>
+                            </div>
+                            <div class="timeline-page pt-2 position-relative">
+                                <div class="timeline-item mt-4">
+                                    <div class="row">
+                                        <div class="col-lg-6 col-md-6 col-sm-6">
+                                            <div class="duration date-label-left border rounded p-2 px-4 position-relative shadow bg-white-color mb-5">
+                                                Order Confirmed - Aug 16, 2024
+                                            </div>
+
+                                            <div class="duration date-label-left border rounded p-2 px-4 position-relative shadow bg-white-color mt-3">
+                                                Order Confirmed - Aug 16, 2024
+                                            </div>
+
+                                        </div><!--end col-->
+                                        
+                                    </div><!--end row-->
+                                </div><!--end timeline item-->
+                            </div><!--end timeline page-->
+                            <!-- TIMELINE END -->
+                                       
+                        <!-- </div> -->
+                    </div>
+                    <!-- End -->
+                     
+                </div><!--end row-->
+            </div><!--end container-->
+
+        </section><!--end section-->
+        <!-- End -->
+
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}

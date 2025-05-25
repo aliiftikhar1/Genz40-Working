@@ -1,0 +1,1090 @@
+{% extends 'admin/layout/base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% load frontend_custom_filters %}
+
+{% block header %}
+<!-- Bootstrap 5 CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- jQuery (if needed for other plugins) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Popper.js and Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<style>
+    /* Admin Chat Panel Styles */
+    #admin-chat-panel {
+        padding-top:1.5rem;
+        padding-left:17rem;
+        width:100%;
+        height:85vh;
+        z-index: 1000;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        display: none;
+    }
+
+    #admin-chat-container {
+        width: 100%;
+        height: 100%;
+        background: #000000;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: row;
+        overflow: hidden;
+        animation: slideIn 0.3s ease;
+    }
+
+    /* Left sidebar - Chat list */
+    #admin-chat-sidebar {
+        width: 35%;
+        background: #111111;
+        border-right: 1px solid #333333;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    /* Right side - Chat messages */
+    #admin-chat-main {
+        width: 65%;
+        display: flex;
+        flex-direction: column;
+        background: #0a0a0a;
+    }
+
+    /* Header styles */
+    .admin-chat-header {
+        background-color: #1a1a1a;
+        color: #ffffff;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid #333333;
+    }
+
+    #admin-chat-title {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 500;
+        flex-grow: 1;
+        color: #ffffff;
+    }
+
+    /* Search bar */
+    #admin-chat-search {
+        padding: 12px;
+        border-bottom: 1px solid #333333;
+    }
+
+    #search-input {
+        width: 100%;
+        padding: 8px 12px;
+        background: #222222;
+        border: 1px solid #333333;
+        border-radius: 20px;
+        color: #ffffff;
+        outline: none;
+    }
+
+    #search-input:focus {
+        border-color: #555555;
+    }
+
+    /* Chat list */
+    #admin-chat-list {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .admin-chat-item {
+        padding: 12px 16px;
+        border-bottom: 1px solid #222222;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #ffffff;
+    }
+
+    .admin-chat-item:hover {
+        background-color: #222222;
+    }
+
+    .admin-chat-item.active {
+        background-color: #333333;
+    }
+
+    .admin-chat-item.unread {
+        background-color: #1e1e1e;
+    }
+
+    .admin-chat-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #333333;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        font-weight: bold;
+        color: #ffffff;
+    }
+
+    .admin-chat-info {
+        flex: 1;
+        overflow: hidden;
+    }
+
+    .admin-chat-name {
+        font-weight: 500;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .admin-chat-preview {
+        font-size: 0.8rem;
+        color: #aaaaaa;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .community-badge {
+        background-color: #4a6fdc;
+        color: white;
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 10px;
+        margin-left: 8px;
+    }
+
+    .admin-chat-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        margin-left: 12px;
+    }
+
+    .admin-chat-time {
+        font-size: 0.7rem;
+        color: #777777;
+    }
+
+    .admin-chat-unread {
+        background-color: #ffffff;
+        color: #000000;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 4px;
+    }
+
+    /* Message area */
+    #admin-message-area {
+        flex: 1;
+        padding: 16px;
+        overflow-y: auto;
+        background: #0a0a0a;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .admin-message {
+        padding: 10px 14px;
+        border-radius: 12px;
+        max-width: 80%;
+        word-break: break-word;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        position: relative;
+        color: #ffffff;
+    }
+
+    .admin-message.sent {
+        background-color: #333333;
+        margin-left: auto;
+        border-top-right-radius: 4px;
+    }
+
+    .admin-message.received {
+        background-color: #222222;
+        margin-right: auto;
+        border-top-left-radius: 4px;
+    }
+
+    .admin-message-sender {
+        font-weight: 600;
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+        color: #ffffff;
+    }
+
+    .admin-message-sender.admin {
+        color: #4a6fdc;
+    }
+
+    .admin-message-sender.customer {
+        color: var(--user-color, #ffffff);
+    }
+
+    .admin-message-time {
+        font-size: 0.7rem;
+        color: #aaaaaa;
+        text-align: right;
+        margin-top: 4px;
+    }
+
+    .admin-message-status {
+        font-size: 0.65rem;
+        text-align: right;
+        margin-top: 2px;
+        color: #aaaaaa;
+    }
+
+    /* Input area */
+    #admin-input-area {
+        padding: 12px 16px;
+        border-top: 1px solid #333333;
+        background: #000000;
+    }
+
+    #admin-message-input {
+        width: 100%;
+        padding: 10px 16px;
+        border: 1px solid #444444;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        outline: none;
+        transition: all 0.3s ease;
+        background: #111111;
+        color: #ffffff;
+    }
+
+    #admin-message-input:focus {
+        border-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+    }
+
+    #admin-send-button {
+        padding: 8px 20px;
+        background-color: #000000;
+        color: #ffffff;
+        border: 1px solid white;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        margin-left: 10px;
+    }
+
+    #admin-send-button:hover {
+        background-color: #222222;
+        transform: translateY(-1px);
+    }
+
+    /* Empty state */
+    .admin-empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #777777;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .admin-empty-icon {
+        font-size: 3rem;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 1200px) {
+        #admin-chat-container {
+            width: 70rem;
+            height: 45rem;
+        }
+    }
+
+    @media (max-width: 992px) {
+        #admin-chat-container {
+            width: 60rem;
+            height: 40rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        #admin-chat-container {
+            width: 100%;
+            height: 80vh;
+            border-radius: 0;
+            bottom: 0;
+            right: 0;
+        }
+        
+        #admin-chat-sidebar {
+            width: 100%;
+            display: none;
+        }
+        
+        #admin-chat-main {
+            width: 100%;
+            display: none;
+        }
+        
+        .show-sidebar #admin-chat-sidebar {
+            display: flex;
+        }
+        
+        .show-messages #admin-chat-main {
+            display: flex;
+        }
+        
+        #admin-back-button {
+            display: block !important;
+        }
+    }
+
+    /* Animation */
+    @keyframes slideIn {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .unread-label {
+        background: #fffbe6;
+        color: #c77d00;
+        padding: 6px 12px;
+        border-radius: 8px;
+        margin: 8px 0;
+        font-size: 0.95rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div id="admin-chat-panel">
+    <div id="admin-chat-container">
+        <!-- Left sidebar - Chat list -->
+        <div id="admin-chat-sidebar">
+            <div class="admin-chat-header">
+                <h3 id="admin-chat-title">Chats</h3>
+                <button id="admin-new-chat" hidden class="btn-icon">
+                    <i class="fas fa-plus"></i>
+                </button>
+                <button id="admin-close-chat" hidden class="btn-icon">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div id="admin-chat-search">
+                <input id="search-input" type="text" placeholder="Search chats...">
+            </div>
+            
+            <div id="admin-chat-list">
+                <!-- Chat items will be inserted here -->
+            </div>
+        </div>
+        
+        <!-- Right side - Chat messages -->
+        <div id="admin-chat-main">
+            <div class="admin-chat-header">
+                <button id="admin-back-button" class="btn-icon" style="display: none;">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h3 id="admin-current-chat-title">Select a chat</h3>
+                <div id="admin-connection-status">Online</div>
+            </div>
+            
+            <div id="admin-message-area">
+                <div class="admin-empty-state">
+                    <div class="admin-empty-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h4>No chat selected</h4>
+                    <p>Select a chat from the list to view messages</p>
+                </div>
+            </div>
+            
+            
+            
+            <div id="admin-input-area" style="display: none;">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button id="admin-image-upload-btn" class="btn-icon" aria-label="Upload image">
+                        <i class="fas fa-image"></i>
+                    </button>
+                    <input id="admin-message-input" type="text" placeholder="Type a message..." autocomplete="off">
+                    <button id="admin-send-button">Send</button>
+                </div>
+                <input type="file" id="admin-file-input" accept="image/*" style="display: none;" aria-hidden="true">
+                
+                <div id="admin-typing-indicator"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Only initialize if user is admin
+    if ('{{ user_data.role }}' !== 'admin') return;
+
+    const adminChatPanel = document.getElementById('admin-chat-panel');
+    const adminChatContainer = document.getElementById('admin-chat-container');
+    const adminChatSidebar = document.getElementById('admin-chat-sidebar');
+    const adminChatMain = document.getElementById('admin-chat-main');
+    const adminChatList = document.getElementById('admin-chat-list');
+    const adminMessageArea = document.getElementById('admin-message-area');
+    const adminInputArea = document.getElementById('admin-input-area');
+    const adminMessageInput = document.getElementById('admin-message-input');
+    const adminSendButton = document.getElementById('admin-send-button');
+    const adminCurrentChatTitle = document.getElementById('admin-current-chat-title');
+    const adminConnectionStatus = document.getElementById('admin-connection-status');
+    const adminNewChatButton = document.getElementById('admin-new-chat');
+    const adminCloseChatButton = document.getElementById('admin-close-chat');
+    const adminBackButton = document.getElementById('admin-back-button');
+    const searchInput = document.getElementById('search-input');
+    const adminTypingIndicator = document.getElementById('admin-typing-indicator');
+    const adminImageUploadBtn = document.getElementById('admin-image-upload-btn');
+    const adminFileInput = document.getElementById('admin-file-input');
+
+    let adminSocket = null;
+    let currentAdminRoomId = null;
+    let currentAdminRoomName = null;
+    let adminPingInterval = null;
+    let adminReconnectAttempts = 0;
+    const maxAdminReconnectAttempts = 5;
+    let isAdminChatOpen = false;
+    let adminTypingTimer = null;
+    const adminTypingDelay = 1000;
+    const currentAdminUserId = '{{ user_data.user_id }}';
+    console.log("current User id is : ",currentAdminUserId)
+
+    adminImageUploadBtn?.addEventListener('click', () => {
+    adminFileInput?.click();
+});
+
+adminFileInput?.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        handleAdminImageUpload(file);
+        e.target.value = ''; // reset input
+    }
+});
+    // Initialize admin chat panel
+    function initAdminChat() {
+        // Show admin panel instead of regular chat for admins
+        adminChatPanel.style.display = 'block';
+        
+        // Position the admin panel
+        adminChatPanel.style.position = 'relative';
+        adminChatPanel.style.bottom = '20px';
+        adminChatPanel.style.right = '20px';
+        
+        // Load initial data
+        fetchAdminChatRooms();
+        connectAdminWebSocket();
+        
+        // Set up periodic refresh
+        setInterval(fetchAdminChatRooms, 30000);
+    }
+
+    function handleAdminImageUpload(file) {
+    if (!file || !file.type.match('image.*')) {
+        showAdminToast('Please select a valid image');
+        return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+        showAdminToast('Image must be under 5MB');
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+    formData.append('room_id', currentAdminRoomId);
+
+    fetch('/api/chat/upload-image/', {
+        method: 'POST',
+        body: formData,
+        credentials: 'include',
+        headers: {
+            'X-CSRFToken': getCSRFToken(),
+        },
+    })
+    .then(res => {
+        if (!res.ok) throw new Error('Upload failed');
+        return res.json();
+    })
+    .then(data => {
+        if (adminSocket?.readyState === WebSocket.OPEN) {
+            adminSocket.send(JSON.stringify({
+                type: 'image',
+                room_id: currentAdminRoomId,
+                image_url: data.image_url,
+                content: 'Image shared'
+            }));
+        }
+    })
+    .catch(err => {
+        console.error('Upload failed:', err);
+        showAdminToast('Image upload failed');
+    });
+}
+
+    // Add the getUserColor function at the beginning of the script
+    function getUserColor(id) {
+        const colors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD',
+            '#D4A5A5', '#9B59B6', '#3498DB', '#E67E22', '#2ECC71'
+        ];
+        const index = String(id).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return colors[index % colors.length];
+    }
+
+    // Fetch chat rooms for admin
+    async function fetchAdminChatRooms() {
+        try {
+            const [privateResponse, communityResponse] = await Promise.all([
+                fetch('/api/chat/rooms/list/', { credentials: 'include' }),
+                fetch('/api/chat/community/rooms/', { credentials: 'include' })
+            ]);
+
+            if (!privateResponse.ok || !communityResponse.ok) {
+                throw new Error('Failed to load chatrooms');
+            }
+
+            const [privateRooms, communityRooms] = await Promise.all([
+                privateResponse.json(),
+                communityResponse.json()
+            ]);
+
+            console.log("Private rooms:", privateRooms);
+            console.log("Community rooms:", communityRooms);
+
+            // Combine and sort all rooms - community rooms first, then by timestamp
+            const allRooms = [...privateRooms, ...communityRooms].sort((a, b) => {
+                // First sort by chat type (community first)
+                if (a.chat_type === 'community' && b.chat_type !== 'community') return -1;
+                if (a.chat_type !== 'community' && b.chat_type === 'community') return 1;
+                
+                // Then sort by timestamp
+                const aTime = new Date(a.last_message?.timestamp || a.created_at);
+                const bTime = new Date(b.last_message?.timestamp || b.created_at);
+                return bTime - aTime;
+            });
+
+            console.log("All rooms:", allRooms);
+            renderAdminChatRooms(allRooms);
+        } catch (error) {
+            console.error('Error loading admin chatrooms:', error);
+            showAdminErrorMessage('Failed to load conversations');
+        }
+    }
+
+    // Render chat rooms in the sidebar
+    function renderAdminChatRooms(chatrooms) {
+        adminChatList.innerHTML = '';
+
+        if (!chatrooms || chatrooms.length === 0) {
+            const emptyMsg = document.createElement('div');
+            emptyMsg.className = 'p-3 text-center text-white';
+            emptyMsg.textContent = 'No conversations yet';
+            adminChatList.appendChild(emptyMsg);
+            return;
+        }
+
+        chatrooms.forEach(chatroom => {
+            const chatItem = document.createElement('div');
+            chatItem.className = `admin-chat-item ${chatroom.unread_count > 0 ? 'unread' : ''} ${currentAdminRoomId === chatroom.id ? 'active' : ''}`;
+            
+            let name = '';
+            let avatarContent = '';
+            let lastMessagePreview = '';
+
+            if (chatroom.chat_type === 'community') {
+                name = chatroom.community?.name || 'Community Chat';
+                avatarContent = 'C';
+            } else {
+                name = `${chatroom.customer_name || 'Customer'} - ${chatroom.subject}`;
+                avatarContent = chatroom.customer_name ? chatroom.customer_name.charAt(0).toUpperCase() : 'C';
+            }
+
+            lastMessagePreview = chatroom.last_message ? 
+                (chatroom.last_message.message_type === 'image' ? '[Image]' : 
+                chatroom.last_message.content?.substring(0, 30) + (chatroom.last_message.content?.length > 30 ? '...' : '')) : 
+                'No messages yet';
+            
+            chatItem.innerHTML = `
+                <div style="display: flex; align-items: center; width: 100%;">
+                    <div class="admin-chat-avatar">${avatarContent}</div>
+                    <div class="admin-chat-info">
+                        <div class="admin-chat-name">
+                            ${name}
+                            ${chatroom.chat_type === 'community' ? '<span class="community-badge">Community</span>' : ''}
+                        </div>
+                        <div class="admin-chat-preview">${lastMessagePreview}</div>
+                    </div>
+                    <div class="admin-chat-meta">
+                        <div class="admin-chat-time">${chatroom.last_message ? chatroom.last_message.timestamp : ''}</div>
+                        ${chatroom.unread_count > 0 ? `<div class="admin-chat-unread">${chatroom.unread_count}</div>` : ''}
+                    </div>
+                </div>
+            `;
+
+            chatItem.addEventListener('click', () => {
+                openAdminChatRoom(chatroom.id, name);
+                
+                // Highlight the selected chat
+                document.querySelectorAll('.admin-chat-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                chatItem.classList.add('active');
+                
+                // On mobile, switch to message view
+                if (window.innerWidth <= 768) {
+                    adminChatContainer.classList.remove('show-sidebar');
+                    adminChatContainer.classList.add('show-messages');
+                }
+            });
+
+            adminChatList.appendChild(chatItem);
+        });
+    }
+
+    // Helper function to format timestamp
+    function formatTimestamp(timestamp) {
+        if (!timestamp) return '';
+        const date = new Date(timestamp);
+        return date.toLocaleString();
+    }
+
+    async function loadChatRommMessages(roomId){
+        try {
+            const response = await fetch(`/api/chat/rooms/${roomId}/messages/`, {
+                credentials: 'include'
+            });
+
+            if (!response.ok) throw new Error('Failed to load messages');
+
+            const messages = await response.json();
+            adminMessageArea.innerHTML = '';
+
+            if (messages.length === 0) {
+                showAdminNoMessages();
+            } else {
+                // Find the index of the first unread message for the current admin user
+                let firstUnreadIndex = -1;
+                for (let i = 0; i < messages.length; i++) {
+                    const msg = messages[i];
+                    // Check if current admin is in unread_by list (for received messages)
+                    if (
+                        msg.sender_id !== currentAdminUserId &&
+                        Array.isArray(msg.unread_by) &&
+                        msg.unread_by.includes(currentAdminUserId)
+                    ) {
+                        firstUnreadIndex = i;
+                        break;
+                    }
+                }
+
+                messages.forEach((msg, idx) => {
+                    if (idx === firstUnreadIndex) {
+                        // Insert the "New unread messages" label just before this message
+                        const unreadLabel = document.createElement('div');
+                        unreadLabel.className = 'unread-label text-center my-2';
+                        unreadLabel.textContent = 'New unread messages';
+                        adminMessageArea.appendChild(unreadLabel);
+                    }
+                    addAdminMessageToChat(msg);
+                });
+
+                // After DOM is updated, scroll to the first unread message (skip the label)
+                setTimeout(() => {
+                    if (firstUnreadIndex !== -1) {
+                        // Find all message elements (skip the label)
+                        const messageElements = adminMessageArea.querySelectorAll('.admin-message');
+                        if (messageElements[firstUnreadIndex]) {
+                            messageElements[firstUnreadIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        } else {
+                            scrollAdminToBottom();
+                        }
+                    } else {
+                        scrollAdminToBottom();
+                    }
+                }, 100);
+            }
+            
+            // Mark messages as read
+            await markAdminMessagesAsRead(roomId);
+        } catch (error) {
+            console.error('Failed to load messages:', error);
+            showAdminErrorMessage('Failed to load messages');
+        }
+    }
+
+    // Open a chat room in the main area
+    async function openAdminChatRoom(roomId, roomName) {
+        if (adminSocket?.readyState === WebSocket.OPEN) {
+            adminSocket.send(JSON.stringify({
+                type: 'join',
+                room_id: roomId
+            }));
+        }
+
+        currentAdminRoomId = roomId;
+        currentAdminRoomName = roomName;
+        
+        adminCurrentChatTitle.textContent = roomName;
+        adminMessageArea.innerHTML = ''; // Clear previous messages
+        adminInputArea.style.display = 'block';
+        
+        // Show loading state
+        const loadingMsg = document.createElement('div');
+        loadingMsg.className = 'text-center p-4 text-white';
+        loadingMsg.textContent = 'Loading messages...';
+        adminMessageArea.appendChild(loadingMsg);
+        
+        loadChatRommMessages(roomId)
+        
+    }
+
+    // Add a message to the chat area
+    function addAdminMessageToChat(message) {
+        console.log("Current Message is : ",message)
+        const isCurrentUser = message.sender === currentAdminUserId;
+        console.log("Details are : ",message," Sender id is ",message.sender, "Current admin id ",currentAdminUserId)
+        console.log("Current User - ",isCurrentUser);
+
+        // Remove empty state
+        const emptyState = adminMessageArea.querySelector('.admin-empty-state');
+        if (emptyState) emptyState.remove();
+
+        const messageElement = document.createElement('div');
+        messageElement.className = `admin-message ${isCurrentUser ? 'sent' : 'received'}`;
+
+        const senderDiv = document.createElement('div');
+        senderDiv.className = 'admin-message-sender';
+        
+        // Determine sender role and apply appropriate styling
+        const isAdmin = message.sender_role === 'admin' || 
+                      (message.sender && message.sender.is_staff) ||
+                      (message.sender_email && message.sender_email.includes('admin'));
+        
+        if (isAdmin) {
+            senderDiv.classList.add('admin');
+        } else {
+            senderDiv.classList.add('customer');
+            // Use sender_id or sender's email as unique identifier for color
+            const colorId = message.sender_id || message.sender_email || message.sender_name;
+            senderDiv.style.setProperty('--user-color', getUserColor(colorId));
+        }
+        
+        senderDiv.textContent = isCurrentUser ? 'You' : (message.sender_name || 'Customer');
+
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'admin-message-time';
+        timeDiv.textContent = message.timestamp;
+
+        messageElement.appendChild(senderDiv);
+
+        // If it's an image message
+        if (message.message_type === 'image' && message.image_url) {
+            const img = document.createElement('img');
+            img.src = message.image_url;
+            img.alt = 'Uploaded image';
+            img.style.maxWidth = '300px';
+            img.style.borderRadius = '8px';
+            img.style.marginTop = '8px';
+            img.style.cursor = 'pointer';
+            img.addEventListener('click', () => window.open(img.src, '_blank'));
+            messageElement.appendChild(img);
+        }
+
+        // Add text content if exists
+        if (message.content && message.message_type !== 'image') {
+            const contentDiv = document.createElement('div');
+            contentDiv.textContent = message.content;
+            messageElement.appendChild(contentDiv);
+        }
+
+        messageElement.appendChild(timeDiv);
+
+        if (isCurrentUser) {
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `admin-message-status ${message.is_read ? 'text-success' : 'text-white'}`;
+            statusDiv.textContent = message.is_read ? '✓ Read' : '✓ Delivered';
+            messageElement.appendChild(statusDiv);
+        }
+
+        adminMessageArea.appendChild(messageElement);
+    }
+
+
+    // Mark messages as read
+    async function markAdminMessagesAsRead(roomId) {
+        try {
+            await fetch(`/api/chat/rooms/${roomId}/read/`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCSRFToken(),
+                },
+                credentials: 'include'
+            });
+            
+            // Refresh chat list to update unread counts
+            fetchAdminChatRooms();
+        } catch (e) {
+            console.warn('Failed to mark messages as read:', e);
+        }
+    }
+
+    // Connect WebSocket for admin
+    function connectAdminWebSocket() {
+        if (adminSocket) {
+            adminSocket.close();
+            clearInterval(adminPingInterval);
+        }
+
+        const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+        const host = window.location.host;
+        const wsUrl = `${protocol}${host}/ws/chat/global/`;
+
+        console.log('Connecting to Admin WebSocket:', wsUrl);
+        adminSocket = new WebSocket(wsUrl);
+
+        adminSocket.onopen = () => {
+            console.log('Admin WebSocket connected');
+            adminReconnectAttempts = 0;
+            updateAdminConnectionStatus('Online');
+
+            adminPingInterval = setInterval(() => {
+                if (adminSocket.readyState === WebSocket.OPEN) {
+                    adminSocket.send(JSON.stringify({ type: 'ping' }));
+                }
+            }, 25000);
+
+            // 🚨 Join the current room if already selected
+            if (currentAdminRoomId) {
+                adminSocket.send(JSON.stringify({
+                    type: 'join',
+                    room_id: currentAdminRoomId
+                }));
+            }
+        };
+
+
+        adminSocket.onmessage = async (e) => {
+            
+            try {
+                const data = JSON.parse(e.data);
+                console.log("On Message - ",data)
+                if (data.type === 'pong') return;
+                if (data.type === 'error') {
+                    showAdminErrorMessage(data.error);
+                    return;
+                }
+
+                if (data.type === 'typing') {
+                    if (data.sender_id !== currentAdminUserId && currentAdminRoomId === data.room_id) {
+                        adminTypingIndicator.textContent = `${data.sender_name || 'Customer'} is typing...`;
+                        setTimeout(() => {
+                            adminTypingIndicator.textContent = '';
+                        }, 3000);
+                    }
+                    return;
+                }
+
+                if (data.type === 'chat') {
+                    console.log("Current message data is : ",data);
+                    const isCurrentUser = data.sender_id === currentAdminUserId;
+                    const inCurrentRoom = currentAdminRoomId === data.room_id;
+
+                    console.log("Current User - ",isCurrentUser," Current Room - ",inCurrentRoom);
+                    
+                    // Add message to chat if in current room
+                    if (inCurrentRoom) {
+                        loadChatRommMessages(data.room_id)
+                        scrollAdminToBottom();
+                        
+                        // Mark as read if we're the recipient
+                        if (!isCurrentUser) {
+                            markAdminMessagesAsRead(currentAdminRoomId);
+                        }
+                    }
+                    
+                    // Update chat list to show new message preview
+                    fetchAdminChatRooms();
+                    
+                    // Show notification if not in current room
+                    if (!isCurrentUser && !inCurrentRoom) {
+                        showAdminToast(`New message from ${data.sender_name || 'Customer'}`);
+                    }
+                }
+            } catch (error) {
+                console.error('Error processing admin message:', error);
+            }
+        };
+
+        adminSocket.onclose = (e) => {
+            console.log('Admin WebSocket closed:', e.code, e.reason);
+            clearInterval(adminPingInterval);
+
+            if (e.code === 1000) {
+                updateAdminConnectionStatus('Offline');
+                return;
+            }
+
+            updateAdminConnectionStatus('Reconnecting...');
+            if (adminReconnectAttempts < maxAdminReconnectAttempts) {
+                adminReconnectAttempts++;
+                const delay = Math.min(3000 * adminReconnectAttempts, 30000);
+                console.log(`Reconnecting in ${delay/1000}s...`);
+                setTimeout(connectAdminWebSocket, delay);
+            } else {
+                updateAdminConnectionStatus('Disconnected', true);
+                showAdminToast('Connection lost. Please refresh the page.');
+            }
+        };
+
+        adminSocket.onerror = (error) => {
+            console.error('Admin WebSocket error:', error);
+            updateAdminConnectionStatus('Connection error', true);
+        };
+    }
+
+    // Send message from admin
+    async function sendAdminMessage() {
+        const message = adminMessageInput.value.trim();
+        if (!message || !currentAdminRoomId) return;
+
+        try {
+            if (!adminSocket || adminSocket.readyState !== WebSocket.OPEN) {
+                throw new Error('Connection not ready');
+            }
+
+            adminMessageInput.value = '';
+            scrollAdminToBottom();
+
+            adminSocket.send(JSON.stringify({
+                type: 'chat',
+                message: message,
+                room_id: currentAdminRoomId
+            }));
+
+        } catch (error) {
+            console.error('Failed to send message:', error);
+            showAdminErrorMessage('Failed to send message. Please try again.');
+        }
+    }
+
+    // Helper functions
+    function scrollAdminToBottom() {
+        adminMessageArea.scrollTop = adminMessageArea.scrollHeight;
+    }
+
+    function showAdminNoMessages() {
+        adminMessageArea.innerHTML = `
+            <div class="admin-empty-state">
+                <div class="admin-empty-icon">
+                    <i class="fas fa-comment-slash"></i>
+                </div>
+                <h4>No messages yet</h4>
+                <p>Start the conversation with the customer</p>
+            </div>
+        `;
+    }
+
+    function showAdminErrorMessage(message) {
+        const errorElement = document.createElement('div');
+        errorElement.className = 'text-center p-2 text-white bg-danger bg-opacity-10 rounded';
+        errorElement.textContent = message;
+        adminMessageArea.appendChild(errorElement);
+    }
+
+    function updateAdminConnectionStatus(status, isError = false) {
+        adminConnectionStatus.textContent = status;
+        adminConnectionStatus.className = isError ? 'text-danger' : 'text-success';
+    }
+
+    function showAdminToast(message) {
+        // You can reuse the existing toast notification or create a new one
+        const toast = document.createElement('div');
+        toast.className = 'admin-toast-notification';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+
+    function formatTime(timestamp) {
+        if (!timestamp) return '';
+        const date = new Date(timestamp);
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function getCSRFToken() {
+        const cookieValue = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
+        return cookieValue ? cookieValue.pop() : null;
+    }
+
+    // Event listeners
+    adminCloseChatButton.addEventListener('click', () => {
+        adminChatPanel.style.display = 'none';
+    });
+
+    adminBackButton.addEventListener('click', () => {
+        adminChatContainer.classList.remove('show-messages');
+        adminChatContainer.classList.add('show-sidebar');
+    });
+
+    adminSendButton.addEventListener('click', sendAdminMessage);
+    adminMessageInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendAdminMessage();
+    });
+
+    adminMessageInput.addEventListener('input', () => {
+        if (adminTypingTimer) clearTimeout(adminTypingTimer);
+
+        if (adminMessageInput.value.trim().length > 0) {
+            if (adminSocket && adminSocket.readyState === WebSocket.OPEN) {
+                adminSocket.send(JSON.stringify({
+                    type: 'typing',
+                    is_typing: true,
+                    room_id: currentAdminRoomId
+                }));
+            }
+
+            adminTypingTimer = setTimeout(() => {
+                adminTypingIndicator.textContent = '';
+            }, adminTypingDelay);
+        } else {
+            adminTypingIndicator.textContent = '';
+        }
+    });
+
+    // Initialize admin chat panel
+    initAdminChat();
+});
+</script>
+{% endblock %}

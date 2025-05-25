@@ -1,0 +1,125 @@
+{% extends 'admin/layout/base.html' %}
+ {% load static %}
+{% block header %}
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{% static 'admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'admin/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+
+{% endblock %}
+
+{% block content %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Customers</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item active">Customers</li>
+          </ol>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+          <div class="col-12 col-sm-12">
+            <div class="input-group input-group-sm mb-2" style="width: 300px; float: right;">
+                <input type="text" name="table_search" id="myInputTextField" class="form-control float-right" placeholder="Search...">
+                  <div class="input-group-append">
+                    <button type="submit" class="btn btn-default" disabled><i class="fas fa-search"></i></button>
+                  </div>
+              </div>
+
+          </div>
+        </div>
+      <table id="users_tbl" class="table table-bordered table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">Location</th>
+                    <th scope="col">Last Login</th>
+                    <th scope="col">Registered at</th>
+
+                </tr>
+                </thead>
+                    <tbody>
+                            {% for cutomer in cutomers %}
+                            <tr>
+                                <td>{{ cutomer.first_name }} {{ cutomer.last_name }}</td>
+                                <td>
+                                  {% if cutomer.is_email_verified  %}
+                                    <i class="far fa-check-circle text-success"></i>
+                                    <a href="mailto:{{ cutomer.email }}">{{ cutomer.email }}</a>
+                                  {% else %}
+                                    <i class="far fa-times-circle text-danger"></i>
+                                    {{ cutomer.email }}
+                                  {% endif %}
+                                </td>
+                                <td>
+                                  {% if cutomer.is_phone_number_verified  %}
+                                    <i class="far fa-check-circle text-success"></i>
+                                    <a href="tel:{{ cutomer.phone_number }}">{{ cutomer.phone_number }}</a>
+                                  {% else %}
+                                    <i class="far fa-times-circle text-danger"></i>
+                                    {{ cutomer.phone_number }}
+                                  {% endif %}
+                                </td>
+                                <td>{{ cutomer.country|default_if_none:"" }} - {{ cutomer.zip_code|default_if_none:"" }}</td>
+                                <td>{{ cutomer.last_login|default_if_none:"" }}</td>
+                                <td>{{ cutomer.created_at }}</td>
+                                
+                            </tr>
+                            {% endfor %}
+                    </tbody>
+              </table>
+
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+{% endblock %}
+
+{% block javascript %}
+<!-- DataTables -->
+<script src="{% static 'admin/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'admin/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'admin/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'admin/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    oTable = $('#users_tbl').DataTable({
+        "bPaginate": true,
+        "bLengthChange": false,
+        "bFilter": true,
+        "bInfo": true,
+        "ordering": false,
+        "searching": true,
+        "bAutoWidth": false,
+        "dom": 'lrtip',
+        "responsive": true,
+        "oLanguage": { "sSearch": "", "searchPlaceholder": "Search..." },
+
+    });
+
+    $('#myInputTextField').keyup(function(){
+      oTable.search($(this).val()).draw() ;
+})
+
+} );
+</script>
+ {% endblock %}

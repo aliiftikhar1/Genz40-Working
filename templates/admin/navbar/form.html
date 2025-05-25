@@ -1,0 +1,145 @@
+{% extends 'admin/layout/base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block header %}
+<!-- Toastr -->
+<link rel="stylesheet" href="{% static 'admin/plugins/toastr/toastr.min.css' %}">
+<!-- SweetAlert2 -->
+<link rel="stylesheet" href="{% static 'admin/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css' %}">
+<!-- Select2 -->
+<link rel="stylesheet" href="{% static 'admin/plugins/select2/css/select2.min.css' %}">
+<link rel="stylesheet" href="{% static 'admin/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css' %}">
+<!-- summernote -->
+<link rel="stylesheet" href="{% static 'admin/plugins/summernote/summernote-bs4.min.css' %}">
+{% endblock %}
+{% block content %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    {{form.instance.pk}}
+                    {% if form.instance.pk %}Edit{% else %}Add{% endif %}
+                    <h1>{% if form.instance.pk %}Edit{% else %}Add{% endif %} navbar</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'package_list' %}">Navbar</a></li>
+                        <li class="breadcrumb-item active">{% if form.instance.pk %}Edit{% else %}Add{% endif %} Navbar</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <!--            <form method="post" enctype="multipart/form-data">-->
+            <!--                {% csrf_token %}-->
+            <!--                {{ form.as_p }}-->
+            <!--                <button type="submit">Save</button>-->
+            <!--            </form>-->
+<!--  fields = ['title', 'slug', 'content', 'parent', 'is_active', 'position']-->
+            <div class="card card-default">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="{{ form.parent.id_for_label }}">Parent</label>
+                                    {{ form.parent|add_class:'form-control select2bs4' }}
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="{{ form.title.id_for_label }}">Navbar Title</label>
+                                    {{ form.title|add_class:'form-control' }}
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label for="{{ form.slug.id_for_label }}">Slug</label>
+                                    {{ form.slug|add_class:'form-control' }}
+                                </div>
+                            </div>
+                             <div class="col-md-1 mt-3">
+                                <div class="form-check mt-4 ml-2">
+                                    {{ form.is_active|add_class:'form-check-input' }}
+                                    <label class="form-check-label mb-4" for="{{ form.slug.is_active }}">is Active</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="description">Description</label>
+                                    <textarea id="summernote" name="content" rows="6" style="width: 100% !important;">
+                                        {{ content|safe }}
+                                    </textarea>
+                                </div>
+                            </div>
+                            <!-- /.col -->
+                        </div>
+                        <!-- /.row -->
+                        <a href="{% url 'navitem_list' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+{% endblock %}
+
+{% block javascript %}
+<!-- SweetAlert2 -->
+<script src="{% static 'admin/plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+<!-- Toastr -->
+<script src="{% static 'admin/plugins/toastr/toastr.min.js' %}"></script>
+
+<!-- Select2 -->
+<script src="{% static 'admin/plugins/select2/js/select2.full.min.js' %}"></script>
+<!-- Summernote -->
+<script src="{% static 'admin/plugins/summernote/summernote-bs4.min.js' %}"></script>
+<script>
+  $(function () {
+    //Initialize Select2 Elements
+    $('.select2').select2()
+
+    //Initialize Select2 Elements
+    $('.select2bs4').select2({
+      theme: 'bootstrap4'
+    })
+ });
+</script>
+
+<script>
+ $(document).ready(function() {
+            $('#summernote').summernote({
+                fontSizes: ['8', '9', '10', '11', '12', '14', '18', '24', '36', '48' , '64', '82', '150'],
+                toolbar: [
+                    // [groupName, [list of button]]
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['font', ['strikethrough', 'superscript', 'subscript']],
+                    ['fontsize', ['fontsize']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['height', ['height']]
+                  ],
+                height: 300,
+                minHeight: null, // set minimum height of editor
+                maxHeight: null, // set maximum height of editor
+                focus: true,    // set focus to editable area after initializing summernote
+            });
+        });
+</script>
+{% endblock %}

@@ -1,0 +1,195 @@
+{% extends 'admin/layout/base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<div class="content-wrapper">
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1>Feature Requests</h1>
+        </div>
+        <div class="col-sm-6">
+          <form method="get" class="float-right">
+            <div class="input-group">
+              <select class="form-control" name="rn_filter" onchange="this.form.submit()">
+                <option value="">All Reservations</option>
+                {% for rn in all_rn_numbers %}
+                <option value="{{ rn }}" {% if rn == request.GET.rn_filter %}selected{% endif %}>{{ rn }}</option>
+                {% endfor %}
+              </select>
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit">Filter</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Feature Requests</h3>
+            </div>
+            
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                  <thead>
+                    <tr>
+                      <th>Reservation #</th>
+                      <th>Package Title</th>
+                      <th>Feature Description</th>
+                      <th>Amount</th>
+                      <th>Request Date</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for feature in all_features %}
+                    <tr>
+                      <td>{{ feature.booked_package.reservation_number }}</td>
+                      <td>{{ feature.booked_package.title }}</td>
+                      <td>{{ feature.features|truncatechars:100 }}</td>
+                      <td>${{ feature.amount|floatformat:0 | intcomma }}</td>
+                      <td>{{ feature.created_at|date:"M d, Y" }}</td>
+                      <td>
+                        <span class="badge 
+                          {% if feature.status == 'pending' %}bg-warning
+                          {% elif feature.status == 'approved' %}bg-success
+                          {% elif feature.status == 'rejected' %}bg-danger
+                          {% else %}bg-info{% endif %}">
+                          {{ feature.get_status_display|title }}
+                        </span>
+                      </td>
+                      <td>
+                        <div class="btn-group">
+                          <a href="#" class="btn btn-sm btn-info" data-toggle="modal" data-target="#featureDetails{{ feature.id }}">
+                            <i class="fas fa-eye"></i> View
+                          </a>
+                          {% if feature.status == 'pending' %}
+                          <a href="{% url 'add_feature_payment' %}?rn_number={{ feature.booked_package.reservation_number }}&feature_id={{ feature.id }}" 
+                             class="btn btn-sm btn-success" title="Make Payment">
+                            <i class="fas fa-credit-card"></i> Pay
+                          </a>
+                          {% endif %}
+                        </div>
+                        
+                        <!-- Feature Details Modal -->
+                        <div class="modal fade" id="featureDetails{{ feature.id }}" tabindex="-1" role="dialog" aria-labelledby="featureDetailsLabel{{ feature.id }}">
+                          <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="featureDetailsLabel{{ feature.id }}">
+                                  Feature Details - {{ feature.booked_package.reservation_number }}
+                                </h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <div class="row">
+                                  <div class="col-md-6">
+                                    <p><strong>Package:</strong> {{ feature.booked_package.title }}</p>
+                                    <p><strong>Car Model:</strong> {{ feature.booked_package.car_model.title|default:"N/A" }}</p>
+                                    <p><strong>Base Price:</strong> ${{ feature.booked_package.price|floatformat:0 | intcomma }}</p>
+                                  </div>
+                                  <div class="col-md-6">
+                                    <p><strong>Request Date:</strong> {{ feature.created_at|date:"M d, Y H:i" }}</p>
+                                    <p><strong>Status:</strong> {{ feature.get_status_display|title }}</p>
+                                    <p><strong>Feature Amount:</strong> ${{ feature.amount|floatformat:0 | intcomma }}</p>
+                                  </div>
+                                </div>
+                                <hr>
+                                <h6>Feature Description:</h6>
+                                <p>{{ feature.features|default:"No description provided" }}</p>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                {% if feature.status == 'pending' %}
+                                <a href="{% url 'add_feature_payment' %}?rn_number={{ feature.booked_package.reservation_number }}&feature_id={{ feature.id }}" 
+                                   class="btn btn-primary">
+                                  <i class="fas fa-credit-card"></i> Proceed to Payment
+                                </a>
+                                {% endif %}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                      <td colspan="7" class="text-center">No feature requests found</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Ensure select maintains value after submission
+  document.addEventListener('DOMContentLoaded', function() {
+    const select = document.querySelector('select[name="rn_filter"]');
+    const rnFilter = new URLSearchParams(window.location.search).get('rn_filter');
+    if (rnFilter) {
+      select.value = rnFilter;
+    }
+  });
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .badge {
+    font-size: 0.85em;
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+    color: white;
+  }
+  .bg-warning {
+    background-color: #ffc107 !important;
+  }
+  .bg-success {
+    background-color: #28a745 !important;
+  }
+  .bg-danger {
+    background-color: #dc3545 !important;
+  }
+  .bg-info {
+    background-color: #17a2b8 !important;
+  }
+  .table-responsive {
+    overflow-x: auto;
+  }
+  .table th, .table td {
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  .btn-group .btn {
+    margin-right: 5px;
+  }
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+  .input-group select {
+    min-width: 200px;
+  }
+</style>
+{% endblock %}

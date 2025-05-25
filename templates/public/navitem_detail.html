@@ -1,0 +1,556 @@
+{% extends "public/layout/base.html" %}
+{% load static %}
+{% block header %}
+<style>
+  .cd-product-viewer-wrapper {
+  text-align: center;
+  padding: 2em 0;
+}
+.cd-product-viewer-wrapper > div {
+  display: inline-block;
+}
+.cd-product-viewer-wrapper .product-viewer {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  overflow: hidden;
+}
+.cd-product-viewer-wrapper img {
+  /* this is the image visible before the image sprite is loaded */
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+.cd-product-viewer-wrapper .product-sprite {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  height: 100%;
+  /* our image sprite is composed by 16 frames */
+  width: 1600%;
+  /* background: url(https://codyhouse.co/demo/360-degrees-product-viewer/img/alfa.png) no-repeat center center; */
+  background: url(https://genz40.com/static/images/genz/alfa.png) no-repeat center center;
+  background-size: 100%;
+  opacity: 0;
+  -webkit-transition: opacity 0.3s;
+  -moz-transition: opacity 0.3s;
+  transition: opacity 0.3s;
+}
+.cd-product-viewer-wrapper.loaded .product-sprite {
+  /* image sprite has been loaded */
+  opacity: 1;
+  cursor: ew-resize;
+}
+
+.cd-product-viewer-handle {
+  position: relative;
+  z-index: 2;
+  width: 60%;
+  max-width: 300px;
+  border-radius: 50em;
+  margin: 1em auto 3em;
+  height: 4px;
+  background: #4d4d4d;
+}
+.cd-product-viewer-handle .fill {
+  /* this is used to create the loading fill effect */
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background: #2eca8b;
+  -webkit-transform: scaleX(0);
+  -moz-transform: scaleX(0);
+  -ms-transform: scaleX(0);
+  -o-transform: scaleX(0);
+  transform: scaleX(0);
+  -webkit-transform-origin: left center;
+  -moz-transform-origin: left center;
+  -ms-transform-origin: left center;
+  -o-transform-origin: left center;
+  transform-origin: left center;
+  -webkit-transition: -webkit-transform 0.5s;
+  -moz-transition: -moz-transform 0.5s;
+  transition: transform 0.5s;
+}
+.no-csstransitions .cd-product-viewer-handle .fill {
+  display: none;
+}
+.loaded .cd-product-viewer-handle .fill {
+  /* image sprite has been loaded */
+  opacity: 0;
+  -webkit-transition: -webkit-transform 0.3s, opacity 0.2s 0.3s;
+  -moz-transition: -moz-transform 0.3s, opacity 0.2s 0.3s;
+  transition: transform 0.3s, opacity 0.2s 0.3s;
+}
+.cd-product-viewer-handle .handle {
+  position: absolute;
+  z-index: 2;
+  display: inline-block;
+  height: 44px;
+  width: 44px;
+  left: 0;
+  top: -20px;
+  background: #2eca8b url(https://codyhouse.co/demo/360-degrees-product-viewer/img/cd-arrows.svg) no-repeat center center;
+  border-radius: 50%;
+  box-shadow: 0 0 0 6px rgba(125, 246, 110, 0.3), 0 0 20px rgba(0, 0, 0, 0.2);
+  /* replace text with image */
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  color: transparent;
+  -webkit-transform: translateX(-50%) scale(0);
+  -moz-transform: translateX(-50%) scale(0);
+  -ms-transform: translateX(-50%) scale(0);
+  -o-transform: translateX(-50%) scale(0);
+  transform: translateX(-50%) scale(0);
+  -webkit-transition: box-shadow 0.2s;
+  -moz-transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s;
+}
+.cd-product-viewer-handle .handle:active {
+  box-shadow: 0 0 0 0 rgba(181, 66, 64, 0), 0 0 20px rgba(0, 0, 0, 0.2);
+}
+.loaded .cd-product-viewer-handle .handle {
+  /* image sprite has been loaded */
+  -webkit-transform: translateX(-50%) scale(1);
+  -moz-transform: translateX(-50%) scale(1);
+  -ms-transform: translateX(-50%) scale(1);
+  -o-transform: translateX(-50%) scale(1);
+  transform: translateX(-50%) scale(1);
+  -webkit-animation: cd-bounce 0.3s 0.3s;
+  -moz-animation: cd-bounce 0.3s 0.3s;
+  animation: cd-bounce 0.3s 0.3s;
+  -webkit-animation-fill-mode: both;
+  -moz-animation-fill-mode: both;
+  animation-fill-mode: both;
+  cursor: ew-resize;
+}
+
+@-webkit-keyframes cd-bounce {
+  0% {
+    -webkit-transform: translateX(-50%) scale(0);
+  }
+  60% {
+    -webkit-transform: translateX(-50%) scale(1.1);
+  }
+  100% {
+    -webkit-transform: translateX(-50%) scale(1);
+  }
+}
+@-moz-keyframes cd-bounce {
+  0% {
+    -moz-transform: translateX(-50%) scale(0);
+  }
+  60% {
+    -moz-transform: translateX(-50%) scale(1.1);
+  }
+  100% {
+    -moz-transform: translateX(-50%) scale(1);
+  }
+}
+@keyframes cd-bounce {
+  0% {
+    -webkit-transform: translateX(-50%) scale(0);
+    -moz-transform: translateX(-50%) scale(0);
+    -ms-transform: translateX(-50%) scale(0);
+    -o-transform: translateX(-50%) scale(0);
+    transform: translateX(-50%) scale(0);
+  }
+  60% {
+    -webkit-transform: translateX(-50%) scale(1.1);
+    -moz-transform: translateX(-50%) scale(1.1);
+    -ms-transform: translateX(-50%) scale(1.1);
+    -o-transform: translateX(-50%) scale(1.1);
+    transform: translateX(-50%) scale(1.1);
+  }
+  100% {
+    -webkit-transform: translateX(-50%) scale(1);
+    -moz-transform: translateX(-50%) scale(1);
+    -ms-transform: translateX(-50%) scale(1);
+    -o-transform: translateX(-50%) scale(1);
+    transform: translateX(-50%) scale(1);
+  }
+}
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+  background-color: #262424;
+  border-top: 3px solid #AAAAAA;
+  border-radius: 0px;
+}
+.acc-bg {
+  background-color: #262424 !important;
+}
+
+.accordion .accordion-item .accordion-button:before {
+  color: #fff;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!--============================================VEHICLES START==============================================-->
+
+        <!-- Start -->
+        <section class="bg-half-100 d-table w-100">
+           <div class="container-fluid">
+                <div class="row">
+
+                    <!-- START VIDEO -->
+                    <div class="col-lg-8 col-md-6 col-12 mt-sm-0 pt-2 pt-sm-0">
+                        <div class="col-lg-12 mt-4 pt-2 mt-lg-0 pt-lg-0 sidebar sticky-bar">
+
+                        <div class="card border-0  rounded ms-lg-4 overflow-hidden" style="background-color: #0000;"">
+                          <!-- <img src="{% static 'images/genz/mark1-builder4.png' %}" class="img-fluid" alt=""> -->
+                          <div class=" ">
+                            {% if items.title == 'Mark I' %}
+                            <img class="w-100 img-fluid rounded" src="{% static 'mk1.gif' %}" alt="Mark I GIF">
+                            {% elif items.title == 'Mark II' %}
+                            <img class="w-100 img-fluid rounded" src="{% static 'mk2.gif' %}" alt="Mark II GIF">
+                            {% elif items.title == 'Mark IV' %}
+                            <img class="w-100 img-fluid rounded" src="{% static 'mk4.gif' %}" alt="Mark IV GIF">
+                            {% endif %}
+                            
+                        </div>
+                          <!-- <div class="cd-product-viewer-wrapper" data-frame="16" data-friction="0.33">
+                            <div>
+                              <figure class="product-viewer">
+                                <img src="{% static 'images/genz/alfa-loading.jpg' %}" class="img-fluid" alt="Product Preview">
+                                <div class="product-sprite" data-image="{% static 'images/genz/alfa.png' %}"></div>
+                              </figure>
+                              <div class="cd-product-viewer-handle">
+                                <span class="fill"></span>
+                                <span class="handle">Handle</span>
+                              </div>
+                            </div>
+                          </div> -->
+                        </div>
+                    </div><!--end col-->
+
+                    </div>
+                    <!--end col-->
+                    <!-- END VIDEO -->
+
+                    <!-- START SIDEBAR -->
+                    <div class="col-lg-4 col-md-4">
+                        <div class="card border-0 shadow rounded overflow-hidden bg-black">
+                            <div class="row justify-content-center">
+                                <div class="col-12 text-center">
+                                    <div class="section-title pb-2 wow animate__animated animate__fadeInUp" data-wow-delay=".1s">
+                                        <h4 class="title mb-1 mt-4 text-uppercase">{{ items.title }}</h4>
+                                        <!-- <small class="text-dark para-desc mb-0 mx-auto">ESTIMATED DELIVERY <span class="text-success fw-bold">{{ items.estimated_delivery|date:"F Y" }}</span></small> -->
+                                    </div>
+                                </div><!--end col-->
+                            </div><!--end row-->
+<!--                            <img src="{% static 'images/blog/standard.jpg' %}" class="img-fluid" alt="">-->
+                            <div class="card-body">
+                                <div class="row justify-content-center">
+                                    <div class="col-lg-12 col-md-12 text-center">
+                                        <ul class="nav nav-pills nav-justified flex-column flex-sm-row wow animate__animated animate__fadeInUp" data-wow-delay=".3s" id="pills-tab" role="tablist" style="border-top: 1px solid #AAAAAA;">
+                                            {% for package in packages %}
+                                                <li class="nav-item">
+                                                    <a class="nav-link {% if forloop.first %}active{% endif %}" id="community-{{ package.id }}-tab" data-bs-toggle="pill" href="#pills-community-{{ package.id }}" role="tab" aria-controls="pills-community-{{ package.id }}" aria-selected="false">
+                                                        <div class="text-center py-2">
+                                                            <h6 class="mb-0">{{ package.name }}</h6>
+                                                            <!-- <span class="d-flex justify-content-center"><s>Original ${{ package.amount }}</s></span> -->
+                                                        </div>
+                                                    </a><!--end nav link-->
+                                                </li><!--end nav item-->
+                                            {% endfor %}
+                                        </ul><!--end nav pills-->
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 mt-4 pt-2">
+                                        <div class="tab-content" id="pills-tabContent">
+                                             {% for package in packages %}
+                                                <div class="tab-pane fade show {% if forloop.first %}show active{% endif %}" id="pills-community-{{ package.id }}" role="tabpanel" aria-labelledby="community-{{ package.id }}-tab">
+                                                    <div class="row align-items-center">
+                                                      <span class="text-dark text-center mb-2 mt-0">Included</span>
+                                                        <div class="col-md-12 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                            <!-- <blockquote class="blockquote p-2"> -->
+                                                             <!-- <span class="text-dark text-center">Included</span> -->
+                                                            <!-- </blockquote> -->
+
+                                                            <div class="accordion" id="buyingquestion">
+                                                              <div class="accordion-item rounded" style="border: 1px solid #fff;">
+                                                                  <h2 class="accordion-header" id="headingOne">
+                                                                      <button class="accordion-button bg-black border-0 text-white collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                                                                          aria-expanded="false" aria-controls="collapseOne">
+                                                                          COMPLETE SPACE FRAME
+                                                                      </button>
+                                                                  </h2>
+                                                                  <div id="collapseOne" class="accordion-collapse acc-bg collapse" aria-labelledby="headingOne"
+                                                                      data-bs-parent="#buyingquestion">
+                                                                      <div class="accordion-body">
+                                                                        <p>- Fully welded in our chassis fixture mild steel tubing with semi stressed skin pedal box</p>
+                                                                        <p>- DOM .134 wall roll bar</p>
+                                                                        <p>- Front and Rear body supported and hinged</p>
+                                                                        <p>- L & R Side Pods</p>
+                                                                        <p>- Chassis is delivered in a satin black epoxy finish</p>
+                                                                        <p>- Aluminum skin pre fitted and fastened, side pods, firewall</p>
+                                                                      </div>
+                                                                  </div>
+                                                              </div>
+                                                              
+                                                              <div class="accordion-item rounded mt-2" style="border: 1px solid #fff;">
+                                                                  <h2 class="accordion-header" id="headingTwo">
+                                                                      <button class="accordion-button border-0 bg-black text-white collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+                                                                          aria-expanded="false" aria-controls="collapseTwo">
+                                                                          COMPLETE FIBER GLASS BODY
+                                                                      </button>
+                                                                  </h2>
+                                                                  <div id="collapseTwo" class="accordion-collapse acc-bg border-0 collapse" aria-labelledby="headingTwo"
+                                                                      data-bs-parent="#buyingquestion">
+                                                                      <div class="accordion-body">
+                                                                        <p>- Main Body</p>
+                                                                        <p>- Rocker Panels</p>
+                                                                        <p>- Roof</p>
+                                                                        <p>- Doors</p>
+                                                                        <p>- Nostril (drop down for single or Twin)</p>
+                                                                        <p>- Tail</p>
+                                                                        <p>- Windshield</p>
+                                                                        <p>- Polycarbonate Headlight Covers</p>
+                                                                        <p>- Polycarbonate Side and Rear Windows</p>
+                                                                      </div>
+                                                                  </div>
+                                                              </div>
+
+                                                              <div class="accordion-item rounded mt-2" style="border: 1px solid #fff;">
+                                                                <h2 class="accordion-header" id="headingThree">
+                                                                    <button class="accordion-button border-0 bg-black collapsed text-white text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree"
+                                                                        aria-expanded="false" aria-controls="collapseThree">
+                                                                        STEERING
+                                                                    </button>
+                                                                </h2>
+                                                                <div id="collapseThree" class="accordion-collapse border-0 acc-bg collapse" aria-labelledby="headingThree"
+                                                                    data-bs-parent="#buyingquestion">
+                                                                    <div class="accordion-body">
+                                                                      <p>- Custom Rack and Pinion Steering Unit</p>
+                                                                      <p>- Collapsible Steering Column</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="accordion-item rounded mt-2" style="border: 1px solid #fff;">
+                                                              <h2 class="accordion-header" id="headingFour">
+                                                                  <button class="accordion-button border-0 bg-black collapsed text-white text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour"
+                                                                      aria-expanded="false" aria-controls="collapseFour">
+                                                                      SUSPENSION
+                                                                  </button>
+                                                              </h2>
+                                                              <div id="collapseFour" class="accordion-collapse border-0 acc-bg collapse" aria-labelledby="headingFour"
+                                                                  data-bs-parent="#buyingquestion">
+                                                                  <div class="accordion-body">
+                                                                    <p>- Billet Aluminum Front and Rear Suspension Uprights</p>
+                                                                    <p>- Billet Aluminum Front Upper and Lower Control Arms</p>
+                                                                    <p>- Performance Tie Rods and Balljoints</p>
+                                                                  </div>
+                                                              </div>
+                                                          </div>
+
+                                                          </div>
+
+                                                            <!-- <div class="section-title wow animate__animated animate__fadeInUp" data-wow-delay=".7s">
+                                                                <p class="text-dark text-small">{{ package.description|safe }}</p>
+                                                            </div> -->
+                                                        </div><!--end col-->
+                                                        <!-- <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                            <h4 class="mb-0">Due Today</h4>
+                                                            <small>Fully refundable</small>
+                                                        </div>
+                                                        <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                            <h4 class="mb-0 float-end">${{ package.amount_due }}</h4>
+                                                        </div> -->
+                                                    </div><!--end row-->
+                                                    <div class="row">
+                                                      <div class="col-12">
+                                                    <!-- <div class="component-wrapper rounded shadow"> -->
+                                                      <!-- <div class="p-4 border-bottom"> -->
+                                                          <h5 class="title mb-0 mt-4"> Optional </h5>
+                                                      <!-- </div> -->
+                
+                                                          <!-- <div class="form-check">
+                                                              <div class="mb-0"> -->
+                                                                <div class="form-check mt-2">
+                                                                  <input class="form-check-input" type="checkbox" checked="" value="" id="flexCheckDefault1">
+                                                                  <label class="form-check-label" for="flexCheckDefault1">Primer</label>
+                                                              </div>
+
+                                                                  <div class="form-check mt-2">
+                                                                      <input class="form-check-input" type="checkbox" checked="" value="" id="flexCheckDefault1">
+                                                                      <label class="form-check-label" for="flexCheckDefault1">Paint</label>
+                                                                  </div>
+
+                                                                  <div class="form-check mt-2">
+                                                                    <input class="form-check-input" type="checkbox" checked="" value="" id="flexCheckDefault1">
+                                                                    <label class="form-check-label" for="flexCheckDefault1">Livery</label>
+                                                                  </div>
+
+                                                                  <div class="form-check mt-2">
+                                                                    <input class="form-check-input" type="checkbox" checked="" value="" id="flexCheckDefault1">
+                                                                    <label class="form-check-label" for="flexCheckDefault1">Wheels</label>
+                                                                </div>
+                                                              <!-- </div>
+                                                          </div> -->
+                                                   
+                                                  <!-- </div> -->
+                                                  </div>
+                                                  </div>
+
+
+                                                    <div class="row justify-content-center">
+
+                                                      
+                                                      <div class="col-12 text-center">
+                                                          <div class="section-title mt-4 mb-4 pb-2">
+                                                              <h4 class="title">Your Mark I</h4>
+                                                              <p class="para-desc mb-0 mx-auto">Est. Delivery: <span class="text-success fw-bold">Aug – Sep 2024</span></p>
+                                                          </div>
+                                                          <div class="accordion" id="buyingquestion">
+                                                            <div class="accordion-item rounded" style="border: 1px solid #fff;">
+                                                                <h2 class="accordion-header" id="headingFive">
+                                                                    <button class="accordion-button bg-black border-0 text-white collapsed text-uppercase" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive"
+                                                                        aria-expanded="false" aria-controls="collapseFive">
+                                                                        Show pricing details
+                                                                    </button>
+                                                                </h2>
+                                                                <div id="collapseFive" class="accordion-collapse acc-bg collapse" aria-labelledby="headingFive"
+                                                                    data-bs-parent="#buyingquestion">
+                                                                    <div class="accordion-body">
+                                                                      <p>- Fully welded in our chassis fixture mild steel tubing with semi stressed skin pedal box</p>
+                                                                      <p>- DOM .134 wall roll bar</p>
+                                                                      <p>- Front and Rear body supported and hinged</p>
+                                                                      <p>- L & R Side Pods</p>
+                                                                      <p>- Chassis is delivered in a satin black epoxy finish</p>
+                                                                      <p>- Aluminum skin pre fitted and fastened, side pods, firewall</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            </div>
+                                                      </div><!--end col-->
+
+                                                    <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                        <h4 class="mb-0 mt-4">Purchase Price</h4>
+                                                        <!-- <small>THIS RESERVATIONS WILL SAVE YOUR PLACE IN LINE. YOU WILL BE INVITED WHEN YOUR GENZ40 IS READY TO GO IN PRODUCTION</small> -->
+                                                    </div>
+                                                    
+                                                    <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                        <h4 class="float-end mb-0 mt-4">${{ package.amount }}</h4>
+                                                    </div>
+                                                    <div class="col-md-12 mt-1 mt-sm-0 pt-2 pt-sm-0">
+                                                      <small class="text-small">THIS RESERVATIONS WILL SAVE YOUR PLACE IN LINE. YOU WILL BE INVITED WHEN YOUR GENZ40 IS READY TO GO IN PRODUCTION</small>
+                                                    </div>
+
+                                                      <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0 mb-4">
+                                                        <h4 class="mb-0 mt-4">Due Today</h4>
+                                                        <small>Non-refundable Order Fee</small>
+                                                    </div>
+                                                    <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0 mb-4">
+                                                        <h4 class="mb-0 mt-4 float-end">${{ package.amount_due }}</h4>
+                                                    </div>
+
+                                                  </div><!--end row-->
+
+                                                    <div class="row">
+                                                        <div class="col-md-12 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                          <form action="{% url 'create_checkout_session' %}" method="POST">
+                                                            {% csrf_token %}
+                                                            <!-- <button type="submit" id="checkout-button">Pay $50</button> -->
+                                                            <input type="hidden" value="{{package.amount_due}}" name="amount"/>
+                                                            <input type="hidden" value="MARK I (Builder Package)" name="package" />
+                                                            {{user_data.is_authenticated}}
+                                                            {{user_data.user_id}}
+                                                              <button type="submit" class="btn d-grid btn-outline-dark text-uppercase">Reserve Now</button>
+                                                          </form>
+                                                        </div>
+                                                    </div>
+                                                </div><!--end teb pane-->
+                                            {% endfor %}
+                                            <div class="tab-pane fade" id="pills-self" role="tabpanel" aria-labelledby="selfservice-tab">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-6 order-2 order-md-1 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                        <div class="section-title me-md-4 wow animate__animated animate__fadeInUp" data-wow-delay=".7s">
+                                                            <h4 class="title mb-4">Self-service Portal</h4>
+                                                            <p class="text-muted">CRM systems start by collecting a customer's website, email, telephone, social media data, and more, across multiple sources and channels. It may also automatically pull in other information, such as recent news about the company's activity, and it can store personal details, such as a client's personal preferences on communications.</p>
+                                                            <div class="mt-4">
+                                                                <a href="javascript:void(0)" class="text-primary p-1 px-2 shadow rounded me-3">Read More <i class="uil uil-angle-right-b"></i></a>
+                                                                <a href="javascript:void(0)" class="text-warning p-1 px-2 shadow rounded">Blogs</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>  <!--end col-->
+
+                                                    <div class="col-md-6 order-1 order-md-2">
+                                                        <div class="wow animate__animated animate__fadeInUp" data-wow-delay=".5s">
+                                                            <img src="assets/images/saas/classic02.png" class="img-fluid mx-auto d-block shadow rounded" alt="">
+                                                        </div>
+                                                    </div><!--end col-->
+                                                </div>    <!--end row-->
+                                            </div><!--end teb pane-->
+
+                                            <div class="tab-pane fade" id="pills-teamwork" role="tabpanel" aria-labelledby="teamwork-tab">
+                                                <div class="row align-items-center">
+                                                    <div class="col-md-6">
+                                                        <div class="wow animate__animated animate__fadeInUp" data-wow-delay=".5s">
+                                                            <img src="assets/images/saas/classic03.png" class="img-fluid mx-auto d-block shadow rounded" alt="">
+                                                        </div>
+                                                    </div><!--end col-->
+
+                                                    <div class="col-md-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                                                        <div class="section-title ms-md-4 wow animate__animated animate__fadeInUp" data-wow-delay=".7s">
+                                                            <h4 class="title mb-4">Proper Teamwork</h4>
+                                                            <p class="text-muted">CRM systems start by collecting a customer's website, email, telephone, social media data, and more, across multiple sources and channels. It may also automatically pull in other information, such as recent news about the company's activity, and it can store personal details, such as a client's personal preferences on communications.</p>
+                                                            <div class="mt-4">
+                                                                <a href="javascript:void(0)" class="text-primary p-1 px-2 shadow rounded me-3">Read More <i class="uil uil-angle-right-b"></i></a>
+                                                                <a href="javascript:void(0)" class="text-warning p-1 px-2 shadow rounded">Blogs</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>  <!--end col-->
+                                                </div>    <!--end row-->
+                                            </div><!--end teb pane-->
+                                        </div><!--end tab content-->
+
+                                    </div><!--end col-->
+                                </div><!--end row-->
+                            </div>
+                        </div>
+                    </div><!--end col-->
+                    <!-- END SIDEBAR -->
+
+                </div><!--end row-->
+           </div>
+            <!--end container-->
+        </section><!--end section-->
+        <!-- End -->
+<!--============================================VEHICLES END==============================================-->
+
+
+<div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="exampleModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+                <button class="btn btn-primary" type="button">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block script %}
+<script src="{% static 'js/image_slider.js' %}"></script>
+{% endblock script %}

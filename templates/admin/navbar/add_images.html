@@ -1,0 +1,113 @@
+
+{% extends 'admin/layout/base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block header %}
+<!-- Toastr -->
+<link rel="stylesheet" href="{% static 'admin/plugins/toastr/toastr.min.css' %}">
+<!-- SweetAlert2 -->
+<link rel="stylesheet" href="{% static 'admin/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css' %}">
+<!-- Select2 -->
+<link rel="stylesheet" href="{% static 'admin/plugins/select2/css/select2.min.css' %}">
+<link rel="stylesheet" href="{% static 'admin/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css' %}">
+
+{% endblock %}
+{% block content %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Add Image</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'navitem_list' %}">Navbar</a></li>
+                        <li class="breadcrumb-item active">Add Image</li>
+                    </ol>
+                </div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card card-default">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label for="{{ form.nav_item.id_for_label }}">Nav Item</label>
+                                    {{ form.nav_item|add_class:'form-control select2bs4' }}
+                                </div>
+                            </div>
+                             <div class="col-md-9">
+                                <div class="form-group">
+                                    <label for="{{ form.image.id_for_label }}">File input</label>
+                                    <div class="input-group">
+                                        <div class="custom-file">
+                                            {{ form.image }}
+                                            <label class="custom-file-label" for="{{ form.image.id_for_label }}">Choose file</label>
+                                        </div>
+                                    </div>
+                                </div>
+                             </div>
+                            <!-- /.col -->
+                        </div>
+                        <!-- /.row -->
+                        <a href="{% url 'package_list' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+{% endblock %}
+
+{% block javascript %}
+<!-- SweetAlert2 -->
+<script src="{% static 'admin/plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+<!-- Toastr -->
+<script src="{% static 'admin/plugins/toastr/toastr.min.js' %}"></script>
+
+<!-- Select2 -->
+<script src="{% static 'admin/plugins/select2/js/select2.full.min.js' %}"></script>
+<script>
+  $(function () {
+    //Initialize Select2 Elements
+    $('.select2bs4').select2({
+      theme: 'bootstrap4'
+    })
+ });
+</script>
+
+<script type="text/javascript">
+  $(document).ready(function () {
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000
+    });
+  {% if messages %}
+    {% for message in messages %}
+    toastr.{{ message.tags }}('{{ message }}')
+    {% endfor %}
+  {% endif %}
+});
+</script>
+{% endblock %}
+

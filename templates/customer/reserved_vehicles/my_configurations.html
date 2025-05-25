@@ -1,0 +1,226 @@
+{% extends "public/layout/base.html" %}
+{% load static %}
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<section class="section bg-black">
+    <div class="container">
+        <div class="row mt-4">
+            {% if user_data.is_email_verified == False %}
+                <div class="col-12 mb-4 pb-2">
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <i class="uil uil-exclamation-triangle fs-5 align-middle me-1"></i>
+                        Email verification is pending. <a href="#" id="email-activation-link" class="alert-link text-white text-decoration-underline">Click here to send activation email</a>.
+                        <button type="button" class="btn-close mt-1" data-bs-dismiss="alert" aria-label="Close"> </button>
+                        <span class="spinner-border spinner-border-sm" id="pro" role="status"
+                                            aria-hidden="true" style="display: none;"></span>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- {% if user_data.is_phone_number_verified == False %}
+                <div class="col-12 mb-4 pb-2">
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <i class="uil uil-exclamation-triangle fs-5 align-middle me-1"></i>
+                        Phone number verification is pending. <a href="#" id="phone-activation-link" class="alert-link text-white text-decoration-underline">Click here to send OTP</a>.
+                        <button type="button" class="btn-close mt-1" data-bs-dismiss="alert" aria-label="Close"> </button>
+                        <span class="spinner-border spinner-border-sm" id="pro" role="status"
+                                            aria-hidden="true" style="display: none;"></span>
+                    </div>
+                </div>
+            {% endif %} -->
+
+             <!-- START SIDEBAR -->
+             <div class="col-lg-4 col-12 mt-4 mt-lg-0 pt-2 pt-lg-0 hide-on-small">
+                {% include "customer/sidebar.html" %}
+
+            </div><!--end col-->
+            <!-- END SIDEBAR -->
+
+             <!-- Start -->
+             <div class="col-lg-8 col-12">
+                <div class="row">
+                    <div class="col-12 mb-1 ">
+                        <div class="section-title text-md-start">
+                            <h4 class="title mb-">{{ user_data.full_name }}'s Vehicles</h4>
+                        </div>
+                      
+                    </div><!--end col-->
+
+                    <div class="col-12 mb-4 pb-2">
+                        <div class="section-title text-md-start">
+                            <h4 class="title mb-">Saved Configurations</h4>
+                        </div>
+                        {% if configure_vehicles %}
+                        {% for config in configure_vehicles %}
+                            <div class="card blog blog-primary rounded border-0 shadow overflow-hidden mb-3">
+                                <div class="row align-items-center g-0">
+                                    <div class="col-md-6 p-0">
+                                        {% if config.car_model.title == 'Mark I' %}
+                                            <img class="img-fluid w-100" src="{% static 'images/mark1details/HighresScreenshot00013.png' %}" alt="Mark-I">
+                                        {% elif config.car_model.title == 'Mark II' %}
+                                            <img class="img-fluid w-100" src="{% static 'images/mark2details/HighresScreenshot00001.png' %}" alt="Mark-II">
+                                        {% elif config.car_model.title == 'Mark IV' %}
+                                            <img class="img-fluid w-100" src="{% static 'images/mark4details/HighresScreenshot00002.png' %}" alt="Mark-IV">
+                                        {% else %}
+                                            <img class="img-fluid w-100" src="{% static 'images/default-car.png' %}" alt="{{ config.car_model.title }}">
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="card-body py-1">
+                                            <h5 class="mb-2">
+                                                <span class="text-success logo-font">GEN-Z 40</span> - {{ config.car_model.title }}
+                                            </h5>
+                                            
+                                            <div class="config-details" style="font-size: 12px;">
+                                                <div class="row">
+                                                    <div class="col-6">
+                                                        <p class="text-muted mb-1"><strong>Exterior:</strong> {{ config.exterior_color|default:"Standard" }}</p>
+                                                        <p class="text-muted mb-1"><strong>Wheels:</strong> {{ config.wheel_type|default:"Standard" }}</p>
+                                                        <p class="text-muted mb-1"><strong>Interior:</strong> {{ config.interior_color|default:"Standard" }}</p>
+                                                        <p class="text-muted mb-1"><strong>Upholstery:</strong> {{ config.upholstery_material|default:"Standard" }}</p>
+                                                    </div>
+                                                    <div class="col-6">
+                                                        <p class="text-muted mb-1"><strong>Engine:</strong> {{ config.engine_type|default:"Standard" }}</p>
+                                                        <p class="text-muted mb-1"><strong>Drivetrain:</strong> {{ config.drivetrain|default:"Standard" }}</p>
+                                                        <p class="text-muted mb-1"><strong>Price:</strong> ${{ config.total_price|floatformat:2|default:"0.00" }}</p>
+                                                        <p class="text-muted mb-1"><strong>Created:</strong> {{ config.created_at|date:"M d, Y" }}</p>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="mt-2">
+                                                    <small class="text-muted">
+                                                        {% if config.luxury_package %}
+                                                            <span class="badge bg-light text-dark me-1">Luxury Package</span>
+                                                        {% endif %}
+                                                        {% if config.sport_package %}
+                                                            <span class="badge bg-light text-dark me-1">Sport Package</span>
+                                                        {% endif %}
+                                                        {% if config.winter_package %}
+                                                            <span class="badge bg-light text-dark me-1">Winter Package</span>
+                                                        {% endif %}
+                                                        {% if config.offroad_package %}
+                                                            <span class="badge bg-light text-dark me-1">Offroad Package</span>
+                                                        {% endif %}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                                <a href="{% url 'car_configurator_slug' config.car_model.slug %}" class="btn btn-sm btn-primary">Update Configuration</a>
+                                                <a href="{% url 'learn_more' config.car_model.slug %}" class="text-dark">View Details <i class="uil uil-angle-right-b align-middle"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <h4>No saved configurations found.</h4>
+                            <p class="text-muted">Start customizing your dream vehicle today!</p>
+                            {% if vehicles %}
+                                <div class="mt-3">
+                                    {% for vehicle in vehicles %}
+                                        <a href="{% url 'car_configurator_slug' vehicle.slug %}" class="btn btn-outline-primary m-1">Configure {{ vehicle.title }}</a>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                        </div>
+                   
+
+                </div><!--end row-->
+            </div><!--end col-->
+            <!-- End -->
+
+        </div><!--end row-->
+    </div><!--end container-->
+</section><!--end section-->
+{% endblock content %}
+
+{% block script %}
+<script>
+    $(document).on("click", "#email-activation-link", function (e) {
+    e.preventDefault();
+    $('#pro').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'email_verify_from_dashboard' %}",
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'), // Fix CSRF Issue
+                "Content-Type": "application/json"
+            },
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response['message']);
+                   
+                } else {
+                    toastr.error(response['message']);
+                }
+                $('#pro').hide();
+            },
+            error: function (response) {
+                if (!response.is_success) {
+                    toastr.error(response['message']);
+                }
+                // alert the error if any error occurred
+                $('#pro').hide();
+            }
+        })
+    });
+</script>
+
+<script>
+    $(document).on("click", "#phone-activation-link", function (e) {
+    e.preventDefault();
+    $('#pro').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'send_otp' %}",
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'), // Fix CSRF Issue
+                "Content-Type": "application/json"
+            },
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response['message']);
+                    setTimeout(function() {
+                        location.href = "{% url 'otp_verify_page' %}";
+                    }, 2000);
+                } else {
+                    toastr.error(response['message']);
+                }
+                $('#pro').hide();
+            },
+            error: function (response) {
+                if (!response.is_success) {
+                    toastr.error(response['message']);
+                }
+                // alert the error if any error occurred
+                $('#pro').hide();
+            }
+        })
+    });
+</script>
+
+<script>
+    function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        let cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            let cookie = cookies[i].trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock script %}

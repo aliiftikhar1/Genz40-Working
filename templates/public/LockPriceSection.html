@@ -1,0 +1,126 @@
+{% load static %}
+{% load humanize %}
+
+<style>
+    .package-card {
+        transition: all 0.3s ease;
+    }
+    .package-card.selected {
+        border-color: #28a745 !important;
+        box-shadow: 0 0 10px rgb(0, 255, 34) !important;
+        background-color: rgba(123, 255, 0, 0.1) !important;
+    }
+    .package-card:not(.selected) {
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+</style>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-lg-6">
+            <!-- Car Image -->
+            <div class="">
+                {% if items.title == 'Mark I' %}
+                    <img class="w-100 img-fluid rounded" src="{% static 'mk1.gif' %}" alt="Mark I GIF">
+                {% elif items.title == 'Mark II' %}
+                    <img class="w-100 img-fluid rounded" src="{% static 'mk2.gif' %}" alt="Mark II GIF">
+                {% elif items.title == 'Mark IV' %}
+                    <img class="w-100 img-fluid rounded" src="{% static 'mk4.gif' %}" alt="Mark IV GIF">
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-6 text-center">
+            <h1 class="text-light text-center pt-4">
+                Save your spot & lock in a 20% discount with $100 deposit today.
+            </h1>
+            <p class="text-light text-center">
+                Prices go up closer to launch.
+            </p>
+            
+            <!-- Package Cards -->
+            <div class="row justify-content-center">
+                {% for package in package_details %}
+                <div class="col-md-4 p-1">
+                    <div class="package-card {% if forloop.first %}selected{% endif %}" 
+                         data-package="{{ package.name|lower }}" 
+                         data-package-id="{{ package.id }}"
+                         style="cursor: pointer; 
+                                border: 2px solid {% if forloop.first %}#28a745{% else %}#6c757d{% endif %}; 
+                                border-radius: 10px; 
+                                padding: 15px;
+                                height: 100%;">
+                        <h5 class="text-center text-light">{{ package.name }}</h5>
+                        <h6 class="text-center text-black-50 text-decoration-line-through">
+                            ${{ package.baseAmount|floatformat:"0"|intcomma }}
+                        </h6>
+                        <h2 class="text-center text-light">
+                            ${{ package.discountAmount|floatformat:"0"|intcomma }}
+                        </h2>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Hidden inputs to store selected package info -->
+            <input type="hidden" id="selected-package" value="{{ package_details.0.name|lower }}">
+            <input type="hidden" id="selected-package-id" value="{{ package_details.0.id }}">
+            
+            <p id="lock-price-btn" class="btn btn-lg me-2 btn-success text-light fw-bold text-uppercase mt-4 mb-3 text-center" style="cursor: pointer;">
+                Lock your price now
+            </p>
+
+            <br>
+            <a href="#" data-bs-toggle="modal" data-bs-target="#fullscreenModal" class="text-center text-decoration-underline">
+                Technical Specs
+            </a>
+            <p class="text-light">
+                * Reservation today will save your spot and lock your price for either Package "Roller or Turnkey Minus"
+            </p>
+            <h3 class="text-light">
+                Spots are limited. Launching soon.
+            </h3>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const packageCards = document.querySelectorAll('.package-card');
+    const selectedPackageInput = document.getElementById('selected-package');
+    const selectedPackageIdInput = document.getElementById('selected-package-id');
+    const lockPriceBtn = document.getElementById('lock-price-btn');
+
+    // Handle card selection
+    packageCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // Remove selected class from all cards
+            packageCards.forEach(c => c.classList.remove('selected'));
+
+            // Add selected to this one
+            this.classList.add('selected');
+
+            // Update hidden inputs
+            const packageName = this.getAttribute('data-package');
+            const packageId = this.getAttribute('data-package-id');
+            selectedPackageInput.value = packageName;
+            selectedPackageIdInput.value = packageId;
+        });
+    });
+
+    // Handle lock price button
+    lockPriceBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        const packageId = selectedPackageIdInput.value;
+        const carSlug = "{{ items.slug|default:'' }}";  // Fallback from backend context
+
+        if (!carSlug || !packageId) {
+            alert("Missing car or package information.");
+            return;
+        }
+
+        window.location.href = `/lock-your-price-now/${carSlug}/${packageId}/`;
+    });
+});
+</script>

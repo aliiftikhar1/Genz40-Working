@@ -1,0 +1,190 @@
+{% load static %}
+<!-- Navbar Start Mobile-->
+<header id="topnav" class="defaultscroll sticky d-lg-none">
+    <div class="container">
+        <!-- Logo container-->
+        <a class="logo" href="{% url 'index' %}">
+            <span class="logo-light-mode">
+                <span class="l-dark logo-font">GEN-Z</span>
+                <span class="l-light logo-font text-success">GEN-Z</span>
+                <!-- <img src="{% static 'images/logo-dark.png' %}" class="l-dark" height="24" alt="">
+                <img src="{% static 'images/logo-light.png' %}" class="l-light" height="24" alt=""> -->
+            </span>
+            <span class="logo-dark-mode logo-font text-success">GEN-Z</span>
+            <!-- <img src="{% static 'images/logo-light.png' %}" height="24" class="logo-dark-mode" alt=""> -->
+        </a>
+
+        <!-- End Logo container-->
+        <div class="menu-extras">
+            <div class="menu-item">
+                <!-- Mobile menu toggle-->
+                <a class="navbar-toggle" id="isToggle" onclick="toggleMenu()">
+                    <div class="lines">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </a>
+                <!-- End mobile menu toggle-->
+            </div>
+        </div>
+
+        <!--Login button Start-->
+        <ul class="buy-button list-inline mb-0">
+            <li class="list-inline-item mb-0 text-uppercase">
+                <a href="javascript:void(0)" class="text-white" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                   
+                    <div class="login-btn-primary"><span class="btn btn-icon btn-pills btn-soft-primary"><i data-feather="user" class="fea icon-sm"></i></span></div>
+                    <div class="login-btn-light"><span class="btn btn-icon btn-pills btn-light"><i data-feather="user" class="fea icon-sm"></i></span></div>
+                </a>
+            </li>
+            
+<!--
+            <li class="list-inline-item ps-1 mb-0">
+                <a href="https://1.envato.market/landrick" target="_blank">
+                    <div class="login-btn-primary"><span class="btn btn-icon btn-pills btn-primary"><i data-feather="shopping-cart" class="fea icon-sm"></i></span></div>
+                    <div class="login-btn-light"><span class="btn btn-icon btn-pills btn-light"><i data-feather="shopping-cart" class="fea icon-sm"></i></span></div>
+                </a>
+            </li> -->
+        </ul>
+        <!--Login button End-->
+
+        <div id="navigation">
+            <!-- Navigation Menu-->
+
+            <ul class="navigation-menu nav-light">
+
+                {% for item in nav_items %}
+                <li class="sub-menu-item {% if item.active_children.exists %}dropdown{% endif %}">
+                    <a class="nav-link {% if item.active_children.exists %}dropdown-toggle{% endif %}"
+                    href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                    {% if item.active_children.exists %}id="navbarDropdown{{ forloop.counter }}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"{% endif %}>
+                        {{ item.title }}
+                    </a>
+                    <!-- {% if item.active_children.exists %}
+                    <div class="has-submenu parent-parent-menu-item" aria-labelledby="navbarDropdown{{ forloop.counter }}">
+                        {% for child in item.active_children %}
+                        <div class="dropdown-item">
+                            <a href="{{ child.url }}" class="sub-menu-item">
+                                <div class="text-lg-center">
+                                    <span class="d-none d-lg-block"><img src="{% static child.image %}" class="img-fluid rounded shadow-md" alt=""></span>
+                                    <span class="mt-lg-2 d-block">{{ child.title }}</span>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %} -->
+                </li>
+                {% endfor %}
+                <li><a href="{% url 'about' %}" class="sub-menu-item">Company</a></li>
+                <li class="sub-menu-item">
+                    <a class="nav-link" href="#">
+                        Community
+                    </a>
+                </li>
+            </ul><!--end navigation menu-->
+        </div><!--end navigation-->
+    </div><!--end container-->
+</header><!--end header-->
+<!-- Navbar End -->
+
+<!-- Navbar Start web-->
+<header id="topnav" class="defaultscroll sticky d-none d-lg-block">
+    <div class="container-fluid">
+        <!-- Logo container-->
+        <a class="logo ms-5" href="{% url 'index' %}">
+            <span class="logo-light-mode">
+                <span class="l-dark logo-font ms-5">GEN-Z</span>
+                <span class="l-light logo-font text-success ms-5">GEN-Z</span>
+                <!-- <img src="{% static 'images/logo-dark.png' %}" class="l-dark" height="24" alt="">
+                <img src="{% static 'images/logo-light.png' %}" class="l-light" height="24" alt=""> -->
+            </span>
+            <span class="logo-dark-mode logo-font text-success ms-5">GEN-Z</span>
+            <!-- <img src="{% static 'images/logo-light.png' %}" height="24" class="logo-dark-mode" alt=""> -->
+        </a>
+
+        <!--Login button Start-->
+        <ul class="buy-button list-inline mb-0 me-5">
+            <li class="list-inline-item mb-0 text-uppercase">
+                <a href="javascript:void(0)" class="text-white" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                    Account
+                    <!-- <div class="login-btn-primary"><span class="btn btn-icon btn-pills btn-soft-primary"><i data-feather="user" class="fea icon-sm"></i></span></div>
+                    <div class="login-btn-light"><span class="btn btn-icon btn-pills btn-light"><i data-feather="user" class="fea icon-sm"></i></span></div> -->
+                </a>
+            </li>
+            <li class="list-inline-item mb-0 text-uppercase ms-4  me-5">
+                <a href="javascript:void(0)" class="text-white btn btn-outline-light" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                    Configurator
+                </a>
+            </li>
+        </ul>
+        <!--Login button End-->
+
+        <div id="navigation">
+            <!-- Navigation Menu-->
+
+            <ul class="navigation-menu nav-light">
+
+                {% for item in nav_items %}
+                <li class="sub-menu-item {% if item.active_children.exists %}dropdown{% endif %}">
+                    <a class="nav-link {% if item.active_children.exists %}dropdown-toggle{% endif %}"
+                    href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                    {% if item.active_children.exists %}id="navbarDropdown{{ forloop.counter }}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"{% endif %}>
+                        {{ item.title }}
+                    </a>
+                </li>
+                {% endfor %}
+                <li class="has-submenu parent-parent-menu-item">
+                    <a href="javascript:void(0)">Company</a><span class="menu-arrow"></span>
+                    <ul class="submenu megamenu">
+                        <li>
+                            <ul>
+                                <li>
+                                    <a href="{% url 'about' %}" class="sub-menu-item">
+                                        <div class="text-lg-center">
+                                            <span class="d-none d-lg-block"><img src="{% static 'images/demos/corporate.png' %}" class="img-fluid rounded shadow-md" alt=""></span>
+                                            <span class="mt-lg-2 d-block">About</span>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <ul>
+                                <li>
+                                    <a href="{% url 'blog' %}" class="sub-menu-item">
+                                        <div class="text-lg-center">
+                                            <span class="d-none d-lg-block"><img src="{% static 'images/demos/shop.png' %}" class="img-fluid rounded shadow-md" alt=""></span>
+                                            <span class="mt-lg-2 d-block">Blog</span>
+                                        </div>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
+
+                        <li>
+                            <ul>
+                                <li>
+                                    <a href="{% url 'contact_us' %}" class="sub-menu-item">
+                                        <div class="text-lg-center">
+                                            <span class="d-none d-lg-block"><img src="{% static 'images/demos/blog.png' %}" class="img-fluid rounded shadow-md" alt=""></span>
+                                            <span class="mt-lg-2 d-block">Contact</span>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li class="sub-menu-item">
+                    <a class="nav-link" href="#">
+                        Community
+                    </a>
+                </li>
+            </ul><!--end navigation menu-->
+        </div><!--end navigation-->
+    </div><!--end container-->
+</header><!--end header-->
+<!-- Navbar End -->

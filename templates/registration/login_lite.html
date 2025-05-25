@@ -1,0 +1,75 @@
+<!-- templates/registration/login.html -->
+{% load static %}
+{% load crispy_forms_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="Free matrimony jobs addvertisement business">
+  <meta name="keywords" content="matrimony jobs addvertisement business tamil matrimony find business">
+  <meta name="author" content="AIT, AITRG, Muthuraja, MuthuRaja">
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GENZ CARS</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'admin/plugins/fontawesome-free/css/all.min.css' %}">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="{% static 'admin/plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'admin/css/adminlte.min.css' %}">
+</head>
+<body class="hold-transition login-page">
+<div class="login-box">
+  <!-- /.login-logo -->
+  <div class="card card-outline card-success">
+    <div class="card-header text-center">
+      <a href="{% url 'index' %}" class="h1">
+<!--        <b>Admin</b>LTE-->
+      <span class="text-danger">GEN</span><span class="text-warning">-Z</span> <span class="text-dark"> CARS</span></a>
+    </div>
+    <div class="card-body">
+<!--      <p class="login-box-msg">Sign in to start your session</p>-->
+
+      <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="row">
+          <div class="col-12 mt-2 mb-2">
+            <button type="submit" class="btn btn-success btn-block">Sign In</button>
+          </div>
+        </div>
+      </form>
+
+      <p class="mb-2">
+        <a href="{% url 'password_reset' %}">I forgot my password</a>
+      </p>
+      <p class="mb-0">
+        <a href="{% url 'register' %}" class="text-center">Register a new membership</a>
+      </p>
+    </div>
+    <!-- /.card-body -->
+  </div>
+  <!-- /.card -->
+</div>
+<!-- /.login-box -->
+
+<!-- jQuery -->
+<script src="{% static 'admin/plugins/jquery/jquery.min.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'admin/plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'admin/js/adminlte.min.js' %}"></script>
+<script>
+$(document).ready(function() {
+    setTimeout(function() {
+        document.querySelector('.alert').remove();
+    }, 5000);
+});
+</script>
+</body>
+</html>
+

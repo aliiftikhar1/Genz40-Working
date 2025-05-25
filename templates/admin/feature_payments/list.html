@@ -1,0 +1,167 @@
+{% extends 'admin/layout/base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% load frontend_custom_filters %}
+{% block header %}
+<link rel="stylesheet" href="{% static 'admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+<link rel="stylesheet" href="{% static 'admin/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1>Payment Details</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Hom</a></li>
+            <li class="breadcrumb-item active">Payment Details</li>
+          </ol>
+        </div>
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+
+          <div class="card">
+            <div class="card-body">
+              <div class="mb-3">
+                {% comment %} <a href="{% url 'add_feature_payment' %}" class="btn btn-primary">
+                  <i class="fas fa-plus"></i> Add Payment
+                </a> {% endcomment %}
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>RN Number</label>
+                    <select class="form-control" id="rn_filter">
+                      <option value="">All RN Numbers</option>
+                      {% for rn in all_rn_numbers %}
+                        <option value="{{ rn }}">{{ rn }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>Regarding</label>
+                    <select class="form-control" id="regarding_filter">
+                      <option value="">All</option>
+                      <option value="reserve">Reserve</option>
+                      <option value="body_complete">Body Complete</option>
+                      <option value="built">Built</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="input-group input-group-sm mb-2 mt-4 float-right" style="width: 300px;">
+                    <input type="text" name="table_search" id="myInputTextField" class="form-control float-right" placeholder="Search...">
+                    <div class="input-group-append">
+                      <button type="submit" class="btn btn-default" disabled><i class="fas fa-search"></i></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <table id="payment_tbl" class="table table-bordered table-striped">
+                <thead>
+                <th>ID</th>
+                <th>Transaction Id</th>
+                <th>RN Number</th>
+                <th>Feature Name</th>
+                <th>Amount</th>
+                <th>Currency</th>
+                <th>Status</th>
+                <th>Type</th>
+                <th>Created At</th>
+                
+                </thead>
+                <tbody>
+                {% for payment in payments %}
+                    <tr>
+                    <td>{{ payment.id }}</td>
+                    <td>{{ payment.transaction_id }}</td>
+                    <td>{{ payment.reservation_feature.booked_package.reservation_number }}</td>
+                    <td>{{ payment.reservation_feature.features }}</td>
+                    <td>{{ payment.amount }}</td>
+                    <td>USD</td>
+                    <td>{{ payment.payment_status|title_case }}</td>
+                    <td>{{ payment.payment_method|title_case }}</td>
+                    <td>{{ payment.created_at }}</td>
+                    
+                    </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+{% endblock %}
+
+{% block javascript %}
+<!-- SweetAlert2 -->
+<script src="{% static 'admin/plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+<!-- Toastr -->
+<script src="{% static 'admin/plugins/toastr/toastr.min.js' %}"></script>
+<!-- DataTables -->
+<script src="{% static 'admin/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'admin/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'admin/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'admin/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    var paymentTable = $('#payment_tbl').DataTable({
+        "bPaginate": true,
+        "bLengthChange": false,
+        "bFilter": true,
+        "bInfo": true,
+        "ordering": false,
+        "searching": true,
+        "bAutoWidth": false,
+        "dom": 'lrtip',
+        "responsive": true,
+        "oLanguage": { "sSearch": "", "searchPlaceholder": "Search..." },
+    });
+
+    $('#myInputTextField').keyup(function(){
+        paymentTable.search($(this).val()).draw();
+    });
+
+    // Custom filtering function for RN Number
+    $('#rn_filter').on('change', function() {
+      var selectedRN = $(this).val();
+      console.log("Selected value is : ", selectedRN);
+      paymentTable.column(2).search(selectedRN).draw();  // Change from column(1) to column(2)
+  });
+  
+  // Custom filtering function for Regarding
+  $('#regarding_filter').on('change', function() {
+      var selectedRegarding = $(this).val();
+      paymentTable.column(7).search(selectedRegarding).draw();  // Change from column(6) to column(7)
+  });
+});
+</script>
+{% endblock %}

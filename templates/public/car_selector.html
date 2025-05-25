@@ -1,0 +1,602 @@
+{% extends "public/layout/base.html" %}
+{% load static %}
+{% load humanize %}
+{% block header %}
+<link href="{% static 'css/custom-styles.css' %}" rel="stylesheet">
+<style>
+    body{
+        background-color: #fff !important;
+    }
+    .shadow{
+        box-shadow: none!important;
+    }
+    .offcanvas.offcanvas-end, .offcanvas.offcanvas-start {
+        width: 420px !important;
+    }
+</style>
+{% endblock header %}
+
+{% block content %}
+<section class="bg-half-100 d-table w-100">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <a href="" data-bs-toggle="modal" data-bs-target="#fullscreenModal"
+                        class="text-decoration-underline float-end">
+                        Technical Specs
+            </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-lg-6">
+                <h4 class="text-dark mb-2">{{ items.title }}</h4>
+            
+                <div class="mb-3 mt-2">
+                    <label for="car-select" class="fw-bold text-black me-2">Select Car Model:</label>
+                    <select id="car-select" class="form-select d-inline-block w-auto">
+                        <option value="mark1/" {% if items.title == "Mark I" %}selected{% endif %}>Mark I</option>
+                        <option value="mark2/" {% if items.title == "Mark II" %}selected{% endif %}>Mark II</option>
+                        <option value="mark3/" {% if items.title == "Mark IV" %}selected{% endif %}>Mark IV</option>
+                    </select>
+                </div>
+            
+                <!-- Video Display Section -->
+                {% if items.title == 'Mark I' %}
+                    <video class="w-100 rounded h-100" autoplay muted loop controls>
+                        <source src="/static/mk1.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                {% elif items.title == 'Mark II' %}
+                    <video class="w-100 rounded h-100" autoplay muted loop controls>
+                        <source src="/static/mk2.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                {% elif items.title == 'Mark IV' %}
+                    <video class="w-100 rounded h-100" autoplay muted loop controls>
+                        <source src="/static/mk4.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                {% endif %}
+            </div>
+            
+            <div class="col-md-6 col-lg-6 text-center">
+                
+                <h1 class="text-light text-center pt-4">
+                    Save your spot & lock in a 20% discount with $100 deposit today.
+                </h1>
+                <p class="text-light text-center">
+                    Prices go up closer to launch.
+                </p>
+                <div class="row">
+                    {% for package in packages %}
+                    <div class="col-md-6 text-dark">
+                        <p class="text-light text-center">
+                            {{ package.name }}
+                         </p>
+                         <h6 class="text-center text-black-50 text-decoration-line-through">${{ package.amount_reserve|intcomma }}</h6>
+                         <h2 class="text-center text-light">${{ package.amount|intcomma }}</h2>
+
+                        
+                    </div>
+                    {% endfor %}
+
+                    <!-- <div class="col-md-6">
+                        <p class="text-light text-center">
+                           Roller
+                        </p>
+                        <h6 class="text-center text-black-50 text-decoration-line-through">$34,999</h6>
+                        <h2 class="text-center text-light">$27,999</h2>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="text-light text-center">
+                            TurnKey Minus
+                        </p>
+                        <h6 class="text-center text-black-50 text-decoration-line-through">$34,999</h6>
+                        <h2 class="text-center text-light">$27,999</h2>
+                    </div> -->
+                </div>
+                <a href="javascript:void(0)" class="btn btn-lg me-2 btn-light text-uppercase mt-4 mb-3 text-center" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+                    Lock your price now
+                </a>
+                <!-- <button id="toggleButton" type="button"
+                class="btn btn-lg me-2 btn-light text-uppercase mt-4 mb-3 text-center">Lock your price now</button> -->
+                <br>
+                <a href="" data-bs-toggle="modal" data-bs-target="#fullscreenModal"
+                        class="text-center text-decoration-underline">
+                        Technical Specs
+            </a>
+                <p class="text-light">* Reservation today will save your spot and lock your price for either Package "Roller or Turnkey Minus"</p>
+                <h3 class="text-light">
+                    Spots are limited. Launching soon.
+                </h3>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 col-md-6 col-12 mt-4 pt-2">
+                <div class="card features feature-clean explore-feature p-4 px-md-3 border-0 rounded-md shadow text-center bg-white">
+                    <div class="icons text-light text-center mx-auto">
+                        <i class="uil uil-shield-check d-block rounded h1 mb-0" style="font-size: 60px;"></i>
+                    </div>
+
+                    <div class="card-body p-0 content">
+                        <h3 class="text-light">Secure payment</h3>
+                        <p class="text-light">Payments process through Stripe's secure payment network, trusted by millions of customers everyday.</p>
+                    </div>
+                </div>
+            </div><!--end col-->   
+            
+            <div class="col-lg-4 col-md-6 col-12 mt-4 pt-2">
+                <div class="card features feature-clean explore-feature p-4 px-md-3 border-0 rounded-md shadow text-center bg-white">
+                    <div class="icons text-light text-center mx-auto">
+                        <i class="uil uil-usd-circle d-block rounded h1 mb-0" style="font-size: 60px;"></i>
+                    </div>
+
+                    <div class="card-body p-0 content">
+                        <h3 class="text-light">100% refund guaranteed</h3>
+                        <p class="text-light">We guarantee your deposit with a no questions asked refund policy, from now until you confirm your order.</p>
+                    </div>
+                </div>
+            </div><!--end col-->   
+
+            <div class="col-lg-4 col-md-6 col-12 mt-4 pt-2">
+                <div class="card features feature-clean explore-feature p-4 px-md-3 border-0 rounded-md shadow text-center bg-white">
+                    <div class="icons text-light text-center mx-auto">
+                        <i class="uil uil-info-circle d-block rounded h1 mb-0" style="font-size: 60px;"></i>
+                    </div>
+
+                    <div class="card-body p-0 content">
+                        <h3 class="text-light">Transparency pledge</h3>
+                        <p class="text-light">Supporting a new product is exciting. It’s our pledge to keep you updated every step of the way. Questions? <a href="">info@genz40.com</a></p>
+                    </div>
+                </div>
+            </div><!--end col-->   
+        </div>
+
+    </div>
+</section>
+
+<!-- tech specs Modal -->
+<div class="modal fade" id="fullscreenModal" tabindex="-1" aria-labelledby="fullscreenModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header"
+                style="background-color: ghostwhite; border-bottom: rgb(70, 70, 74); padding-left: 40px; padding-right: 40px;">
+                <h1 class="modal-title text-dark text-uppercase" id="fullscreenModalLabel">
+                    {{ items.title }}
+                </h1>
+                <button type="button" class="btn-close btn btn-icon btn-outline-danger float-end"
+                    data-bs-dismiss="modal" aria-label="Close"><i class="mdi mdi-close"></i></button>
+                <!-- <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button> -->
+            </div>
+            <div class="modal-body bg-white" style="padding-right: 40px; padding-left: 40px;">
+                <div class="row">
+
+                    <div class="col-md-6 text-dark">
+                        <div class="row">
+                            {% for package in packages %}
+                            <div class="col-md-6 text-dark">
+                                <div class="flex-1">
+                                    <h4 class="text-dark mb-0">
+                                        {{ package.name }} From $ {{ package.amount|intcomma }}
+                                        <!-- <span class="wrapper text-primary fs-6">
+                                                <i class="uil uil-info-circle fs-5 align-middle me-1 text-dark"></i>
+                                                <div class="tooltip">
+                                                    Price valid until March 31, 2025
+
+                                                </div>
+                                            </span> -->
+                                        <!-- <button class="btn btn-icon btn-sm" title="Price valid until March 31, 2025"><i data-feather="info" class="fea icon-sm"></i> -->
+                                        <!-- <i class="uil uil-info-circle fs-5 align-middle me-1 text-dark"></i> -->
+                                        <!-- </button> -->
+
+                                    </h4>
+                                    <h6 class="text-black-50 mb-0">
+                                        Original Price <span class="text-decoration-line-through">$ {{ package.amount_reserve|intcomma }}</span>
+                                    </h6>
+                                    <div class="wrapper text-primary fs-6">
+                                        Learn More
+                                        <div class="tooltip">
+                                            {{ package.description }}
+                                            <!-- Package comes with body mounted to chassis with dash unit and suspension pre
+                                                installed.
+                                                You will be able to choose more options as add-on features to this package
+                                                when your car is in production to make your car as close to turnkey. -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                        </div>
+
+                        <div class="col-md-12 mt-4 pt-2">
+                            <h1 class="text-dark mt-4">Technical Specs</h1>
+                            <div class="accordion" id="accordionExample">
+                                <!-- Accordion Item 1 -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingDimension">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapseDimension"
+                                            aria-expanded="false" aria-controls="collapseDimension">
+                                            Dimensions
+                                        </button>
+                                    </h2>
+                                    <div id="collapseDimension" class="accordion-collapse collapse"
+                                        aria-labelledby="headingDimension" data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Length: 163"</p>
+                                            <p>- Height: 40.5"</p>
+                                            {% if items.title == 'Mark I' %}
+                                            <p>- Width: 71" (intermediate rear) or 78" (Wide rear) or 79" (Extra Wide rear)</p>
+                                            {% elif items.title == 'Mark II' %}
+                                            <p>- Width: 71"</p>
+                                            {% elif items.title == 'Mark IV' %}
+                                            <p>- Width: 71"</p>
+                                            {% endif %}
+                                            <p>- Wheelbase: 95"</p>
+                                            <p>- Front Wheels: Options Available</p>
+                                            <p>- Rear Wheels: Options Available</p>
+                                            <p>- Front Tires: Options Available</p>
+                                            <p>- Rear Tires: Options Available</p>
+                                            <p>- Fuel Tank: Aluminum 22 Gallons</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading2">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false"
+                                            aria-controls="collapse2">
+                                            Body
+                                        </button>
+                                    </h2>
+                                    <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Vaccum Infused / Handlaid Fiber Glass or Carbon Fiber </p>
+                                            <p>- Fiber Glass / Carbon Fiber Roof</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading3">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false"
+                                            aria-controls="collapse3">
+                                            Chassis
+                                        </button>
+                                    </h2>
+                                    <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Mig/Tig-welded Tubular Chassis be-spoke designed for GEN-Z40 </p>
+                                            <p>- Aluminum Skinned</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading4">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false"
+                                            aria-controls="collapse4">
+                                            Suspension
+                                        </button>
+                                    </h2>
+                                    <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="heading4"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Front: Ford Production upper control Arm and Spindle, cnc produced
+                                                lower control arm, adjustable coilover shocks </p>
+                                            <p>- Rear: Cnc produced uprights and control arm, adjustable coilover shocks
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading5">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false"
+                                            aria-controls="collapse5">
+                                            Steering
+                                        </button>
+                                    </h2>
+                                    <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="heading5"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Rack and pinion with Colapsable Steering Column </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading6">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false"
+                                            aria-controls="collapse6">
+                                            Brakes
+                                        </button>
+                                    </h2>
+                                    <div id="collapse6" class="accordion-collapse collapse" aria-labelledby="heading6"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Front: Brembo / Wilwood </p>
+                                            <p>- Rear: Brembo / Wilwood </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading9">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse9" aria-expanded="false"
+                                            aria-controls="collapse9">
+                                            Interior
+                                        </button>
+                                    </h2>
+                                    <div id="collapse9" class="accordion-collapse collapse" aria-labelledby="heading9"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Original Style Dash (Left Hand Drive / Right Hand Drive) - Leather
+                                                Stiched / Carbon Fiber / Alacantara </p>
+                                            <p>- Moto-lita 14" Steering Wheel </p>
+                                            <p>- Original style Seats with Leather or Alcantara </p>
+                                            <p>- Speed Hut Gauges </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading7">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse7" aria-expanded="false"
+                                            aria-controls="collapse7">
+                                            Drivetrain
+                                        </button>
+                                    </h2>
+                                    <div id="collapse7" class="accordion-collapse collapse" aria-labelledby="heading7"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Recommended Engines: 289, 302, 351W, 427 or Coyote </p>
+                                            <p>- Transmission: Boxter S (upto 04) or Audi 01E/01X </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading8">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse8" aria-expanded="false"
+                                            aria-controls="collapse8">
+                                            Exhaust System
+                                        </button>
+                                    </h2>
+                                    <div id="collapse8" class="accordion-collapse collapse" aria-labelledby="heading8"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Bundle of Snakes </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!--end col-->
+                        <div class="col-md-12 d-grid">
+                            <button data-bs-dismiss="modal" id="closeModalButton" type="button"
+                                class="btn btn-lg me-2 btn-light text-uppercase mt-4 float-end">
+                                Reserve Now
+                            </button>
+                            <small class="text-dark text-sm mb-5 mt-3" style="font-size: 11px;">
+                                * Reservation today will save your spot and lock your price for either Package "Roller
+                                or Turnkey Minus"
+                            </small>
+                        </div>
+                    </div>
+                    <div class="pt-2 col-md-6 mb-5">
+                        {% if items.title == 'Mark I' %}
+                        <img src="{% static 'images/genz/mark1wided.jpg' %}" class="img-fluid rounded shadow mb-5"
+                            alt="">
+                        {% elif items.title == 'Mark II' %}
+                        <img src="{% static 'images/genz/mark2wided.jpg' %}" class="img-fluid rounded shadow mb-5"
+                            alt="">
+                        {% elif items.title == 'Mark IV' %}
+                        <img src="{% static 'images/genz/mark1wided.jpg' %}" class="img-fluid rounded shadow mb-5"
+                            alt="">
+                        {% endif %}
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Offcanvas Start -->
+<div class="offcanvas offcanvas-end shadow border-0 bg-dark" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+    <!-- <div class="offcanvas-header p-4 border-bottom">
+        <h5 id="offcanvasRightLabel" class="mb-0">
+            <span class="l-dark logo-font">GEN-Z 40</span>
+        </h5>
+        <button type="button" class="btn-close d-flex align-items-center" data-bs-dismiss="offcanvas" aria-label="Close"><i class="uil uil-times fs-4"></i></button>
+    </div> -->
+    <div class="offcanvas-body p-4">
+        <div class="row">
+            <div class="col-md-12 mt-3">
+                <button data-bs-dismiss="offcanvas" type="button"
+                    class="btn btn-sm btn-outline-secondary text-dark text-uppercase mt-2 float-end"><i
+                        class="mdi mdi-arrow-left-thin"></i>Back</button>
+                <h3 class="display-5 fw-bold mb-0 text-uppercase text-dark">{{ items.title }}</h3>
+                {{items.amount_due}}
+                <span class="badge bg-info">Est. Delivery - Mar 31, 2025</span>
+            </div>
+            <div class="col-md-12">
+                <form id="checkout-form" method="POST" action="{% url 'create_account_before_checkout' %}">
+                    {% csrf_token %}
+                    <input type="text" value="{{ random_password }}" name="password1" hidden>
+                    <input type="text" value="{{ random_password }}" name="password2" hidden>
+                    <input type="text" value="{{ country_code }}" name="country" hidden>
+                    <input type="text" value="customer" name="role" hidden>
+
+                    <div class="alert alert-info alert-dismissible fade show text-dark mt-3" role="alert"
+                        style="background-color: rgb(59 130 246 / .2)!important; border-color: rgb(59 130 246 / .5) !important;">
+                        <i class="uil uil-info-circle fs-5 align-middle me-1 text-dark"></i><strong
+                            class="text-uppercase">Reserve now, Configure later</strong><br>
+                        This reservation will save your position in line. When you car is available
+                        for production, we will invite you to configure and choose from dozens of options to make it
+                        complete personalized and unique.
+                        <button type="button" class="btn-close btn btn-icon btn-sm text-white float-end"
+                            style="width: 20px; height: 20px; color: #fff !important; background-color: rgb(59 130 246 / .5) !important;"
+                            data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <h3 class="mt-2 text-dark">Reserve Now</h3>
+                    <div class="col-md-12 pt-2">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label text-dark">First Name<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control bg-white text-dark" name="first_name"
+                                    id="first_name" value="{{user_data.first_name}}" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-dark">Last Name<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control bg-white text-dark" name="last_name"
+                                    id="last_name" value="{{user_data.last_name}}" required />
+                            </div>
+
+                            <div class="col-md-12 mt-2">
+                                <label class="form-label text-dark">Email<span class="text-danger">*</span></label>
+                                <input type="email" class="form-control bg-white text-dark" name="email" id="email"
+                                    value="{{user_data.email}}" required />
+                            </div>
+                            <!-- <div class="col-md-12 mt-2">
+                                <label class="form-label text-dark">Confirm Email<span
+                                        class="text-danger">*</span></label>
+                                <input type="email" class="form-control bg-white text-dark" name="confirm_email"
+                                    id="confirm_email" value="{{user_data.email}}" required />
+                            </div>
+                            <div id="errorMessage" style="color: red; display: none;"></div> -->
+                            <div class="col-md-6 mt-2 position-relative">
+                                <label class="form-label text-dark">Phone Number <span
+                                        class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <!-- Add wrapper to hold the flag -->
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-white border-0 p-0">
+                                            <img class="fea icon-sm icons" src="{{ country_flag_url }}"
+                                                alt="Country Flag" style="width: 28px; height: 28px;" />
+                                        </span>
+                                    </div>
+                                    <!-- Input field -->
+                                    <input type="tel" class="form-control bg-white text-dark pl-5" name="phone_number"
+                                        value="{{user_data.phone_number}}" id="phone_number" maxlength="10"
+                                        style="border-radius: .375rem !important;" required />
+                                </div>
+                            </div>
+                            <div class="col-md-6 mt-2">
+                                <label class="form-label text-dark">Delivery Zip Code<span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control bg-white text-dark" name="zip_code" id="zip_code"
+                                    value="{{ user_data.zip_code }}" maxlength="5" required />
+                            </div>
+
+                            <div class="col-md-12 text-dark">
+                                <small class="text-gray text-sm" style="font-size: 11px;">
+                                    By entering my contact information above, I authorize Alvi Automobiles to
+                                    contact me about this request and Alvi Automobiles Updates including other Alvi
+                                    Automobiles
+                                    products, services and events. I can opt out in the Alvi Automobiles app or by
+                                    unsubscribing. This is not a purchase requirement.</span>
+
+                                </small>
+                            </div>
+
+                            <div class="col-md-12 text-dark mt-3 mb-1 text-sm" style="font-size: 11px;">
+                                <h4 class="mb-0">Due Today
+                                    <span class="mb-0 float-end mt-2">$ {{ amount_due }}</span>
+                                </h4>
+                                <!-- <h4 class="mb-0 float-end">$100</h4> -->
+                                <small>Fully Refundable</small>
+                            </div>
+                        </div>
+                        <input type="hidden" value="{{ amount_due }}" name="amount" />
+                        <input type="hidden" value="{{ items.title }}" name="package" />
+                        <!-- {{user_data.is_authenticated}}
+                            {{user_data.user_id}} -->
+                        <div class="d-grid mt-3 mb-1">
+                            <button type="submit"
+                                class="mb-1 btn btn-secondary text-dark text-uppercase">
+                                <!-- <i class="mdi mdi-arrow-right-thin"></i> -->
+                                Reserve Now
+                                <span class="spinner-border spinner-border-sm" id="pro1" role="status"
+                                    aria-hidden="true" style="display: none;"></span>
+                            </button>
+                        </div>
+                        <div class="col-md-12 text-dark mb-5">
+                            <small class="text-dark text-sm mb-5" style="font-size: 11px;">
+                                By placing this order, I understand that this is just the reservation fee and not a
+                                car purchase price.
+                                The Final price of the car will depend on options and features I choose. Reservation
+                                today will save your spot and lock your price for either Package "Roller or Turnkey
+                                Minus"
+                            </small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Offcanvas End -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("closeModalButton").addEventListener("click", function () {
+            var modal = bootstrap.Modal.getInstance(document.getElementById("fullscreenModal"));
+            modal.hide(); // Close the modal
+
+            var offcanvas = new bootstrap.Offcanvas(document.getElementById("offcanvasRight"));
+            offcanvas.show(); // Open the sidebar
+        });
+    });
+</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("closeModalButton").addEventListener("click", function () {
+            var modal = bootstrap.Modal.getInstance(document.getElementById("fullscreenModal"));
+            modal.hide(); // Close the modal
+    
+            var offcanvas = new bootstrap.Offcanvas(document.getElementById("offcanvasRight"));
+            offcanvas.show(); // Open the sidebar
+        });
+    });
+    
+    // Dropdown logic -> route to /mark1/, /mark2/, /mark4/
+    document.getElementById("car-select").addEventListener("change", function() {
+        const selectedCar = this.value;
+        let newUrl = "/mark1/"; // default
+    
+        if (selectedCar === "Mark II") {
+           newUrl = "/mark2/";
+        } else if (selectedCar === "Mark IV") {
+           newUrl = "/mark3/";
+        }
+    
+        window.location.href = newUrl;
+    });
+    </script>
+    
+
+
+{% endblock content %}
+
+{% block script %}
+
+{% endblock script %}

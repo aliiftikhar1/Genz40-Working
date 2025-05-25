@@ -1,0 +1,1442 @@
+{% extends "public/layout/base.html" %}
+{% load static %}
+{% load frontend_custom_filters %}
+{% block header %}
+<style>
+    /* Global Styles */
+    body {
+        background-color: #000;
+        color: #fff;
+        font-family: Arial, sans-serif;
+    }
+
+    /* Utility Classes */
+    .z-index-1 { position: relative; z-index: 1; }
+    .section-title {
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: #fff;
+        text-align:start;
+    }
+
+    /* Password validation styles */
+    .password-requirements {
+        font-size: 0.8rem;
+        margin-top: 5px;
+    }
+    
+    .password-requirements-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    .requirement {
+        color: #dc3545;
+        transition: color 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+    
+    .requirement.valid {
+        color: #28a745;
+    }
+
+    /* Form input styles */
+    .form-control {
+        background-color: #000 !important;
+        color: #fff !important;
+        border: 1px solid #fff;
+    }
+
+    .form-control:focus {
+        background-color: #000 !important;
+        color: #fff !important;
+        border-color: #fff;
+        box-shadow: none;
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Mobile form input styles */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"] {
+        background-color: #000 !important;
+        color: #fff !important;
+        border: 1px solid #fff;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    input[type="tel"]:focus {
+        background-color: #000 !important;
+        color: #fff !important;
+        border-color: #fff;
+        box-shadow: none;
+    }
+
+    /* Password toggle icon styles */
+    .password-toggle, .confirm-password-toggle {
+        color: #fff;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .password-toggle:hover, .confirm-password-toggle:hover {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Password match message styles */
+    #community-password-match, #community-password-match-mobile {
+        transition: color 0.3s ease;
+    }
+
+    /* Submit button styles */
+    #community-submit-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    /* Services Section */
+    .services-section {
+        padding: 4rem 0;
+    }
+    .service-card {
+        border-radius: 16px;
+        padding: 2rem;
+        transition: transform 0.3s ease;
+        border: 1px solid #fff;
+    }
+    .service-card:hover {
+        transform: translateY(-5px);
+    }
+    .looking-card { background: rgba(255, 255, 255, 0.1); }
+    .buying-card { background: rgba(255, 255, 255, 0.15); }
+    .btn-get-started {
+        background: #004cff6b;
+        border: 1px solid #fff;
+        color: #fff;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .icon-container {
+        position: absolute;
+        bottom: 2rem;
+        right: 2rem;
+    }
+    .icon-blue, .icon-pink { color: #fff; }
+    .service-description {
+        color: #fff;
+        margin-bottom: 1.5rem;
+        max-width: 80%;
+    }
+
+    /* Community Section */
+    .community-section {
+        padding: 3rem 1rem;
+    }
+    .car-card {
+        background: #000;
+        border: 1px solid #666;
+        border-radius: 12px;
+        padding: 1.2rem;
+        transition: transform 0.2s ease;
+    }
+    .car-card:hover {
+        transform: translateY(-5px);
+    }
+    .card-car-image-container {
+        background: #000;
+        border-radius: 12px;
+        width:80%;
+        margin:auto;
+        height: 28rem;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .card-car-image{
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 0 -6rem;
+    }
+    .card-content {
+        padding: 1rem 0;
+        text-align: center;
+    }
+    .card-text {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+    .link-container {
+        border-radius: 25px;
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        width: 100%;
+        max-width: 30rem;
+        margin-left: auto;
+        margin-right: auto;
+    } 
+    .link-primary {
+        color: #0d6efd;
+        text-decoration: none;
+        font-size: 0.875rem;
+    }
+    .form-control {
+        border-radius: 6px;
+        padding: 0.75rem;
+        border: 1px solid #fff;
+        background: rgba(255, 255, 255, 0.4);
+        color: #fff;
+    }
+    .form-control::placeholder { color: #fff; }
+    .btn-primary {
+        background: #0d6efd;
+        border: none;
+        border-radius: 6px;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+    }
+    .btn-primary:hover { background: #0b5ed7; }
+
+    /* FAQ Section */
+    .faq-section {
+        padding: 3rem 0;
+    }
+    .faq-title {
+        font-weight: 800;
+        font-size: 2rem;
+        margin-bottom: 2rem;
+    }
+    .custom-faq-item {
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 0.5rem;
+    }
+    .custom-faq-question {
+        color: #fff;
+        font-weight: 600;
+        font-size: 1.1rem;
+        padding: 1rem 0;
+        background: transparent;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        border: none;
+    }
+    .custom-faq-question:hover { color: #0d6efd; }
+    .custom-faq-answer {
+        padding: 0 0 1rem;
+        color: #87ef75;
+        display: none;
+    }
+    .custom-faq-answer.active { display: block; }
+    .custom-faq-icon { transition: transform 0.3s ease; }
+    .custom-faq-question.active .custom-faq-icon { transform: rotate(180deg); }
+    .side-car-image-container {
+        position: relative;
+        max-height: 400px;
+        overflow: hidden;
+    }
+    .side-car-image {
+        width: 100%;
+        height: auto;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+    .show-overlay {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+    }
+    .show-text {
+        font-size: 3rem;
+        font-weight: 800;
+        color: rgba(255, 255, 255, 0.25);
+        letter-spacing: 0.3rem;
+    }
+    .car-section {
+        border-top: 1px solid white;
+        padding-top: 3rem;
+        margin-bottom: 3rem;
+    }
+    .car-tag {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #28a745;
+        text-transform: uppercase;
+    }
+    .car-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: white;
+        text-transform: uppercase;
+        margin: 0.5rem 0 1.5rem;
+    }
+    .car-btn {
+        border-radius: 30px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 600;
+    }
+    .btn-learn-more {
+        border: 2px solid white;
+        width:50%;
+        background-color: black;
+    }
+    .btn-order-now {
+        border: 2px solid white;
+        width:50%;
+        background-color: black;
+    }
+
+    /* Community Form Section */
+    .section.bg-black { padding: 3rem 0; }
+    .form-label { color: #fff; text-transform: uppercase; }
+    .form-icon { position: relative; }
+    .form-icon i, .form-icon img {
+        position: absolute;
+        top: 50%;
+        left: 12px;
+        transform: translateY(-50%);
+    }
+    .form-control.ps-5 {
+        padding-left: 3rem;
+        background: transparent;
+        border: 1px solid #ccc;
+        color: #fff;
+    }
+    .btn-success {
+        background: #28a745;
+        border: none;
+        padding: 0.75rem;
+        border-radius: 6px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 991.98px) {
+        .hero-image-container { flex-direction: column; }
+        .car-image {
+            width: 100%;
+            transform: none;
+        }
+        .car-image-container { margin-top: 2rem; }
+        .side-car-image-container { max-height: 300px; }
+        .show-text { font-size: 2.5rem; }
+    }
+
+    @media (max-width: 767.98px) {
+        .hero-container { margin-top: 2rem; }
+        .specs-container .col-6 { margin-bottom: 1.5rem; }
+        .card-car-image-container { height: 20rem; width:100%; }
+        {% comment %} .card-car-image, .card-car-image-1 { object-fit: contain; } {% endcomment %}
+        .card-car-image{
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: 0 -2rem;
+        }
+        .btn-learn-more {
+            border: 2px solid white;
+            width:100%;
+            background-color: black;
+        }
+        .btn-order-now {
+            border: 2px solid white;
+            width:100%;
+            background-color: black;
+        }
+        .faq-title { font-size: 1.75rem; }
+        .custom-faq-question { font-size: 1rem; }
+        .link-container { width: 100%; display: flex; flex-direction: column; }
+        .btn-primary { padding: 0.5rem 1rem; }
+        #description { font-size: 0.9rem; }
+        .car-tag { font-size: 1.2rem; }
+        .car-title { font-size: 1.3rem; }
+    }
+
+    @media (max-width: 575.98px) {
+        .hero-image-container { flex-direction: column-reverse; }
+        .side-car-image-container { display: none; }
+        .car-image-container { margin-top: -2rem; margin-bottom: 1rem; }
+        .show-text { font-size: 2rem; }
+        .faq-section { padding: 2rem 0; }
+        .card-car-image-container { height: 12rem; }
+    }
+
+    /* Autofill fix for Chrome, Safari, Edge */
+    input:-webkit-autofill,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 1000px #000 inset !important;
+        box-shadow: 0 0 0 1000px #000 inset !important;
+        -webkit-text-fill-color: #fff !important;
+        color: #fff !important;
+        border: 1px solid #fff !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+    /* Autofill fix for Firefox */
+    input:-moz-autofill {
+        box-shadow: 0 0 0 1000px #000 inset !important;
+        -moz-text-fill-color: #fff !important;
+        color: #fff !important;
+        border: 1px solid #fff !important;
+    }
+</style>
+{% endblock header %}
+
+{% block content %}
+<div class="position-relative text-white overflow-hidden rounded" style="background:black;">
+{% include 'public/component/carousel_component.html' %}
+<!-- Second Section -->
+{% comment %} <section class="services-section text-white bg-black">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Looking for a Car Card -->
+            <div class="col-md-6">
+                <div class="service-card looking-card position-relative">
+                    <div>
+                        <h2>Are You Looking<br>For a Car?</h2>
+                        <p class="service-description">We are committed to providing our customers with exceptional service.</p>
+                        <button class="btn-get-started-blue">
+                            Get Started
+                            <i data-lucide="move-right" width="18" height="18"></i>
+                        </button>
+                    </div>
+                    <div class="icon-container">
+                        <div style="position: relative;">
+                            <i data-lucide="car" width="48" height="48" class="icon-blue"></i>
+                            <i data-lucide="zap" width="24" height="24" class="icon-blue" style="position: absolute; top: -10px; right: -10px;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Buy a Car Card -->
+            <div class="col-md-6">
+                <div class="service-card buying-card position-relative">
+                    <div>
+                        <h2>Do You Want to<br>Buy a Car?</h2>
+                        <p class="service-description">We are committed to providing our customers with exceptional service.</p>
+                        <button class="btn-get-started-dark">
+                            Get Started
+                            <i data-lucide="move-right" width="18" height="18"></i>
+                        </button>
+                    </div>
+                    <div class="icon-container">
+                        <div style="position: relative;">
+                            <i data-lucide="car" width="48" height="48" class="icon-pink"></i>
+                            <i data-lucide="check" width="16" height="16" class="icon-pink" style="position: absolute; bottom: 0; left: -10px;"></i>
+                            <i data-lucide="dollar-sign" width="20" height="20" class="icon-pink" style="position: absolute; bottom: -10px; right: -10px;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section> {% endcomment %}
+
+<!-- Join Genz Section -->
+<section class="community-section bg-black">
+    <div class="container">
+        {% comment %} <h2 class="section-title">JOIN GEN-Z COMMUNITY</h2> {% endcomment %}
+        
+        <div class="row g-4">
+            <!-- Car Card 1 -->
+            {% comment %} <div class="col-12 col-md-6">
+                <div class="car-card">
+                    <div class="card-car-image-container">
+                        <img src="{% static 'images/car/red-car.png' %}" alt="Red Racing Car #1" class="card-car-image-1">
+                    </div>
+                    <div class="card-content">
+                        <p class="card-text">Lock your exclusive discount by signing up today.</p>
+                        <div class="link-container">
+                            <a href="#" class="link-primary">Learn More</a>
+                            <a href="#" class="link-primary" >Technical Specs</a>
+                        </div>
+                        <div class="input-group">
+                            <input type="email" class="form-control" placeholder="Email" aria-label="Email">
+                            <button class="btn btn-primary" type="button">GET STARTED</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Car Card 2 -->
+            <div class="col-12 col-md-6">
+                <div class="car-card">
+                    <div class="card-car-image-container">
+                        <img  src="{% static 'images/car/blue-car.png' %}"  alt="Blue Racing Car #6" class="card-car-image-1">
+                    </div>
+                    <div class="card-content">
+                        <p class="card-text">Lock your exclusive discount by signing up today.</p>
+                        <div class="link-container">
+                            <a href="#" class="link-primary">Learn More</a>
+                            <a href="#" class="link-primary">Technical Specs</a>
+                        </div>
+                        <div class="input-group">
+                            <input type="email" class="form-control" placeholder="Email" aria-label="Email">
+                            <button class="btn btn-primary" type="button">GET STARTED</button>
+                        </div>
+                    </div>
+                </div>
+            </div> {% endcomment %}
+            
+            <!-- Car Card 3 -->
+            <div class="col-12 car-section">
+                <div class="card-content">
+                    <h5 class="car-tag">{{ section_1.tag }}</h5>
+                    <h4 class="car-title">{{ section_1.title }}</h4>
+                    <div class="card-car-image-container">
+                        <img src="{{ section_1.image.url }}" alt="{{ section_1.title }}" class="card-car-image">
+                    </div>
+                    {% for item in nav_items %}
+                    {% if forloop.counter == 1 %}
+                    <div class="link-container">
+                        <a href="{% url 'learn_more' item.slug %}" class="btn btn-outline-secondary btn-learn-more">Learn More</a>
+                        <a href="{% url 'car_configurator' item.slug %}" class="btn btn-outline-secondary btn-order-now">Order Now</a>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Car Card 4 -->
+            <div class="col-12 car-section">
+                <div class="card-content">
+                    <h5 class="car-tag">{{ section_2.tag }}</h5>
+                    <h4 class="car-title">{{ section_2.title }}</h4>
+                    <div class="card-car-image-container">
+                        <img src="{{ section_2.image.url }}" alt="{{ section_2.title }}" class="card-car-image">
+                    </div>
+                    {% for item in nav_items %}
+                    {% if forloop.counter == 2 %}
+                    <div class="link-container">
+                        <a href="{% url 'learn_more' item.slug %}" class="btn btn-outline-secondary btn-learn-more">Learn More</a>
+                        <a href="{% url 'car_configurator' item.slug %}" class="btn btn-outline-secondary btn-order-now">Order Now</a>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+           
+
+          <!-- Mark 4 card -->
+          <div class="col-12 car-section">
+            <div class="card-content">
+                <h5 class="car-tag">{{ section_3.tag }}</h5>
+                <h4 class="car-title">{{ section_3.title }}</h4>
+                <div class="card-car-image-container">
+                    <img src="{{ section_3.image.url }}" alt="{{ section_3.title }}" class="card-car-image">
+                </div>
+                {% for item in nav_items %}
+                {% if forloop.counter == 3 %}
+                <div class="link-container">
+                    <a href="{% url 'learn_more' item.slug %}" class="btn btn-outline-secondary btn-learn-more">Learn More</a>
+                    <a href="{% url 'car_configurator' item.slug %}" class="btn btn-outline-secondary btn-order-now">Order Now</a>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <!-- mark 4 card end -->
+        </div>
+    </div>
+</section>
+<!-- FAQ Section -->
+<section class="faq-section">
+    <div class="container">
+        <h2 class="faq-title">FAQs</h2>
+        
+        <div class="row">
+            <!-- FAQ Accordion - Custom Implementation -->
+            <div class="col-lg-6">
+                <div class="custom-faq-container">
+                    <!-- FAQ Item 1 (Open by default) -->
+                    <div class="custom-faq-item">
+                        <button class="custom-faq-question active" data-faq="faq1">
+                            Can I do financing?
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="custom-faq-icon" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                            </svg>
+                        </button>
+                        <div id="faq1" class="custom-faq-answer active">
+                            Most of the owners secure their own financing by getting a personal loan.
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ Item 2 -->
+                    <div class="custom-faq-item">
+                        <button class="custom-faq-question" data-faq="faq2">
+                            Does GEN-Z Cars have any dealers?
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="custom-faq-icon" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                            </svg>
+                        </button>
+                        <div id="faq2" class="custom-faq-answer">
+                            We sell all our cars online through our platform. This let's us keep the pricing as low as possible
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ Item 3 -->
+                    <div class="custom-faq-item">
+                        <button class="custom-faq-question" data-faq="faq3">
+                            Current Capacity
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="custom-faq-icon" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                            </svg>
+                        </button>
+                        <div id="faq3" class="custom-faq-answer">
+                            Our current capacity is to build 12 Rollers and 3 Turnkey minus cars in 12 months. We are working on expanding our production capacity based on demand.
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ Item 4 -->
+                    <div class="custom-faq-item">
+                        <button class="custom-faq-question" data-faq="faq4">
+                            EXTRAS & OPTIONS
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="custom-faq-icon" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z"/>
+                            </svg>
+                        </button>
+                        <div id="faq4" class="custom-faq-answer">
+GENZCars supply every single part required to complete the car. Buy online or email us at sales@genz40.com to learn more.
+                        </div>
+                    </div>
+                    
+                   
+                </div>
+            </div>
+            
+            <!-- Car Image -->
+            <div class="col-lg-6">
+                <div class="side-car-image-container">
+                    <img src="{% static 'images/car/side-car-image.jfif' %}" alt="Car Showroom" class="side-car-image">
+                    <div class="show-overlay">
+                        <div class="show-text logo-font"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Join GEN-Z Community Section -->
+<section class="section bg-black d-none d-lg-block">
+    <div class="container-fluid">
+        <div class="row align-items-start">
+            <div class="col-md-1"></div>
+            <div class="col-md-4">
+                <div class="section-title me-lg-4">
+                    <h4 class="title text-white mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>
+                    <h4 class="title text-white mb-4 d-lg-none">JOIN GEN-Z COMMUNITY</h4>
+                    <p class="text-white para-dark para-desc mb-0">
+                        Interested in GEN-Z 40? Join the most sort out community of
+                        Builders & Enthusiats. Ask questions, and share your experience.
+                    </p>
+                    <div class="mt-4 pt-2 text-white">
+                        <h6 class="mb-4">WHAT ELSE YOU GET?</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Exclusive Offers
+                            </li>
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Build & Technical Support
+                            </li>
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Live Chat with Member & Group Experts
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-4">
+                <div class="card rounded shadow  bg-black" style="border: 1px solid black; padding-top: 1rem;">
+                    <div class="card-body pt-0">
+                        <div class="section-title">
+                            <h4 class="title title-light text-center">BECOME A MEMBER</h4>
+                            <form method="post" id="community-form" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" value="{{ random_password }}" name="password1">
+                                <input type="hidden" value="{{ random_password }}" name="password2">
+                                <input type="hidden" value="{{ country_code }}" name="country">
+                                <input type="hidden" value="customer" name="role">
+                                <div class="row mt-4">
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label text-dark text-uppercase">
+                                                First Name <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="user"
+                                                   class="fea icon-sm icons text-dark"></i>
+                                                <input name="first_name" id="first_name" type="text"
+                                                       class="form-control ps-5 bg-transparent text-dark"
+                                                       placeholder="First Name" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label text-dark text-uppercase">
+                                                Last Name <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="user" class="fea icon-sm icons"></i>
+                                                <input name="last_name" id="last_name" type="text"
+                                                       class="form-control ps-5" placeholder="Last Name" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label text-dark text-uppercase">
+                                                Email <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="mail" class="fea icon-sm icons"></i>
+                                                <input type="email" id="email" class="form-control ps-5"
+                                                       placeholder="Email" name="email" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label text-dark text-uppercase">
+                                                Phone Number
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <img class="fea icon-sm icons"
+                                                     src="{{ country_flag_url }}"
+                                                     alt="Country Flag"
+                                                     style="width: 28px; height: 28px; top: 10px !important; left: 12px;">
+                                                <input name="phone_number" id="phone_number" type="text"
+                                                       class="form-control ps-5" placeholder="Phone Number">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label text-dark text-uppercase">
+                                                Password <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="lock" class="fea icon-sm icons"></i>
+                                                <input type="password" id="community-password" name="password" class="form-control ps-5" required>
+                                                <i data-feather="eye" class="fea icon-sm icons position-absolute password-toggle" style="right: 10px; left: auto; cursor: pointer;"></i>
+                                            </div>
+                                            <div class="password-requirements text-dark mt-2">
+                                                <p class="mb-1">Password must contain:</p>
+                                                <div class="password-requirements-grid">
+                                                    <div id="community-length" class="requirement">✓ At least 8 characters</div>
+                                                    <div id="community-uppercase" class="requirement">✓ At least 1 uppercase letter</div>
+                                                    <div id="community-number" class="requirement">✓ At least 1 number</div>
+                                                    <div id="community-special" class="requirement">✓ At least 1 special character</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label text-dark text-uppercase">
+                                                Confirm Password <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="form-icon position-relative">
+                                                <i data-feather="lock" class="fea icon-sm icons"></i>
+                                                <input type="password" id="community-password-confirm" name="password_confirm" class="form-control ps-5" required>
+                                                <i data-feather="eye" class="fea icon-sm icons position-absolute confirm-password-toggle" style="right: 10px; left: auto; cursor: pointer;"></i>
+                                            </div>
+                                            <div id="community-password-match" class="mt-1 text-dark" style="font-size: 0.8rem;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 mb-2">
+                                        <label class="form-check-label text-dark">
+                                            By continuing, you agree to our
+                                            <a href="{% url 'privacy_policy' %}" target="_blank"
+                                               class="text-primary">
+                                                Privacy Policy
+                                            </a>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-12 mb-0">
+                                        <div class="d-grid">
+                                            <button type="submit" class="btn btn-success" id="community-submit-btn">
+                                                Join now
+                                                <span class="spinner-border spinner-border-sm" id="pro"
+                                                      role="status" aria-hidden="true"
+                                                      style="display: none;"></span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div><!-- row end -->
+                            </form>
+                        </div><!-- section-title end -->
+                    </div><!-- card-body end -->
+                </div><!-- card end -->
+            </div>
+        </div><!-- row end -->
+    </div><!-- container-fluid end -->
+</section>
+
+<!-- Community Form (Mobile) -->
+<section class="section bg-black d-lg-none">
+    <div class="container">
+        <div class="row align-items-start">
+            <div class="col-md-6">
+                <div class="section-title me-lg-4">
+                    <h4 class="title title-dark mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>
+                    <h4 class="title title-dark mb-4 d-lg-none">JOIN GEN-Z COMMUNITY</h4>
+                    <p class="text-dark para-light para-desc mb-0">
+                        Interested in GEN-Z 40? Join the most sort out community of
+                        Builders & Enthusiats. Ask questions, and share your experience.
+                    </p>
+                    <div class="mt-4 pt-2">
+                        <h6 class="title-dark mb-4">WHAT ELSE YOU GET?</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Exclusive Offers
+                            </li>
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Build & Technical Support
+                            </li>
+                            <li class="mb-1">
+                                <span class="text-success h5 me-2">
+                                    <i class="uil uil-check-circle align-middle"></i>
+                                </span>
+                                Live Chat with Member & Group Experts
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mt-4">
+                <div class="card rounded shadow border-0 bg-black">
+                    <div class="card-body p-0">
+                        <form method="post" id="community-form-mobile" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" value="{{ random_password }}" name="password1">
+                            <input type="hidden" value="{{ random_password }}" name="password2">
+                            <input type="hidden" value="{{ country_code }}" name="country">
+                            <input type="hidden" value="customer" name="role">
+                            <div class="row mt-4">
+                                <div class="col-md-12 ">
+                                    <div class="mb-3">
+                                        <label class="form-label text-dark text-uppercase">
+                                            First Name <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="user" class="fea icon-sm icons text-dark"></i>
+                                            <input name="first_name" id="first_name" type="text"
+                                                   class="ps-5 bg-transparent text-dark"
+                                                   style="width: 100%; padding: 12px; font-size: 14px;
+                                                          border: 1px solid #ccc; border-radius: 5px;
+                                                          outline: none; margin-bottom: 10px;"
+                                                   placeholder="First Name" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label text-dark text-uppercase">
+                                            Last Name <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="user" class="fea icon-sm icons text-dark"></i>
+                                            <input name="last_name" id="last_name" type="text"
+                                                   class="ps-5 bg-transparent text-dark"
+                                                   style="width: 100%; padding: 12px; font-size: 14px;
+                                                          border: 1px solid #ccc; border-radius: 5px;
+                                                          outline: none; margin-bottom: 10px;
+                                                          "
+                                                   placeholder="Last Name" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label text-dark text-uppercase">
+                                            Email <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="mail" class="fea icon-sm icons text-dark"></i>
+                                            <input type="email" id="email" class="ps-5 bg-transparent text-dark"
+                                                   placeholder="Email"
+                                                   style="width: 100%; padding: 12px; font-size: 14px;
+                                                          border: 1px solid #ccc; border-radius: 5px;
+                                                          outline: none; margin-bottom: 10px;
+                                                          "
+                                                   name="email" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label text-dark text-uppercase">
+                                            Phone Number
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <img class="fea icon-sm icons"
+                                                 src="{{ country_flag_url }}"
+                                                 alt="Country Flag"
+                                                 style="width: 28px; height: 28px; top: 10px !important; left: 12px;">
+                                            <input name="phone_number" id="phone_number_mobile" type="text"
+                                                   class="ps-5 bg-transparent text-dark"
+                                                   placeholder="Phone Number"
+                                                   style="width: 100%; padding: 12px; font-size: 14px;
+                                                          border: 1px solid #ccc; border-radius: 5px;
+                                                          outline: none; margin-bottom: 10px;
+                                                          ">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label text-dark text-uppercase">
+                                            Password <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="lock" class="fea icon-sm icons"></i>
+                                            <input type="password" id="community-password-mobile" name="password" style="width: 100%; padding: 12px; font-size: 14px;
+                                                          border: 1px solid #ccc; border-radius: 5px;
+                                                          outline: none; margin-bottom: 10px;
+                                                          " class="ps-5 bg-transparent text-dark" required>
+                                            <i data-feather="eye" class="fea icon-sm icons position-absolute password-toggle" style="right: 10px; left: auto; cursor: pointer;"></i>
+                                        </div>
+                                        <div class="password-requirements text-dark mt-2">
+                                            <p class="mb-1">Password must contain:</p>
+                                            <div class="password-requirements-grid">
+                                                <div id="community-length-mobile" class="requirement">✓ At least 8 characters</div>
+                                                <div id="community-uppercase-mobile" class="requirement">✓ At least 1 uppercase letter</div>
+                                                <div id="community-number-mobile" class="requirement">✓ At least 1 number</div>
+                                                <div id="community-special-mobile" class="requirement">✓ At least 1 special character</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label class="form-label text-dark text-uppercase">
+                                            Confirm Password <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="lock" class="fea icon-sm icons"></i>
+                                            <input type="password" id="community-password-confirm-mobile" style="width: 100%; padding: 12px; font-size: 14px;
+                                                          border: 1px solid #ccc; border-radius: 5px;
+                                                          outline: none; margin-bottom: 10px;
+                                                          " name="password_confirm" class="ps-5 bg-transparent text-dark" required>
+                                            <i data-feather="eye" class="fea icon-sm icons position-absolute confirm-password-toggle" style="right: 10px; left: auto; cursor: pointer;"></i>
+                                        </div>
+                                        <div id="community-password-match-mobile" class="mt-1 text-dark" style="font-size: 0.8rem;"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 mb-2">
+                                    <label class="form-check-label text-dark">
+                                        By continuing, you agree to our
+                                        <a href="{% url 'privacy_policy' %}" target="_blank"
+                                           class="text-primary">
+                                            Privacy Policy
+                                        </a>
+                                    </label>
+                                </div>
+                                <div class="col-md-12 mb-0">
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-success">
+                                            Join now
+                                            <span class="spinner-border spinner-border-sm" id="pro_mob"
+                                                  role="status" aria-hidden="true"
+                                                  style="display: none;"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div><!-- row end -->
+                        </form>
+                    </div><!-- card-body end -->
+                </div><!-- card end -->
+            </div>
+        </div><!-- row end -->
+    </div><!-- container end -->
+</section>
+{% endblock content %}
+
+
+{% block script %}
+
+<script>
+    document.getElementById("phone_number").addEventListener("input", function (e) {
+        let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+    
+        if (value.length > 10) value = value.substring(0, 10); // Limit to 10 digits
+    
+        let formattedValue = value;
+    
+        if (value.length > 6) {
+            formattedValue = `(${value.substring(0, 3)}) ${value.substring(3, 6)}-${value.substring(6)}`;
+        } else if (value.length > 3) {
+            formattedValue = `(${value.substring(0, 3)}) ${value.substring(3)}`;
+        } else if (value.length > 0) {
+            formattedValue = `(${value}`;
+        }
+    
+        e.target.value = formattedValue;
+    });
+</script>
+<script>
+    document.getElementById("phone_number_mobile").addEventListener("input", function (e) {
+        let value = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+    
+        if (value.length > 10) value = value.substring(0, 10); // Limit to 10 digits
+    
+        let formattedValue = value;
+    
+        if (value.length > 6) {
+            formattedValue = `(${value.substring(0, 3)}) ${value.substring(3, 6)}-${value.substring(6)}`;
+        } else if (value.length > 3) {
+            formattedValue = `(${value.substring(0, 3)}) ${value.substring(3)}`;
+        } else if (value.length > 0) {
+            formattedValue = `(${value}`;
+        }
+    
+        e.target.value = formattedValue;
+    });
+</script>
+<!-- Ajax request for community form -->
+
+<script>
+    $("#community-form").submit(function (e) {
+        e.preventDefault();
+        var data = new FormData($('#community-form').get(0));
+        $('#pro').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'customer_register_community' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response.message);
+                    // Redirect to community chat page after successful registration
+                    setTimeout(function() {
+                        window.location.replace("{% url 'customer_community_message' %}");
+                    }, 2000); // Wait 2 seconds to show the success message
+                } else {
+                    toastr.error(response.message);
+                }
+                $('#community-form')[0].reset();
+                $('#pro').hide();
+            },
+            error: function (response) {
+                if (response.responseJSON) {
+                    toastr.error(response.responseJSON.message);
+                } else {
+                    toastr.error("An error occurred during registration");
+                }
+                $('#pro').hide();
+            }
+        });
+    });
+</script>
+<script>
+    $("#community-form-mobile").submit(function (e) {
+        e.preventDefault();
+        var data = new FormData($('#community-form-mobile').get(0));
+        $('#pro_mob').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'customer_register_community' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response.message);
+                    // Redirect to COMMUNITY page after successful registration
+                    setTimeout(function() {
+                        window.location.replace("{% url 'customer_community_message' %}");
+                    }, 2000); // Wait 2 seconds to show the success message
+                } else {
+                    toastr.error(response.message);
+                }
+                $('#community-form-mobile')[0].reset();
+                $('#pro_mob').hide();
+            },
+            error: function (response) {
+                if (response.responseJSON) {
+                    toastr.error(response.responseJSON.message);
+                } else {
+                    toastr.error("An error occurred during registration");
+                }
+                $('#pro_mob').hide();
+            }
+        });
+    });
+</script>
+<!-- comunity form script ends -->
+<script>
+    lucide.createIcons();
+    
+    // Custom FAQ accordion functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const faqQuestions = document.querySelectorAll('.custom-faq-question');
+        
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', function() {
+                const faqId = this.getAttribute('data-faq');
+                const answer = document.getElementById(faqId);
+                
+                // Toggle active class on the clicked question
+                this.classList.toggle('active');
+                
+                // Toggle active class on the answer
+                answer.classList.toggle('active');
+                
+                // If this question is now active, close all other questions
+                if (this.classList.contains('active')) {
+                    faqQuestions.forEach(otherQuestion => {
+                        if (otherQuestion !== this) {
+                            otherQuestion.classList.remove('active');
+                            const otherId = otherQuestion.getAttribute('data-faq');
+                            const otherAnswer = document.getElementById(otherId);
+                            otherAnswer.classList.remove('active');
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+     function mailChimpSubscribe(email) {
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'subscribe' %}",
+            data: {"email": email},
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken') // only needed if CSRF is enforced
+            },
+            success: function (response) {
+                // silent success or handle as needed
+            },
+            error: function (response) {
+                // silent error or handle as needed
+            }
+        });
+    }
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+     document.getElementById("getStartedBtnFirst").addEventListener("click", function (event) {
+        event.preventDefault();
+        let emailInput = document.getElementById("email-desktop-first").value.trim();
+        let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(emailInput)) {
+            toastr.error("Please enter a valid email address.");
+            return;
+        }
+        mailChimpSubscribe(emailInput);
+
+        let nextPageUrl;
+        {% for item in nav_items %}
+        {% if forloop.first %}
+        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+        {% endif %}
+        {% endfor %}
+        window.location.href = "discount"+ nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+    });
+    document.getElementById("getStartedBtnSecond").addEventListener("click", function (event) {
+        event.preventDefault();
+        let emailInput = document.getElementById("email-desktop-second").value.trim();
+        let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(emailInput)) {
+            toastr.error("Please enter a valid email address.");
+            return;
+        }
+        mailChimpSubscribe(emailInput);
+
+        let nextPageUrl;
+        {% for item in nav_items %}
+        {% if forloop.first %}
+        nextPageUrl = "{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}";
+        {% endif %}
+        {% endfor %}
+        window.location.href = "discount"+ nextPageUrl + "?email=" + encodeURIComponent(emailInput);
+    });
+</script>
+
+<script>
+    // Password validation for community form
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('community-password');
+        const confirmPasswordInput = document.getElementById('community-password-confirm');
+        const submitButton = document.getElementById('community-submit-btn');
+        const passwordMatch = document.getElementById('community-password-match');
+        
+        // Password requirement elements
+        const lengthReq = document.getElementById('community-length');
+        const uppercaseReq = document.getElementById('community-uppercase');
+        const numberReq = document.getElementById('community-number');
+        const specialReq = document.getElementById('community-special');
+        
+        function validatePassword() {
+            const password = passwordInput.value;
+            
+            // Check length
+            if(password.length >= 8) {
+                lengthReq.classList.add('valid');
+            } else {
+                lengthReq.classList.remove('valid');
+            }
+            
+            // Check uppercase
+            if(/[A-Z]/.test(password)) {
+                uppercaseReq.classList.add('valid');
+            } else {
+                uppercaseReq.classList.remove('valid');
+            }
+            
+            // Check number
+            if(/[0-9]/.test(password)) {
+                numberReq.classList.add('valid');
+            } else {
+                numberReq.classList.remove('valid');
+            }
+            
+            // Check special character
+            if(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+                specialReq.classList.add('valid');
+            } else {
+                specialReq.classList.remove('valid');
+            }
+            
+            checkFormValidity();
+        }
+        
+        function checkPasswordMatch() {
+            if(confirmPasswordInput.value === '') {
+                passwordMatch.textContent = '';
+                passwordMatch.classList.remove('text-success', 'text-danger');
+            } else if(passwordInput.value === confirmPasswordInput.value) {
+                passwordMatch.textContent = 'Passwords match';
+                passwordMatch.classList.add('text-success');
+                passwordMatch.classList.remove('text-danger');
+            } else {
+                passwordMatch.textContent = 'Passwords do not match';
+                passwordMatch.classList.add('text-danger');
+                passwordMatch.classList.remove('text-success');
+            }
+            
+            checkFormValidity();
+        }
+        
+        function checkFormValidity() {
+            const password = passwordInput.value;
+            const passwordsMatch = passwordInput.value === confirmPasswordInput.value && confirmPasswordInput.value !== '';
+            const validLength = password.length >= 8;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            
+            if(validLength && hasUppercase && hasNumber && hasSpecial && passwordsMatch) {
+                submitButton.disabled = false;
+            } else {
+                submitButton.disabled = true;
+            }
+        }
+        
+        // Password toggle functionality
+        const passwordToggle = document.querySelector('.password-toggle');
+        const confirmPasswordToggle = document.querySelector('.confirm-password-toggle');
+        
+        passwordToggle.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.setAttribute('data-feather', type === 'password' ? 'eye' : 'eye-off');
+            feather.replace();
+        });
+        
+        confirmPasswordToggle.addEventListener('click', function() {
+            const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPasswordInput.setAttribute('type', type);
+            this.setAttribute('data-feather', type === 'password' ? 'eye' : 'eye-off');
+            feather.replace();
+        });
+        
+        // Initialize validation on page load
+        validatePassword();
+        checkPasswordMatch();
+        
+        // Add event listeners
+        passwordInput.addEventListener('input', validatePassword);
+        confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+        passwordInput.addEventListener('input', checkPasswordMatch);
+
+        // Handle autofill
+        passwordInput.addEventListener('change', validatePassword);
+        confirmPasswordInput.addEventListener('change', checkPasswordMatch);
+    });
+
+    // Password validation for mobile form
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('community-password-mobile');
+        const confirmPasswordInput = document.getElementById('community-password-confirm-mobile');
+        const submitButton = document.querySelector('#community-form-mobile button[type="submit"]');
+        const passwordMatch = document.getElementById('community-password-match-mobile');
+        
+        // Password requirement elements
+        const lengthReq = document.getElementById('community-length-mobile');
+        const uppercaseReq = document.getElementById('community-uppercase-mobile');
+        const numberReq = document.getElementById('community-number-mobile');
+        const specialReq = document.getElementById('community-special-mobile');
+        
+        function validatePassword() {
+            const password = passwordInput.value;
+            
+            // Check length
+            if(password.length >= 8) {
+                lengthReq.classList.add('valid');
+            } else {
+                lengthReq.classList.remove('valid');
+            }
+            
+            // Check uppercase
+            if(/[A-Z]/.test(password)) {
+                uppercaseReq.classList.add('valid');
+            } else {
+                uppercaseReq.classList.remove('valid');
+            }
+            
+            // Check number
+            if(/[0-9]/.test(password)) {
+                numberReq.classList.add('valid');
+            } else {
+                numberReq.classList.remove('valid');
+            }
+            
+            // Check special character
+            if(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+                specialReq.classList.add('valid');
+            } else {
+                specialReq.classList.remove('valid');
+            }
+            
+            checkFormValidity();
+        }
+        
+        function checkPasswordMatch() {
+            if(confirmPasswordInput.value === '') {
+                passwordMatch.textContent = '';
+                passwordMatch.classList.remove('text-success', 'text-danger');
+            } else if(passwordInput.value === confirmPasswordInput.value) {
+                passwordMatch.textContent = 'Passwords match';
+                passwordMatch.classList.add('text-success');
+                passwordMatch.classList.remove('text-danger');
+            } else {
+                passwordMatch.textContent = 'Passwords do not match';
+                passwordMatch.classList.add('text-danger');
+                passwordMatch.classList.remove('text-success');
+            }
+            
+            checkFormValidity();
+        }
+        
+        function checkFormValidity() {
+            const password = passwordInput.value;
+            const passwordsMatch = passwordInput.value === confirmPasswordInput.value && confirmPasswordInput.value !== '';
+            const validLength = password.length >= 8;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+            
+            if(validLength && hasUppercase && hasNumber && hasSpecial && passwordsMatch) {
+                submitButton.disabled = false;
+            } else {
+                submitButton.disabled = true;
+            }
+        }
+        
+        // Password toggle functionality
+        const passwordToggle = document.querySelector('#community-form-mobile .password-toggle');
+        const confirmPasswordToggle = document.querySelector('#community-form-mobile .confirm-password-toggle');
+        
+        passwordToggle.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            this.setAttribute('data-feather', type === 'password' ? 'eye' : 'eye-off');
+            feather.replace();
+        });
+        
+        confirmPasswordToggle.addEventListener('click', function() {
+            const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPasswordInput.setAttribute('type', type);
+            this.setAttribute('data-feather', type === 'password' ? 'eye' : 'eye-off');
+            feather.replace();
+        });
+        
+        // Initialize validation on page load
+        validatePassword();
+        checkPasswordMatch();
+        
+        // Add event listeners
+        passwordInput.addEventListener('input', validatePassword);
+        confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+        passwordInput.addEventListener('input', checkPasswordMatch);
+
+        // Handle autofill
+        passwordInput.addEventListener('change', validatePassword);
+        confirmPasswordInput.addEventListener('change', checkPasswordMatch);
+    });
+</script>
+
+{% endblock script %}

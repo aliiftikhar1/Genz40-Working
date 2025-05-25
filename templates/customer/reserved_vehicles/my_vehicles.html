@@ -1,0 +1,363 @@
+{% extends "public/layout/base.html" %}
+{% load static %}
+{% block header %}
+{% load frontend_custom_filters %}
+{% endblock %}
+
+{% block content %}
+<section class="section bg-black">
+    <div class="container">
+        <div class="row mt-4">
+            {% if user_data.is_email_verified == False %}
+                <div class="col-12 mb-4 pb-2">
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <i class="uil uil-exclamation-triangle fs-5 align-middle me-1"></i>
+                        Email verification is pending. <a href="#" id="email-activation-link" class="alert-link text-white text-decoration-underline">Click here to send activation email</a>.
+                        <button type="button" class="btn-close mt-1" data-bs-dismiss="alert" aria-label="Close"> </button>
+                        <span class="spinner-border spinner-border-sm" id="pro" role="status"
+                                            aria-hidden="true" style="display: none;"></span>
+                    </div>
+                </div>
+            {% endif %}
+
+            <!-- START SIDEBAR -->
+            <div class="col-lg-4 col-12 mt-4 mt-lg-0 pt-2 pt-lg-0 hide-on-small">
+                {% include "customer/sidebar.html" %}
+            </div><!--end col-->
+            <!-- END SIDEBAR -->
+
+            <!-- Start Main Content -->
+            <div class="col-lg-8 col-12">
+                <div class="row">
+                    <div class="col-12 mb-4 pb-2">
+                        <div class="section-title text-md-start">
+                            <h4 class="title mb-">{{ user_data.full_name }}'s Vehicles</h4>
+                        </div>
+                        
+                        <!-- Booked Packages Section -->
+                        <div class="col-12 mb-4 pb-2">
+                            <div class="section-title text-md-start">
+                                <h4 class="title mb-">My Reservations</h4>
+                            </div>
+                            {% if booked_packages %}
+                                {% for package in booked_packages %}
+                                    <div class="card blog blog-primary rounded border-0 shadow overflow-hidden mb-3">
+                                        <div class="row align-items-center g-0">
+                                            <div class="col-md-6 p-0">
+                                                {% if package.car_model.title == 'Mark I' %}
+                                                    <img class="img-fluid w-100" src="{% static 'images/mark1details/HighresScreenshot00013.png' %}" alt="Mark-I">
+                                                {% elif package.car_model.title == 'Mark II' %}
+                                                    <img class="img-fluid w-100" src="{% static 'images/mark2details/HighresScreenshot00001.png' %}" alt="Mark-II">
+                                                {% elif package.car_model.title == 'Mark IV' %}
+                                                    <img class="img-fluid w-100" src="{% static 'images/mark4details/HighresScreenshot00002.png' %}" alt="Mark-IV">
+                                                {% else %}
+                                                    <img class="img-fluid w-100" src="{% static 'images/default-car.png' %}" alt="{{ package.car_model.title }}">
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <div class="card-body py-1">
+                                                    <h5 class="mb-2">
+                                                        <span class="text-success logo-font">GEN-Z 40</span> - {{ package.car_model.title }}
+                                                    </h5>
+                                                    
+                                                    <div class="package-details" style="font-size: 12px;">
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <p class="text-muted mb-1"><strong>Package:</strong> {{ package.title }}</p>
+                                                                <p class="text-muted mb-1"><strong>Code:</strong> {{ package.reservation_number }}</p>
+                                                                <p class="text-muted mb-1"><strong>Price:</strong> ${{ package.price|floatformat:2|default:"0.00" }}</p>
+                                                                <p class="text-muted mb-1"><strong>Status:</strong> 
+                                                                    {% if package.status == 'pending' %}
+                                                                    <span class="badge bg-warning" style="font-size:12px">Reserve Payment Pending</span>
+                                                                {% elif package.status == 'confirmed' %}
+                                                                    <span class="badge bg-success" style="font-size:12px">Confirmed</span>
+                                                                    {% elif package.status == 'payment_done' %}
+                                                                    <span class="badge bg-primary" style="font-size:12px">Reserve Payment Received</span>
+                                                                {% elif package.status == 'in_progress' %}
+                                                                <span class="badge bg-warning" style="font-size:12px">In Progress</span>
+                                                                {% elif package.status == 'delivered' %}
+                                                                <span class="badge bg-btn-outline-success" style="font-size:12px">>Delivered</span>
+                                                                {% elif package.status == 'cancelled' %}
+                                                                <span class="badge bg-danger" style="font-size:12px">Cancelled</span>
+                                                                {% endif %}
+                                                                </p>
+                                                            
+                                                                {% comment %} {% if package.extra_features %}
+                                                                    <p class="text-muted mb-1"><strong>Features: </strong>{{ package.extra_features|title_case|truncate_chars:80 }}</p>
+                                                                {% endif %} {% endcomment %}
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="urls" data-update-url="{% url 'update-booked-package' '00000000-0000-0000-0000-000000000000' %}" style="display: none;"></div>
+                                                    <div class="d-flex justify-content-end align-items-center gap-4 pb-1 pt-2">
+                                                        <a href="{% url 'reservation_details' package.reservation_number %}" class="text-muted readmore">Manage <i class="uil uil-angle-right-b align-middle"></i></a>
+                                                        {% if package.status == 'pending' %}
+                                                        <a href="{% url 'reservation_checkout' package.id %}" class="btn btn-sm btn-success">Pay Now</a>
+                                                        <a href="#" class="btn btn-sm btn-danger cancel-reservation" data-id="{{ package.id }}" data-reservation_number="{{ package.reservation_number }}" data-user_id="{{ package.user.id }}" data-car_model_id="{{ package.car_model.id }}" data-user="{{ package.user.id }}" data-car="{{ package.car_model.id }}" data-title="{{ package.title }}" data-features="{{ package.extra_features }}" data-price="{{ package.price }}" data-build-type="{{ package.build_type }}" data-build-status="{{ package.build_status }}" data-build-payment="{{ package.build_payment_amount }}" data-build-message="{{ package.build_message }}">
+                                                            Cancel
+                                                        </a>
+                                                    {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <h4>No reservations found.</h4>
+                                    <p class="text-muted">Explore our packages and book your preferred option today!</p>
+                                    <div class="mt-3">
+                                        <a href="{% url 'home' %}" class="btn btn-outline-primary m-1">View Available Packages</a>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-12 mb-4 pb-2">
+                        <div class="section-title text-md-start">
+                            <h4 class="title mb-">Order a Vehicle</h4>
+                        </div>
+                        
+                        {% if vehicles %}
+                            {% for order_vehicle in vehicles %}
+                                <div class="card blog blog-primary rounded border-0 shadow overflow-hidden mb-3">
+                                    <div class="row align-items-center g-0">
+                                        <div class="col-md-6">
+                                            {% if order_vehicle.title == 'Mark I' %}
+                                                <img class="img-fluid" src="{% static 'images/mark1details/HighresScreenshot00013.png' %}" alt="Mark-I">
+                                            {% elif order_vehicle.title == 'Mark II' %}
+                                                <img class="img-fluid" src="{% static 'images/mark2details/HighresScreenshot00001.png' %}" alt="Mark-II">
+                                            {% elif order_vehicle.title == 'Mark IV' %}
+                                                <img class="img-fluid" src="{% static 'images/mark4details/HighresScreenshot00002.png' %}" alt="Mark-IV">
+                                            {% endif %}
+                                        </div>
+                                    
+                                        <div class="col-md-6">
+                                            <div class="card-body content">
+                                                <h5><a href="{% url 'learn_more' order_vehicle.slug %}" class="card-title title text-success logo-font">GEN-Z 40</a> - {{ order_vehicle.title }}</a></h5>
+                                                <p class="text-muted mb-0">{{ order_vehicle.content }}</p>
+                                                <div class="post-meta d-flex justify-content-between mt-3">
+                                                    <a href="{% url 'learn_more' order_vehicle.slug %}" class="text-white readmore">Read More <i class="uil uil-angle-right-b align-middle"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <h4>No new car found.</h4>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <!-- End Main Content -->
+        </div>
+    </div>
+</section>
+
+<!-- Custom Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-black border border-secondary">
+            <div class="modal-header border-bottom border-secondary">
+                <h5 class="modal-title" id="confirmationModalLabel">Cancel Reservation</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <i class="uil uil-exclamation-triangle text-warning fs-1 mb-3"></i>
+                <h5 class="mb-3">Are you sure?</h5>
+                <p>You won't be able to revert this!</p>
+            </div>
+            <div class="modal-footer border-top border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, go back</button>
+                <button type="button" class="btn btn-danger" id="confirmCancelReservation">Yes, cancel it!</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<style>
+    /* Custom styles for the confirmation modal */
+    .modal-content.bg-dark {
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    #confirmationModal .modal-dialog {
+        max-width: 400px;
+    }
+    
+    #confirmationModal .btn-close-white {
+        filter: invert(1) grayscale(100%) brightness(200%);
+    }
+    
+    #confirmationModal .modal-body i {
+        display: block;
+        font-size: 3rem;
+    }
+    
+    #confirmCancelReservation:hover {
+        background-color: #c82333;
+    }
+</style>
+
+<script>
+    $(document).on("click", "#email-activation-link", function (e) {
+        e.preventDefault();
+        $('#pro').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'email_verify_from_dashboard' %}",
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                "Content-Type": "application/json"
+            },
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response['message']);
+                } else {
+                    toastr.error(response['message']);
+                }
+                $('#pro').hide();
+            },
+            error: function (response) {
+                if (!response.is_success) {
+                    toastr.error(response['message']);
+                }
+                $('#pro').hide();
+            }
+        })
+    });
+
+    $(document).on("click", "#phone-activation-link", function (e) {
+        e.preventDefault();
+        $('#pro').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'send_otp' %}",
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                "Content-Type": "application/json"
+            },
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response['message']);
+                    setTimeout(function() {
+                        location.href = "{% url 'otp_verify_page' %}";
+                    }, 2000);
+                } else {
+                    toastr.error(response['message']);
+                }
+                $('#pro').hide();
+            },
+            error: function (response) {
+                if (!response.is_success) {
+                    toastr.error(response['message']);
+                }
+                $('#pro').hide();
+            }
+        })
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            let cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                let cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Variables to store current reservation data
+    let currentReservationData = {};
+
+    $(document).on('click', '.cancel-reservation', function(e) {
+        e.preventDefault();
+        
+        // Store the data for later use
+        currentReservationData = {
+            id: $(this).data('id'),
+            reservation_number: $(this).data('reservation_number'),
+            user_id: $(this).data('user_id'),
+            car_model_id: $(this).data('car_model_id'),
+            user: $(this).data('user'),
+            car: $(this).data('car'),
+            title: $(this).data('title'),
+            features: $(this).data('features'),
+            price: $(this).data('price'),
+            build_type: $(this).data('build-type'),
+            build_status: $(this).data('build-status'),
+            build_payment: $(this).data('build-payment'),
+            build_message: $(this).data('build-message')
+        };
+        
+        // Show the custom modal
+        $('#confirmationModal').modal('show');
+    });
+    
+    // Handle confirmation click in the custom modal
+    $(document).on('click', '#confirmCancelReservation', function() {
+        const urlPattern = $('#urls').data('update-url');
+        const url = urlPattern.replace('00000000-0000-0000-0000-000000000000', currentReservationData.id);
+        
+        // Close the modal
+        $('#confirmationModal').modal('hide');
+        
+        // Show processing indicator
+        $('body').append('<div id="processingOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center bg-dark bg-opacity-75" style="z-index: 9999;"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Processing...</span></div></div>');
+        
+        // Send AJAX request
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: {
+                csrfmiddlewaretoken: getCookie('csrftoken'),
+                reservationId: currentReservationData.id,
+                reservation_number: currentReservationData.reservation_number,
+                user: currentReservationData.user_id,
+                car_model_id: currentReservationData.car_model_id,
+                user_name: currentReservationData.user,
+                car_model: currentReservationData.car,
+                title: currentReservationData.title,
+                extra_features: currentReservationData.features,
+                price: currentReservationData.price,
+                status: 'cancelled',
+                build_type: currentReservationData.build_type,
+                build_status: currentReservationData.build_status,
+                build_payment_amount: currentReservationData.build_payment,
+                build_message: currentReservationData.build_message
+            },
+            success: function(response) {
+                // Remove processing overlay
+                $('#processingOverlay').remove();
+                
+                // Show success message
+                toastr.success('Reservation cancelled successfully!');
+                
+                // Reload page after a delay
+                setTimeout(function() {
+                    location.reload();
+                }, 1500);
+            },
+            error: function(xhr) {
+                // Remove processing overlay
+                $('#processingOverlay').remove();
+                
+                // Show error message
+                toastr.error(xhr.responseJSON?.error || 'An error occurred while cancelling your reservation.');
+            }
+        });
+    });
+</script>
+{% endblock script %}

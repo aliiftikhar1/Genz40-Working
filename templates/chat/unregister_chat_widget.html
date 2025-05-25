@@ -1,0 +1,370 @@
+{% load static %}
+<style>
+    #unregister-chat-icon{
+        width:2rem;
+        height:2rem;
+        object-fit:cover;
+    }
+    #unregister-chat-widget {
+        position: fixed;
+        bottom: 15px;
+        right: 15px;
+        z-index: 1000;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    #unregister-chat-button {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            z-index: -100;
+            background-color: #000000;
+            color: #ffffff;
+            width: 60px;
+            height: 60px;
+            border: 1px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+    #unregister-chat-button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    }
+
+    #unregister-chat-container {
+        width: 50rem;
+        height: 40rem;
+        background: #000000;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .guest-chat-header {
+        background-color: #1a1a1a;
+        color: #ffffff;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    #unregister-chat-header {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    #unregister-chat-messages {
+        flex: 1;
+        padding: 16px;
+        overflow-y: auto;
+        background: #111111;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .guest-message {
+        padding: 10px 14px;
+        border-radius: 12px;
+        max-width: 80%;
+        word-break: break-word;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        color: #ffffff;
+    }
+
+    .guest-message.received {
+        background-color: #222222;
+        margin-right: auto;
+        border-top-left-radius: 4px;
+    }
+
+    .guest-message.sent {
+        background-color: #333333;
+        margin-left: auto;
+        border-top-right-radius: 4px;
+    }
+
+    #unregister-message-input {
+        padding: 12px 16px;
+        border-top: 1px solid #333333;
+        background: #000000;
+    }
+
+    #unregister-chat-input {
+        width: 100%;
+        padding: 10px 16px;
+        border: 1px solid #444444;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        outline: none;
+        transition: all 0.3s ease;
+        background: #111111;
+        color: #ffffff;
+    }
+
+    #unregister-chat-input:focus {
+        border-color: #ffffff;
+        box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
+    }
+
+    .guest-btn-icon {
+        background: none;
+        border: none;
+        color: #ffffff;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .guest-btn-icon:hover {
+        color: #cccccc;
+    }
+
+    #question-list {
+        padding: 10px;
+        background: #111111;
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .guest-question-item {
+        padding: 8px 12px;
+        color: #ffffff;
+        cursor: pointer;
+        border-radius: 8px;
+        margin-bottom: 5px;
+        transition: all 0.3s ease;
+    }
+
+    .guest-question-item:hover {
+        background-color: #333333;
+    }
+
+    .guest-action-button {
+        padding: 8px 16px;
+        background-color: #ffffff;
+        color: #000000;
+        border: none;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        margin-right: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .guest-action-button:hover {
+        background-color: #cccccc;
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 576px) {
+        #unregister-chat-widget {
+            background-color: #000000;
+            position: fixed;
+            bottom: 5rem;
+            right: 0rem;
+            z-index: 1000;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        #unregister-chat-container {
+            width: 100%;
+            height: 70vh;
+            border-radius: 0;
+            bottom: 0;
+            right: 0;
+        }
+    }
+</style>
+{% if  user_data.is_authenticated == 'False' or not user_data.is_authenticated %}
+<div id="unregister-chat-widget">
+    <!-- Simplified condition: show for all users, adjust as needed -->
+    
+    <div id="unregister-chat-button">
+        <img id='unregister-chat-icon' src="{% static 'icons/chaticon.png' %}" />
+        {% comment %} <i class="fas fa-comment"></i> {% endcomment %}
+    </div>
+ 
+
+    
+    <div id="unregister-chat-container" style="display: none;">
+        <div class="guest-chat-header">
+            <h3 id="unregister-chat-header">GEN-Z 40 Support</h3>
+            <button id="close-unregister-chat" class="guest-btn-icon">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="unregister-chat-messages"></div>
+        <div id="question-list" style="display: none;"></div>
+        <div id="unregister-message-input">
+            <input id="unregister-chat-input" type="text" placeholder="Search questions..." autocomplete="off">
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatButton = document.getElementById('unregister-chat-button');
+        const chatContainer = document.getElementById('unregister-chat-container');
+        const closeChat = document.getElementById('close-unregister-chat');
+        const chatMessages = document.getElementById('unregister-chat-messages');
+        const chatInput = document.getElementById('unregister-chat-input');
+        const questionList = document.getElementById('question-list');
+
+        // Guard against missing elements
+        if (!chatButton || !chatContainer || !closeChat || !chatMessages || !chatInput || !questionList) {
+            console.error('One or more chat widget elements are missing.');
+            return;
+        }
+
+        const qaPairs = [
+            {
+                question: "How to get started?",
+                answer: "To get started with GEN-Z 40, you can sign up for an account to access exclusive offers and community features, or log in if you already have an account. Explore our website to learn more about our personalized GT40 cars and join our community of enthusiasts! <div><button class='guest-action-button' onclick='window.location.href=\"/customer-register\"'>Sign Up</button><button class='guest-action-button' onclick='window.location.href=\"/customer-login\"'>Log In</button></div>"
+            },
+            {
+                question: "What is GEN-Z 40?",
+                answer: "GEN-Z 40 is a community and manufacturer focused on creating premium quality component cars, specifically replicas or custom versions of the iconic Ford GT40, aimed at builders and enthusiasts."
+            },
+            {
+                question: "What products or services does GEN-Z 40 offer?",
+                answer: "GEN-Z 40 offers personalized GT40 cars engineered for the track, exclusive discounts, community engagement, technical support, and live chat with experts. They also provide options to sign up for discounts, join the community, request a call back, and login for exclusive offers and support."
+            },
+            {
+                question: "How can I join the GEN-Z 40 community?",
+                answer: "You can join the GEN-Z 40 community by signing up on their website. Look for the 'Join Community' option or contact them through the provided contact methods."
+            },
+            {
+                question: "What kind of support does GEN-Z 40 provide?",
+                answer: "GEN-Z 40 offers technical support, build support, and live chat with members and group experts. They also have a community where you can ask questions and share experiences."
+            },
+            {
+                question: "Can I get a custom GT40 from GEN-Z 40?",
+                answer: "Yes, GEN-Z 40 specializes in personalized GT40 cars. You can request a custom build or get more information by contacting them or requesting a call back."
+            },
+            {
+                question: "What are the benefits of signing up for GEN-Z 40?",
+                answer: "Signing up for GEN-Z 40 provides access to exclusive offers, build and technical support, and the ability to engage with a community of like-minded builders and enthusiasts."
+            },
+            {
+                question: "Is GEN-Z 40 related to the original Ford GT40?",
+                answer: "Yes, GEN-Z 40 is inspired by and focuses on replicas or custom versions of the original Ford GT40, a legendary race car from the 1960s."
+            },
+            {
+                question: "Where is GEN-Z 40 based?",
+                answer: "GEN-Z 40 is based in New York City, founded by Salman Alvi in 2020."
+            },
+            {
+                question: "Does GEN-Z 40 offer any events or meetups?",
+                answer: "While the website mentions community engagement, specific events or meetups might be listed on their community page or through their contact methods. You can check their website or contact them for more information."
+            },
+            {
+                question: "How can I get a quote for a custom GT40 from GEN-Z 40?",
+                answer: "You can request a free car quotation by contacting GEN-Z 40 through their website. Look for the 'Request a Call Back' option or use the contact form provided."
+            },
+           
+        ];
+
+        let isChatOpen = false;
+
+        function toggleChat(open) {
+            isChatOpen = open;
+            chatContainer.style.display = open ? 'flex' : 'none';
+            if (open) {
+                showGreetingMessage();
+                chatInput.value = '';
+                renderQuestions(qaPairs);
+            } else {
+                chatMessages.innerHTML = '';
+                questionList.style.display = 'none';
+            }
+        }
+
+        function showGreetingMessage() {
+            const greeting = "Welcome to GEN-Z 40! How can I assist you today? Type a question or browse the suggestions below.";
+            addMessage(greeting, 'received');
+        }
+
+        function addMessage(content, type) {
+            const messageElement = document.createElement('div');
+            messageElement.className = `guest-message ${type}`;
+            messageElement.innerHTML = content;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function renderQuestions(questions) {
+            questionList.innerHTML = '';
+            questionList.style.display = questions.length > 0 ? 'block' : 'none';
+            questions.forEach(qa => {
+                const questionElement = document.createElement('div');
+                questionElement.className = 'guest-question-item';
+                questionElement.textContent = qa.question;
+                questionElement.addEventListener('click', () => displayAnswer(qa.answer));
+                questionList.appendChild(questionElement);
+            });
+        }
+
+        function displayAnswer(answer) {
+            questionList.style.display = 'none';
+            chatInput.value = '';
+            simulateTyping(answer);
+        }
+
+        function simulateTyping(text) {
+            let index = 0;
+            const typingSpeed = 30;
+            const messageElement = document.createElement('div');
+            messageElement.className = 'guest-message received';
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            function type() {
+                if (index < text.length) {
+                    messageElement.innerHTML = text.substring(0, index + 1);
+                    index++;
+                    setTimeout(type, typingSpeed);
+                } else {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            }
+            type();
+        }
+
+        function filterQuestions() {
+            const query = chatInput.value.trim().toLowerCase();
+            if (query === '') {
+                renderQuestions(qaPairs);
+                return;
+            }
+            const filtered = qaPairs.filter(qa => 
+                qa.question.toLowerCase().includes(query)
+            );
+            renderQuestions(filtered);
+        }
+
+        chatButton.addEventListener('click', () => toggleChat(!isChatOpen));
+        closeChat.addEventListener('click', () => toggleChat(false));
+        chatInput.addEventListener('input', filterQuestions);
+
+        // Initialize
+        toggleChat(false);
+    });
+</script>

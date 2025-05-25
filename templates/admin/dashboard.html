@@ -1,0 +1,65 @@
+{% extends 'admin/layout/base.html' %}
+ {% load static %}
+{% block header %}
+    <!-- Toastr -->
+  <link rel="stylesheet" href="{% static 'admin/plugins/toastr/toastr.min.css' %}">
+
+  <!-- SweetAlert2 -->
+  <!-- <link rel="stylesheet" href="{% static 'plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css' %}"> -->
+  
+{% endblock %}
+
+{% block content %}
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Dashboard</h1>
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+          </ol>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+      <a href="#">get users</a>
+    </div><!-- /.container-fluid -->
+  </section>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+{% endblock %}
+
+{% block javascript %}
+  <!-- SweetAlert2 -->
+  <script src="{% static 'admin/plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+  <!-- Toastr -->
+  <script src="{% static 'admin/plugins/toastr/toastr.min.js' %}"></script>
+<script type="text/javascript">
+  $(document).ready(function () { 
+    const Toast = Swal.mixin({
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000
+    });
+  {% if messages %}
+    {% for message in messages %}
+    toastr.{{ message.tags }}('{{ message }}')
+    {% endfor %}
+  {% endif %} 
+});
+</script>
+ {% endblock %}

@@ -1,0 +1,1940 @@
+{% extends "public/layout/base.html" %} {% load static %} {% load
+frontend_custom_filters %} {% block header %}
+<style>
+    /* Mobile Configurator Styles */
+
+
+    .save-config-btn-mobile{
+        display: none;
+    }
+.mobile-config-toggle {
+    display: none;
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    background: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mobile-config-toggle i {
+    margin-right: 8px;
+}
+
+.mobile-config-toggle:hover, 
+.mobile-config-toggle:focus {
+    background: #1a252f;
+    transform: scale(1.05);
+}
+
+.mobile-price-display {
+    display: none;
+    position: fixed;
+    top: 90px;
+    left: 20px;
+    background: rgba(44, 62, 80, 0.8);
+    color: white;
+    border-radius: 50px;
+    padding: 6px 14px;
+    font-size: 16px;
+    font-weight: 600;
+    z-index: 90;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.mobile-config-dialog {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: white;
+    z-index: 1000;
+    flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.4s ease-in-out;
+    overflow: hidden;
+}
+
+.mobile-config-dialog.open {
+    display: flex;
+    transform: translateY(0);
+}
+
+body.dialog-open {
+    overflow: hidden;
+}
+
+.dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #eaeaea;
+    background: #f8f9fa;
+}
+
+.dialog-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.close-dialog {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    color: #777;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.dialog-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 0 70px 0; /* Bottom padding for the footer */
+    position: relative;
+}
+
+.mobile-dialog-footer {
+    position: fixed;
+    bottom: 60px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 16px;
+    background: #f8f9fa;
+    border-top: 1px solid #eaeaea;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.mobile-dialog-footer .total-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.save-changes-btn {
+    background: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.save-changes-btn:hover,
+.save-changes-btn:focus {
+    background: #1a252f;
+}
+
+/* Make the tab-contents scrollable inside the dialog */
+.tab-contents-container {
+    overflow-y: auto;
+    max-height: calc(100vh - 130px);
+    padding: 0 16px;
+}
+
+/* Mobile specific adjustments for config tabs */
+.mobile-config-dialog .config-tabs {
+    display: flex;
+    overflow-x: auto;
+    padding: 0 8px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #eaeaea;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+}
+
+.mobile-config-dialog .config-tab {
+    padding: 12px 16px;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.mobile-config-dialog .badge {
+    font-size: 11px;
+    padding: 2px 6px;
+}
+
+/* Adjustments for option grids on mobile */
+.mobile-config-dialog .option-grid {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 8px;
+}
+
+.mobile-config-dialog .option-item {
+    padding: 8px;
+}
+
+.mobile-config-dialog .option-label {
+    font-size: 12px;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+
+    .save-config-btn-mobile{
+        /* padding: 4rem; */
+        box-shadow: 0 0 10px rgb(255, 255, 255);
+        border-radius: 250px;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        z-index: 300;
+        width: 80px ;
+        height: 80px;
+        border: none;
+        background-color: rgb(105, 168, 255);
+        display: flex;
+        position: fixed;
+        bottom: 200px;
+        right: 20px;
+    }
+    .configurator-sidebar {
+        display: none;
+    }
+
+    .mobile-config-toggle,
+    .mobile-price-display {
+        display: block;
+    }
+
+    .car-display {
+        width: 100%;
+        max-width: none;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Make car image responsive */
+    .car-image {
+        width: 100%;
+        max-height: 70vh;
+        object-fit: contain;
+    }
+
+    /* Adjust view controls for mobile */
+    .view-controls {
+        justify-content: center;
+        margin-top: 16px;
+    }
+
+    /* Styles for dark mode on mobile */
+    body.dark-mode .mobile-config-dialog {
+        background: #121212;
+        color: #f1f1f1;
+    }
+
+    body.dark-mode .dialog-header,
+    body.dark-mode .mobile-dialog-footer {
+        background: #1a1a1a;
+        border-color: #333;
+    }
+
+    body.dark-mode .close-dialog {
+        color: #eaeaea;
+    }
+    
+    body.dark-mode .config-tabs {
+        border-color: #333;
+    }
+}
+
+/* Dialog animation enhancements */
+@keyframes slideIn {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+@keyframes slideOut {
+    from { transform: translateY(0); }
+    to { transform: translateY(100%); }
+}
+
+.mobile-config-dialog.open {
+    animation: slideIn 0.3s forwards;
+}
+
+.mobile-config-dialog.closing {
+    animation: slideOut 0.3s forwards;
+}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link href="{% static 'css/car-configurator-page.css' %}" rel="stylesheet">
+{% endblock header %} {% block content %}
+<form id="carConfigForm" method="POST" action="{% url 'save_car_configuration' %}">
+    {% csrf_token %}
+    {% if existing_configurations %}
+    <input type="hidden" name="car_slug" value="{{ slug }}" />
+    <input type="hidden" name="car_model" value="{{ items.id }}" />
+
+    <input type="hidden" id="exterior_color" name="exterior_color" value="{{ existing_configurations.exterior }}" />
+    <input type="hidden" id="wheel_type" name="wheel_type" value="{{ existing_configurations.wheel_type }}" />
+    <input type="hidden" id="wheel_color" name="wheel_color" value="{{ existing_configurations.wheel_color }}" />
+    <input type="hidden" id="grille_style" name="grille_style" value="{{ existing_configurations.grille_style }}" />
+    <input type="hidden" id="roof_type" name="roof_type" value="{{ existing_configurations.roof_type }}" />
+    <input type="hidden" id="mirror_style" name="mirror_style" value="{{ existing_configurations.mirror_style }}" />
+    <input type="hidden" id="lighting_package" name="lighting_package" value="{{ existing_configurations.lighting_package }}" />
+    <input type="hidden" id="decals" name="decals" value="{{ existing_configurations.decals }}" />
+    <input type="hidden" id="upholstery_material" name="upholstery_material" value="{{ existing_configurations.upholstery_material }}" />
+    <input type="hidden" id="interior_color" name="interior_color" value="{{ existing_configurations.interior_color }}" />
+    <input type="hidden" id="seat_type" name="seat_type" value="{{ existing_configurations.seat_type }}" />
+    <input type="hidden" id="dashboard_trim" name="dashboard_trim" value="{{ existing_configurations.dashboard_trim }}" />
+    <input type="hidden" id="steering_wheel" name="steering_wheel" value="{{ existing_configurations.steering_wheel }}" />
+    <input type="hidden" id="engine_type" name="engine_type" value="{{ existing_configurations.engine_type }}" />
+    <input type="hidden" id="transmission" name="transmission" value="{{ existing_configurations.transmission }}" />
+    <input type="hidden" id="drivetrain" name="drivetrain" value="{{ existing_configurations.drivetrain }}" />
+    <input type="hidden" id="suspension" name="suspension" value="{{ existing_configurations.suspension }}" />
+    <input type="hidden" id="exhaust_system" name="exhaust_system" value="{{ existing_configurations.exhaust_system }}" />
+    <input type="hidden" id="infotainment_system" name="infotainment_system" value="{{ existing_configurations.infotainment_system }}" />
+    <input type="hidden" id="sound_system" name="sound_system" value="{{ existing_configurations.sound_system }}" />
+    <input type="hidden" id="heads_up_display" name="heads_up_display" value="{{ existing_configurations.heads_up_display }}" />
+    <input type="hidden" id="connectivity_package" name="connectivity_package" value="{{ existing_configurations.connectivity_package }}" />
+    <input type="hidden" id="autonomous_driving_level" name="autonomous_driving_level" value="{{ existing_configurations.autonomous_driving_level }}" />
+    <input type="hidden" id="parking_assist" name="parking_assist" value="{{ existing_configurations.parking_assist }}" />
+    <input type="hidden" id="blind_spot_monitoring" name="blind_spot_monitoring" value="{{ existing_configurations.blind_spot_monitoring }}" />
+    <input type="hidden" id="night_vision" name="night_vision" value="{{ existing_configurations.night_vision }}" />
+    <input type="hidden" id="luxury_package" name="luxury_package" value="{{ existing_configurations.luxury_package }}" />
+    <input type="hidden" id="sport_package" name="sport_package" value="{{ existing_configurations.sport_package }}" />
+    <input type="hidden" id="winter_package" name="winter_package" value="{{ existing_configurations.winter_package }}" />
+    <input type="hidden" id="offroad_package" name="offroad_package" value="{{ existing_configurations.offroad_package }}" />
+    <input type="hidden" id="towing_hitch" name="towing_hitch" value="{{ existing_configurations.towing_hitch }}" />
+    <input type="hidden" id="roof_rack" name="roof_rack" value="{{ existing_configurations.roof_rack }}" />
+
+    <input type="hidden" id="exterior_price" name="exterior_price" value="{{ existing_configurations.exterior_price }}" />
+    <input type="hidden" id="interior_price" name="interior_price" value="{{ existing_configurations.interior_price }}" />
+    <input type="hidden" id="performance_price" name="performance_price" value="{{ existing_configurations.performance_price }}" />
+    <input type="hidden" id="tech_price" name="tech_price" value="{{ existing_configurations.tech_price }}" />
+    <input type="hidden" id="package_price" name="package_price" value="{{ existing_configurations.package_price }}" />
+    <input type="hidden" id="total_price" name="total_price" value="{{ existing_configurations.total_price }}" />
+    <input type="hidden" id="base_price" name="base_price" value="{{ existing_configurations.base_price }}" />
+    <input type="hidden" id="is_saved" name="is_saved" value="{{ existing_configurations.is_saved }}" />
+
+    {% else %}
+    <input type="hidden" name="car_slug" value="{{ slug }}" />
+    <input type="hidden" name="car_model" value="{{ items.id }}" />
+    <input type="hidden" id="exterior_color" name="exterior_color" value="Premium Red" />
+    <input type="hidden" id="wheel_type" name="wheel_type" value="Classic Steel" />
+    <input type="hidden" id="wheel_color" name="wheel_color" value="Silver" />
+    <input type="hidden" id="grille_style" name="grille_style" value="Standard" />
+    <input type="hidden" id="roof_type" name="roof_type" value="Solid" />
+    <input type="hidden" id="mirror_style" name="mirror_style" value="Standard" />
+    <input type="hidden" id="lighting_package" name="lighting_package" value="Standard" />
+    <input type="hidden" id="decals" name="decals" value="None" />
+    <input type="hidden" id="upholstery_material" name="upholstery_material" value="Fabric" />
+    <input type="hidden" id="interior_color" name="interior_color" value="Luxe Gold" />
+    <input type="hidden" id="seat_type" name="seat_type" value="Standard" />
+    <input type="hidden" id="dashboard_trim" name="dashboard_trim" value="Plastic" />
+    <input type="hidden" id="steering_wheel" name="steering_wheel" value="Standard" />
+    <input type="hidden" id="engine_type" name="engine_type" value="V8 1000HP" />
+    <input type="hidden" id="transmission" name="transmission" value="Automatic" />
+    <input type="hidden" id="drivetrain" name="drivetrain" value="RWD" />
+    <input type="hidden" id="suspension" name="suspension" value="Standard" />
+    <input type="hidden" id="exhaust_system" name="exhaust_system" value="Standard" />
+    <input type="hidden" id="infotainment_system" name="infotainment_system" value="Standard" />
+    <input type="hidden" id="sound_system" name="sound_system" value="Standard" />
+    <input type="hidden" id="heads_up_display" name="heads_up_display" value="false" />
+    <input type="hidden" id="connectivity_package" name="connectivity_package" value="Standard" />
+    <input type="hidden" id="autonomous_driving_level" name="autonomous_driving_level" value="Level 1" />
+    <input type="hidden" id="parking_assist" name="parking_assist" value="false" />
+    <input type="hidden" id="blind_spot_monitoring" name="blind_spot_monitoring" value="false" />
+    <input type="hidden" id="night_vision" name="night_vision" value="false" />
+    <input type="hidden" id="luxury_package" name="luxury_package" value="false" />
+    <input type="hidden" id="sport_package" name="sport_package" value="false" />
+    <input type="hidden" id="winter_package" name="winter_package" value="false" />
+    <input type="hidden" id="offroad_package" name="offroad_package" value="false" />
+    <input type="hidden" id="towing_hitch" name="towing_hitch" value="false" />
+    <input type="hidden" id="roof_rack" name="roof_rack" value="false" />
+    <input type="hidden" id="exterior_price" name="exterior_price" value="0" />
+    <input type="hidden" id="interior_price" name="interior_price" value="0" />
+    <input type="hidden" id="performance_price" name="performance_price" value="0" />
+    <input type="hidden" id="tech_price" name="tech_price" value="0" />
+    <input type="hidden" id="package_price" name="package_price" value="0" />
+    <input type="hidden" id="total_price" name="total_price" value="{{amount_due}}" />
+    <input type="hidden" id="base_price" name="base_price" value="{{amount_due}}" />
+    <input type="hidden" id="is_saved" name="is_saved" value="true" />
+
+    {% endif %}
+    <div id="MainSection">
+        <!-- <button type="button" class="theme-toggle">
+            <i class="fas fa-moon"></i>
+        </button> -->
+
+        <button type="button" class="mobile-config-toggle" >
+            <i class="fas fa-sliders-h"></i> Configure
+        </button>
+
+        <div class="mobile-price-display">
+            <span id="mobileConfigTotalPrice">${{amount_due}}</span>
+        </div>
+        <div class="car-display">
+            {% if items.title == 'Mark I' %}
+            <img src="{% static 'mk1.gif' %}" class="car-image" id="carImage" alt="Car Configuration" />
+            {% elif items.title == 'Mark II' %}
+            <img src="{% static 'mk2.gif' %}" class="car-image" id="carImage" alt="Car Configuration" />
+            {% elif items.title == 'Mark IV' %}
+            <img src="{% static 'mk4.gif' %}" class="car-image" id="carImage" alt="Car Configuration" />
+            {% endif %}
+
+            <div class="view-controls">
+                <button type="button" class="view-btn active" data-view="front">
+                    <i class="fas fa-car-front"></i>
+                </button>
+                <button type="button" class="view-btn" data-view="side">
+                    <i class="fas fa-car-side"></i>
+                </button>
+                <button type="button" class="view-btn" data-view="rear">
+                    <i class="fas fa-car-rear"></i>
+                </button>
+            </div>
+        </div>
+
+        <button type="submit" class="save-config-btn-mobile">
+            Save
+        </button>
+
+        <div class="mobile-config-dialog" id="mobileConfigDialog">
+            <div class="dialog-header">
+                <h2>Configure Your {{ items.title }}</h2>
+                <button type="button" class="close-dialog">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="dialog-content">
+                <!-- This will contain the same configuration tabs and content as the sidebar -->
+                <div class="config-tabs">
+                    <div class="config-tab active" data-tab="exterior">
+                        Exterior <span class="badge">8</span>
+                    </div>
+                    <div class="config-tab" data-tab="interior">
+                        Interior <span class="badge">5</span>
+                    </div>
+                    <div class="config-tab" data-tab="performance">
+                        Performance <span class="badge">5</span>
+                    </div>
+                    <div class="config-tab" data-tab="technology">
+                        Technology <span class="badge">4</span>
+                    </div>
+                    <div class="config-tab" data-tab="safety">
+                        Safety <span class="badge">4</span>
+                    </div>
+                    <div class="config-tab" data-tab="packages">
+                        Packages <span class="badge">6</span>
+                    </div>
+                </div>
+                
+                <!-- Copy all the tab-content divs from your sidebar here -->
+                <div class="tab-contents-container">
+                    <div class="tab-content active" id="exterior">
+                        <div class="config-section">
+                            <h3 class="section-title">Exterior Color</h3>
+                            <div class="option-grid">
+                                <div class="option-item active" data-option="exterior_color" data-value="Premium Red"
+                                    data-price="0">
+                                    <div class="option-color color-red"></div>
+                                    <div class="option-label">Premium Red</div>
+                                </div>
+                                <div class="option-item" data-option="exterior_color" data-value="Emerald Green"
+                                    data-price="500">
+                                    <div class="option-color color-green"></div>
+                                    <div class="option-label">Emerald Green</div>
+                                </div>
+                                <div class="option-item" data-option="exterior_color" data-value="Nautical Blue"
+                                    data-price="800">
+                                    <div class="option-color color-blue"></div>
+                                    <div class="option-label">Nautical Blue</div>
+                                </div>
+                                <div class="option-item" data-option="exterior_color" data-value="Jet Black" data-price="1200">
+                                    <div class="option-color color-black"></div>
+                                    <div class="option-label">Jet Black</div>
+                                </div>
+                                <div class="option-item" data-option="exterior_color" data-value="Moonlight Silver"
+                                    data-price="1000">
+                                    <div class="option-color color-silver"></div>
+                                    <div class="option-label">Moonlight Silver</div>
+                                </div>
+                            </div>
+                            <div class="price-display">
+                                <span>Selected:
+                                    <span id="exterior_color-selection">Premium Red</span></span>
+                                <span class="price-change" id="exterior_color-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Wheel Type</h3>
+                            <div class="option-grid">
+                                <div class="option-item active" data-option="wheel_type" data-value="Classic Steel"
+                                    data-price="0">
+                                    <img src="{% static 'images/car/wheels/classic.jpg' %}" class="option-image"
+                                        alt="Steel Wheels" />
+                                    <div class="option-label">Classic Steel</div>
+                                </div>
+                                <div class="option-item" data-option="wheel_type" data-value="Sport Rims" data-price="1200">
+                                    <img src="{% static 'images/car/wheels/alloy.png' %}" class="option-image" alt="Rims" />
+                                    <div class="option-label">Sport Rims</div>
+                                </div>
+                                <div class="option-item" data-option="wheel_type" data-value="Premium Alloy" data-price="2500">
+                                    <img src="{% static 'images/car/wheels/premium.jpg' %}" class="option-image"
+                                        alt="Alloy Rims" />
+                                    <div class="option-label">Premium Alloy</div>
+                                </div>
+                            </div>
+                            <div class="price-display">
+                                <span>Selected:
+                                    <span id="wheel_type-selection">Classic Steel</span></span>
+                                <span class="price-change" id="wheel_type-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Wheel Color</h3>
+                            <div class="option-grid">
+                                <div class="option-item active" data-option="wheel_color" data-value="Silver" data-price="0">
+                                    <div class="option-color color-silver"></div>
+                                    <div class="option-label">Silver</div>
+                                </div>
+                                <div class="option-item" data-option="wheel_color" data-value="Gloss Black" data-price="300">
+                                    <div class="option-color color-black"></div>
+                                    <div class="option-label">Gloss Black</div>
+                                </div>
+                                <div class="option-item" data-option="wheel_color" data-value="Gunmetal" data-price="400">
+                                    <div class="option-color color-gray"></div>
+                                    <div class="option-label">Gunmetal</div>
+                                </div>
+                            </div>
+                            <div class="price-display">
+                                <span>Selected: <span id="wheel_color-selection">Silver</span></span>
+                                <span class="price-change" id="wheel_color-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Grille Style</h3>
+                            <select class="config-dropdown" data-option="grille_style">
+                                <option value="Standard" data-price="0">Standard - $0</option>
+                                <option value="Sport" data-price="800">Sport - $800</option>
+                                <option value="Chrome" data-price="600">Chrome - $600</option>
+                                <option value="Black" data-price="500">Black - $500</option>
+                                <option value="Carbon Fiber" data-price="1200">
+                                    Carbon Fiber - $1,200
+                                </option>
+                            </select>
+                            <div class="price-display">
+                                <span>Selected: <span id="grille_style-selection">Standard</span></span>
+                                <span class="price-change" id="grille_style-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Roof Type</h3>
+                            <select class="config-dropdown" data-option="roof_type">
+                                <option value="Solid" data-price="0">Solid - $0</option>
+                                <option value="Panoramic Sunroof" data-price="1500">
+                                    Panoramic Sunroof - $1,500
+                                </option>
+                                <option value="Glass Roof" data-price="2000">
+                                    Glass Roof - $2,000
+                                </option>
+                                <option value="Carbon Fiber" data-price="3000">
+                                    Carbon Fiber - $3,000
+                                </option>
+                            </select>
+                            <div class="price-display">
+                                <span>Selected: <span id="roof_type-selection">Solid</span></span>
+                                <span class="price-change" id="roof_type-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Mirror Style</h3>
+                            <select class="config-dropdown" data-option="mirror_style">
+                                <option value="Standard" data-price="0">Standard - $0</option>
+                                <option value="Auto-Folding" data-price="400">
+                                    Auto-Folding - $400
+                                </option>
+                                <option value="Carbon Fiber" data-price="800">
+                                    Carbon Fiber - $800
+                                </option>
+                                <option value="Heated" data-price="300">Heated - $300</option>
+                            </select>
+                            <div class="price-display">
+                                <span>Selected: <span id="mirror_style-selection">Standard</span></span>
+                                <span class="price-change" id="mirror_style-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Lighting Package</h3>
+                            <select class="config-dropdown" data-option="lighting_package">
+                                <option value="Standard" data-price="0">Standard - $0</option>
+                                <option value="LED" data-price="600">LED - $600</option>
+                                <option value="Matrix LED" data-price="1200">
+                                    Matrix LED - $1,200
+                                </option>
+                                <option value="Adaptive" data-price="1500">
+                                    Adaptive Headlights - $1,500
+                                </option>
+                            </select>
+                            <div class="price-display">
+                                <span>Selected:
+                                    <span id="lighting_package-selection">Standard</span></span>
+                                <span class="price-change" id="lighting_package-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Decals</h3>
+                            <select class="config-dropdown" data-option="decals">
+                                <option value="None" data-price="0">None - $0</option>
+                                <option value="Racing Stripes" data-price="500">
+                                    Racing Stripes - $500
+                                </option>
+                                <option value="Side Graphics" data-price="400">
+                                    Side Graphics - $400
+                                </option>
+                                <option value="Custom Logo" data-price="800">
+                                    Custom Logo - $800
+                                </option>
+                            </select>
+                            <div class="price-display">
+                                <span>Selected: <span id="decals-selection">None</span></span>
+                                <span class="price-change" id="decals-price">+$0</span>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="tab-content" id="interior">
+                        <div class="config-section">
+                            <h3 class="section-title">Upholstery Material</h3>
+                            <div class="option-grid">
+                                <div class="option-item active" data-option="upholstery_material" data-value="Fabric"
+                                    data-price="0">
+                                    <img src="{% static 'images/car/interior/fabric.jpg' %}" class="option-image"
+                                        alt="Fabric" />
+                                    <div class="option-label">Fabric</div>
+                                </div>
+                                <div class="option-item" data-option="upholstery_material" data-value="Leatherette"
+                                    data-price="800">
+                                    <img src="{% static 'images/car/interior/leatherette.jpg' %}" class="option-image"
+                                        alt="Leatherette" />
+                                    <div class="option-label">Leatherette</div>
+                                </div>
+                                <div class="option-item" data-option="upholstery_material" data-value="Nappa Leather"
+                                    data-price="2000">
+                                    <img src="{% static 'images/car/interior/leather.jpg' %}" class="option-image"
+                                        alt="Nappa Leather" />
+                                    <div class="option-label">Nappa Leather</div>
+                                </div>
+                            </div>
+                            <div class="price-display">
+                                <span>Selected:
+                                    <span id="upholstery_material-selection">Fabric</span></span>
+                                <span class="price-change" id="upholstery_material-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Interior Color</h3>
+                            <div class="option-grid">
+                                <div class="option-item active" data-option="interior_color" data-value="Luxe Gold"
+                                    data-price="0">
+                                    <div class="option-color color-gold"></div>
+                                    <div class="option-label">Luxe Gold</div>
+                                </div>
+                                <div class="option-item" data-option="interior_color" data-value="Chestnut Brown"
+                                    data-price="300">
+                                    <div class="option-color color-brown"></div>
+                                    <div class="option-label">Chestnut Brown</div>
+                                </div>
+                                <div class="option-item" data-option="interior_color" data-value="Jet Black" data-price="500">
+                                    <div class="option-color color-black"></div>
+                                    <div class="option-label">Jet Black</div>
+                                </div>
+                                <div class="option-item" data-option="interior_color" data-value="Pearl White" data-price="700">
+                                    <div class="option-color color-white"></div>
+                                    <div class="option-label">Pearl White</div>
+                                </div>
+                            </div>
+                            <div class="price-display">
+                                <span>Selected:
+                                    <span id="interior_color-selection">Luxe Gold</span></span>
+                                <span class="price-change" id="interior_color-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Seat Type</h3>
+                            <select class="config-dropdown" data-option="seat_type">
+                                <option value="Standard" data-price="0">Standard - $0</option>
+                                <option value="Sport" data-price="800">Sport - $800</option>
+                                <option value="Comfort" data-price="1200">Comfort - $1,200</option>
+                                <option value="Ventilated" data-price="1800">
+                                    Ventilated - $1,800
+                                </option>
+                                <option value="Massage" data-price="2500">Massage - $2,500</option>
+                            </select>
+                            <div class="price-display">
+                                <span>Selected: <span id="seat_type-selection">Standard</span></span>
+                                <span class="price-change" id="seat_type-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Dashboard Trim</h3>
+                            <select class="config-dropdown" data-option="dashboard_trim">
+                                <option value="Plastic" data-price="0">Plastic - $0</option>
+                                <option value="Wood" data-price="600">Wood - $600</option>
+                                <option value="Aluminum" data-price="800">Aluminum - $800</option>
+                                <option value="Carbon Fiber" data-price="1500">
+                                    Carbon Fiber - $1,500
+                                </option>
+                            </select>
+                            <div class="price-display">
+                                <span>Selected:
+                                    <span id="dashboard_trim-selection">Plastic</span></span>
+                                <span class="price-change" id="dashboard_trim-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Steering Wheel</h3>
+                            <select class="config-dropdown" data-option="steering_wheel">
+                                <option value="Standard" data-price="0">Standard - $0</option>
+                                <option value="Leather-Wrapped" data-price="300">
+                                    Leather-Wrapped - $300
+                                </option>
+                                <option value="Sport" data-price="600">Sport - $600</option>
+                                <option value="Heated" data-price="500">Heated - $500</option>
+                                <option value="Heated Sport" data-price="900">
+                                    Heated Sport - $900
+                                </option>
+                            </select>
+                            <div class="price-display">
+                                <span>Selected:
+                                    <span id="steering_wheel-selection">Standard</span></span>
+                                <span class="price-change" id="steering_wheel-price">+$0</span>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="tab-content" id="performance">
+                        <div class="config-section">
+                            <h3 class="section-title">Engine Type</h3>
+                            <select class="config-dropdown" data-option="engine_type">
+                                <option value="V8 1000HP" data-price="0">V8 1000HP - $0</option>
+                                <option value="V6 Turbo" data-price="2500">
+                                    V6 Turbo - $2,500
+                                </option>
+                                <option value="V8 Hybrid" data-price="5000">
+                                    V8 Hybrid - $5,000
+                                </option>
+                                <option value="Electric Performance" data-price="8000">
+                                    Electric Performance - $8,000
+                                </option>
+                            </select>
+                            <div class="price-display">
+                                <span>Selected: <span id="engine_type-selection">V8 1000HP</span></span>
+                                <span class="price-change" id="engine_type-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Transmission</h3>
+                            <select class="config-dropdown" data-option="transmission">
+                                <option value="Automatic" data-price="0">Automatic - $0</option>
+                                <option value="Manual" data-price="0">Manual - $0</option>
+                                <option value="8-Speed Automatic" data-price="1500">
+                                    8-Speed Automatic - $1,500
+                                </option>
+                                <option value="Dual-Clutch" data-price="3000">
+                                    Dual-Clutch - $3,000
+                                </option>
+                            </select>
+                            <div class="price-display">
+                                <span>Selected:
+                                    <span id="transmission-selection">Automatic</span></span>
+                                <span class="price-change" id="transmission-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Drivetrain</h3>
+                            <select class="config-dropdown" data-option="drivetrain">
+                                <option value="RWD" data-price="0">RWD - $0</option>
+                                <option value="FWD" data-price="0">FWD - $0</option>
+                                <option value="AWD" data-price="2000">AWD - $2,000</option>
+                                <option value="4WD" data-price="2500">4WD - $2,500</option>
+                            </select>
+                            <div class="price-display">
+                                <span>Selected: <span id="drivetrain-selection">RWD</span></span>
+                                <span class="price-change" id="drivetrain-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Suspension</h3>
+                            <select class="config-dropdown" data-option="suspension">
+                                <option value="Standard" data-price="0">Standard - $0</option>
+                                <option value="Sport" data-price="1200">Sport - $1,200</option>
+                                <option value="Adaptive" data-price="2500">
+                                    Adaptive - $2,500
+                                </option>
+                                <option value="Air Suspension" data-price="3800">
+                                    Air Suspension - $3,800
+                                </option>
+                            </select>
+                            <div class="price-display">
+                                <span>Selected: <span id="suspension-selection">Standard</span></span>
+                                <span class="price-change" id="suspension-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Exhaust System</h3>
+                            <select class="config-dropdown" data-option="exhaust_system">
+                                <option value="Standard" data-price="0">Standard - $0</option>
+                                <option value="Performance" data-price="800">
+                                    Performance - $800
+                                </option>
+                                <option value="Sport" data-price="1200">Sport - $1,200</option>
+                                <option value="Race" data-price="2000">Race - $2,000</option>
+                            </select>
+                            <div class="price-display">
+                                <span>Selected:
+                                    <span id="exhaust_system-selection">Standard</span></span>
+                                <span class="price-change" id="exhaust_system-price">+$0</span>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="tab-content" id="technology">
+                        <div class="config-section">
+                            <h3 class="section-title">Infotainment System</h3>
+                            <select class="config-dropdown" data-option="infotainment_system">
+                                <option value="Standard" data-price="0">
+                                    Standard 8-inch - $0
+                                </option>
+                                <option value="10-inch Touchscreen" data-price="800">
+                                    10-inch Touchscreen - $800
+                                </option>
+                                <option value="12-inch Touchscreen" data-price="1500">
+                                    12-inch Touchscreen - $1,500
+                                </option>
+                                <option value="Dual 12-inch Screens" data-price="2500">
+                                    Dual 12-inch Screens - $2,500
+                                </option>
+                            </select>
+                            <div class="price-display">
+                                <span>Selected:
+                                    <span id="infotainment_system-selection">Standard</span></span>
+                                <span class="price-change" id="infotainment_system-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Sound System</h3>
+                            <select class="config-dropdown" data-option="sound_system">
+                                <option value="Standard" data-price="0">Standard - $0</option>
+                                <option value="Premium 10-Speaker" data-price="800">
+                                    Premium 10-Speaker - $800
+                                </option>
+                                <option value="Bose Premium" data-price="1500">
+                                    Bose Premium - $1,500
+                                </option>
+                                <option value="Meridian Surround" data-price="2200">
+                                    Meridian Surround - $2,200
+                                </option>
+                            </select>
+                            <div class="price-display">
+                                <span>Selected: <span id="sound_system-selection">Standard</span></span>
+                                <span class="price-change" id="sound_system-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Heads-Up Display</h3>
+                            <div class="toggle-option">
+                                <span class="toggle-option-label">Add Heads-Up Display ($1,200)</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" data-option="heads_up_display" data-price="1200" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="price-display">
+                                <span>Selected: <span id="heads_up_display-selection">No</span></span>
+                                <span class="price-change" id="heads_up_display-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Connectivity Package</h3>
+                            <select class="config-dropdown" data-option="connectivity_package">
+                                <option value="Standard" data-price="0">Standard - $0</option>
+                                <option value="Wi-Fi Hotspot" data-price="300">
+                                    Wi-Fi Hotspot - $300
+                                </option>
+                                <option value="5G Connectivity" data-price="600">
+                                    5G Connectivity - $600
+                                </option>
+                                <option value="Premium Connected Services" data-price="1000">
+                                    Premium Connected Services - $1,000
+                                </option>
+                            </select>
+                            <div class="price-display">
+                                <span>Selected:
+                                    <span id="connectivity_package-selection">Standard</span></span>
+                                <span class="price-change" id="connectivity_package-price">+$0</span>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="tab-content" id="safety">
+                        <div class="config-section">
+                            <h3 class="section-title">Autonomous Driving Level</h3>
+                            <select class="config-dropdown" data-option="autonomous_driving_level">
+                                <option value="Level 1" data-price="0">Level 1 - $0</option>
+                                <option value="Level 2" data-price="2000">Level 2 - $2,000</option>
+                                <option value="Level 2+" data-price="3500">
+                                    Level 2+ - $3,500
+                                </option>
+                                <option value="Level 3" data-price="6000">Level 3 - $6,000</option>
+                            </select>
+                            <div class="price-display">
+                                <span>Selected:
+                                    <span id="autonomous_driving_level-selection">Level 1</span></span>
+                                <span class="price-change" id="autonomous_driving_level-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Advanced Safety Features</h3>
+                            <div class="toggle-option">
+                                <span class="toggle-option-label">Parking Assist ($800)</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" data-option="parking_assist" data-price="800" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-option">
+                                <span class="toggle-option-label">Blind Spot Monitoring ($600)</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" data-option="blind_spot_monitoring" data-price="600" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-option">
+                                <span class="toggle-option-label">Night Vision ($1,500)</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" data-option="night_vision" data-price="1500" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="price-display">
+                                <span>Selected Safety Features</span>
+                                <span class="price-change" id="safety-features-price">+$0</span>
+                            </div>
+                        </div>
+                    </div>
+        
+                    <div class="tab-content" id="packages">
+                        <div class="config-section">
+                            <h3 class="section-title">Optional Packages</h3>
+                            <div class="toggle-option">
+                                <span class="toggle-option-label">Luxury Package ($3,500)</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" data-option="luxury_package" data-price="3500" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-option">
+                                <span class="toggle-option-label">Sport Package ($2,800)</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" data-option="sport_package" data-price="2800" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-option">
+                                <span class="toggle-option-label">Winter Package ($1,200)</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" data-option="winter_package" data-price="1200" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-option">
+                                <span class="toggle-option-label">Offroad Package ($2,500)</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" data-option="offroad_package" data-price="2500" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="price-display">
+                                <span>Selected Packages</span>
+                                <span class="price-change" id="packages-price">+$0</span>
+                            </div>
+                        </div>
+        
+                        <div class="config-section">
+                            <h3 class="section-title">Accessories</h3>
+                            <div class="toggle-option">
+                                <span class="toggle-option-label">Towing Hitch ($800)</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" data-option="towing_hitch" data-price="800" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="toggle-option">
+                                <span class="toggle-option-label">Roof Rack ($600)</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" data-option="roof_rack" data-price="600" />
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                            <div class="price-display">
+                                <span>Selected Accessories</span>
+                                <span class="price-change" id="accessories-price">+$0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mobile-dialog-footer">
+                    <!-- <div class="total-price" id="dialogTotalPrice">${{amount_due}}</div> -->
+                    <div class="total-price" id="configTotalPrice">$  {{amount_due}}</div>
+                    <button type="button" class="save-changes-btn">Apply Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="configurator-sidebar">
+            <div class="configurator-header">
+                <h1 class="configurator-title">Configure Your {{ items.title }}</h1>
+                <p class="configurator-subtitle">
+                    Customize every detail to match your style
+                </p>
+            </div>
+
+            <div class="config-tabs">
+                <div class="config-tab active" data-tab="exterior">
+                    Exterior <span class="badge">8</span>
+                </div>
+                <div class="config-tab" data-tab="interior">
+                    Interior <span class="badge">5</span>
+                </div>
+                <div class="config-tab" data-tab="performance">
+                    Performance <span class="badge">5</span>
+                </div>
+                <div class="config-tab" data-tab="technology">
+                    Technology <span class="badge">4</span>
+                </div>
+                <div class="config-tab" data-tab="safety">
+                    Safety <span class="badge">4</span>
+                </div>
+                <div class="config-tab" data-tab="packages">
+                    Packages <span class="badge">6</span>
+                </div>
+            </div>
+
+            <div class="tab-content active" id="exterior">
+                <div class="config-section">
+                    <h3 class="section-title">Exterior Color</h3>
+                    <div class="option-grid">
+                        <div class="option-item active" data-option="exterior_color" data-value="Premium Red"
+                            data-price="0">
+                            <div class="option-color color-red"></div>
+                            <div class="option-label">Premium Red</div>
+                        </div>
+                        <div class="option-item" data-option="exterior_color" data-value="Emerald Green"
+                            data-price="500">
+                            <div class="option-color color-green"></div>
+                            <div class="option-label">Emerald Green</div>
+                        </div>
+                        <div class="option-item" data-option="exterior_color" data-value="Nautical Blue"
+                            data-price="800">
+                            <div class="option-color color-blue"></div>
+                            <div class="option-label">Nautical Blue</div>
+                        </div>
+                        <div class="option-item" data-option="exterior_color" data-value="Jet Black" data-price="1200">
+                            <div class="option-color color-black"></div>
+                            <div class="option-label">Jet Black</div>
+                        </div>
+                        <div class="option-item" data-option="exterior_color" data-value="Moonlight Silver"
+                            data-price="1000">
+                            <div class="option-color color-silver"></div>
+                            <div class="option-label">Moonlight Silver</div>
+                        </div>
+                    </div>
+                    <div class="price-display">
+                        <span>Selected:
+                            <span id="exterior_color-selection">Premium Red</span></span>
+                        <span class="price-change" id="exterior_color-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Wheel Type</h3>
+                    <div class="option-grid">
+                        <div class="option-item active" data-option="wheel_type" data-value="Classic Steel"
+                            data-price="0">
+                            <img src="{% static 'images/car/wheels/classic.jpg' %}" class="option-image"
+                                alt="Steel Wheels" />
+                            <div class="option-label">Classic Steel</div>
+                        </div>
+                        <div class="option-item" data-option="wheel_type" data-value="Sport Rims" data-price="1200">
+                            <img src="{% static 'images/car/wheels/alloy.png' %}" class="option-image" alt="Rims" />
+                            <div class="option-label">Sport Rims</div>
+                        </div>
+                        <div class="option-item" data-option="wheel_type" data-value="Premium Alloy" data-price="2500">
+                            <img src="{% static 'images/car/wheels/premium.jpg' %}" class="option-image"
+                                alt="Alloy Rims" />
+                            <div class="option-label">Premium Alloy</div>
+                        </div>
+                    </div>
+                    <div class="price-display">
+                        <span>Selected:
+                            <span id="wheel_type-selection">Classic Steel</span></span>
+                        <span class="price-change" id="wheel_type-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Wheel Color</h3>
+                    <div class="option-grid">
+                        <div class="option-item active" data-option="wheel_color" data-value="Silver" data-price="0">
+                            <div class="option-color color-silver"></div>
+                            <div class="option-label">Silver</div>
+                        </div>
+                        <div class="option-item" data-option="wheel_color" data-value="Gloss Black" data-price="300">
+                            <div class="option-color color-black"></div>
+                            <div class="option-label">Gloss Black</div>
+                        </div>
+                        <div class="option-item" data-option="wheel_color" data-value="Gunmetal" data-price="400">
+                            <div class="option-color color-gray"></div>
+                            <div class="option-label">Gunmetal</div>
+                        </div>
+                    </div>
+                    <div class="price-display">
+                        <span>Selected: <span id="wheel_color-selection">Silver</span></span>
+                        <span class="price-change" id="wheel_color-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Grille Style</h3>
+                    <select class="config-dropdown" data-option="grille_style">
+                        <option value="Standard" data-price="0">Standard - $0</option>
+                        <option value="Sport" data-price="800">Sport - $800</option>
+                        <option value="Chrome" data-price="600">Chrome - $600</option>
+                        <option value="Black" data-price="500">Black - $500</option>
+                        <option value="Carbon Fiber" data-price="1200">
+                            Carbon Fiber - $1,200
+                        </option>
+                    </select>
+                    <div class="price-display">
+                        <span>Selected: <span id="grille_style-selection">Standard</span></span>
+                        <span class="price-change" id="grille_style-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Roof Type</h3>
+                    <select class="config-dropdown" data-option="roof_type">
+                        <option value="Solid" data-price="0">Solid - $0</option>
+                        <option value="Panoramic Sunroof" data-price="1500">
+                            Panoramic Sunroof - $1,500
+                        </option>
+                        <option value="Glass Roof" data-price="2000">
+                            Glass Roof - $2,000
+                        </option>
+                        <option value="Carbon Fiber" data-price="3000">
+                            Carbon Fiber - $3,000
+                        </option>
+                    </select>
+                    <div class="price-display">
+                        <span>Selected: <span id="roof_type-selection">Solid</span></span>
+                        <span class="price-change" id="roof_type-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Mirror Style</h3>
+                    <select class="config-dropdown" data-option="mirror_style">
+                        <option value="Standard" data-price="0">Standard - $0</option>
+                        <option value="Auto-Folding" data-price="400">
+                            Auto-Folding - $400
+                        </option>
+                        <option value="Carbon Fiber" data-price="800">
+                            Carbon Fiber - $800
+                        </option>
+                        <option value="Heated" data-price="300">Heated - $300</option>
+                    </select>
+                    <div class="price-display">
+                        <span>Selected: <span id="mirror_style-selection">Standard</span></span>
+                        <span class="price-change" id="mirror_style-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Lighting Package</h3>
+                    <select class="config-dropdown" data-option="lighting_package">
+                        <option value="Standard" data-price="0">Standard - $0</option>
+                        <option value="LED" data-price="600">LED - $600</option>
+                        <option value="Matrix LED" data-price="1200">
+                            Matrix LED - $1,200
+                        </option>
+                        <option value="Adaptive" data-price="1500">
+                            Adaptive Headlights - $1,500
+                        </option>
+                    </select>
+                    <div class="price-display">
+                        <span>Selected:
+                            <span id="lighting_package-selection">Standard</span></span>
+                        <span class="price-change" id="lighting_package-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Decals</h3>
+                    <select class="config-dropdown" data-option="decals">
+                        <option value="None" data-price="0">None - $0</option>
+                        <option value="Racing Stripes" data-price="500">
+                            Racing Stripes - $500
+                        </option>
+                        <option value="Side Graphics" data-price="400">
+                            Side Graphics - $400
+                        </option>
+                        <option value="Custom Logo" data-price="800">
+                            Custom Logo - $800
+                        </option>
+                    </select>
+                    <div class="price-display">
+                        <span>Selected: <span id="decals-selection">None</span></span>
+                        <span class="price-change" id="decals-price">+$0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="interior">
+                <div class="config-section">
+                    <h3 class="section-title">Upholstery Material</h3>
+                    <div class="option-grid">
+                        <div class="option-item active" data-option="upholstery_material" data-value="Fabric"
+                            data-price="0">
+                            <img src="{% static 'images/car/interior/fabric.jpg' %}" class="option-image"
+                                alt="Fabric" />
+                            <div class="option-label">Fabric</div>
+                        </div>
+                        <div class="option-item" data-option="upholstery_material" data-value="Leatherette"
+                            data-price="800">
+                            <img src="{% static 'images/car/interior/leatherette.jpg' %}" class="option-image"
+                                alt="Leatherette" />
+                            <div class="option-label">Leatherette</div>
+                        </div>
+                        <div class="option-item" data-option="upholstery_material" data-value="Nappa Leather"
+                            data-price="2000">
+                            <img src="{% static 'images/car/interior/leather.jpg' %}" class="option-image"
+                                alt="Nappa Leather" />
+                            <div class="option-label">Nappa Leather</div>
+                        </div>
+                    </div>
+                    <div class="price-display">
+                        <span>Selected:
+                            <span id="upholstery_material-selection">Fabric</span></span>
+                        <span class="price-change" id="upholstery_material-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Interior Color</h3>
+                    <div class="option-grid">
+                        <div class="option-item active" data-option="interior_color" data-value="Luxe Gold"
+                            data-price="0">
+                            <div class="option-color color-gold"></div>
+                            <div class="option-label">Luxe Gold</div>
+                        </div>
+                        <div class="option-item" data-option="interior_color" data-value="Chestnut Brown"
+                            data-price="300">
+                            <div class="option-color color-brown"></div>
+                            <div class="option-label">Chestnut Brown</div>
+                        </div>
+                        <div class="option-item" data-option="interior_color" data-value="Jet Black" data-price="500">
+                            <div class="option-color color-black"></div>
+                            <div class="option-label">Jet Black</div>
+                        </div>
+                        <div class="option-item" data-option="interior_color" data-value="Pearl White" data-price="700">
+                            <div class="option-color color-white"></div>
+                            <div class="option-label">Pearl White</div>
+                        </div>
+                    </div>
+                    <div class="price-display">
+                        <span>Selected:
+                            <span id="interior_color-selection">Luxe Gold</span></span>
+                        <span class="price-change" id="interior_color-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Seat Type</h3>
+                    <select class="config-dropdown" data-option="seat_type">
+                        <option value="Standard" data-price="0">Standard - $0</option>
+                        <option value="Sport" data-price="800">Sport - $800</option>
+                        <option value="Comfort" data-price="1200">Comfort - $1,200</option>
+                        <option value="Ventilated" data-price="1800">
+                            Ventilated - $1,800
+                        </option>
+                        <option value="Massage" data-price="2500">Massage - $2,500</option>
+                    </select>
+                    <div class="price-display">
+                        <span>Selected: <span id="seat_type-selection">Standard</span></span>
+                        <span class="price-change" id="seat_type-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Dashboard Trim</h3>
+                    <select class="config-dropdown" data-option="dashboard_trim">
+                        <option value="Plastic" data-price="0">Plastic - $0</option>
+                        <option value="Wood" data-price="600">Wood - $600</option>
+                        <option value="Aluminum" data-price="800">Aluminum - $800</option>
+                        <option value="Carbon Fiber" data-price="1500">
+                            Carbon Fiber - $1,500
+                        </option>
+                    </select>
+                    <div class="price-display">
+                        <span>Selected:
+                            <span id="dashboard_trim-selection">Plastic</span></span>
+                        <span class="price-change" id="dashboard_trim-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Steering Wheel</h3>
+                    <select class="config-dropdown" data-option="steering_wheel">
+                        <option value="Standard" data-price="0">Standard - $0</option>
+                        <option value="Leather-Wrapped" data-price="300">
+                            Leather-Wrapped - $300
+                        </option>
+                        <option value="Sport" data-price="600">Sport - $600</option>
+                        <option value="Heated" data-price="500">Heated - $500</option>
+                        <option value="Heated Sport" data-price="900">
+                            Heated Sport - $900
+                        </option>
+                    </select>
+                    <div class="price-display">
+                        <span>Selected:
+                            <span id="steering_wheel-selection">Standard</span></span>
+                        <span class="price-change" id="steering_wheel-price">+$0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="performance">
+                <div class="config-section">
+                    <h3 class="section-title">Engine Type</h3>
+                    <select class="config-dropdown" data-option="engine_type">
+                        <option value="V8 1000HP" data-price="0">V8 1000HP - $0</option>
+                        <option value="V6 Turbo" data-price="2500">
+                            V6 Turbo - $2,500
+                        </option>
+                        <option value="V8 Hybrid" data-price="5000">
+                            V8 Hybrid - $5,000
+                        </option>
+                        <option value="Electric Performance" data-price="8000">
+                            Electric Performance - $8,000
+                        </option>
+                    </select>
+                    <div class="price-display">
+                        <span>Selected: <span id="engine_type-selection">V8 1000HP</span></span>
+                        <span class="price-change" id="engine_type-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Transmission</h3>
+                    <select class="config-dropdown" data-option="transmission">
+                        <option value="Automatic" data-price="0">Automatic - $0</option>
+                        <option value="Manual" data-price="0">Manual - $0</option>
+                        <option value="8-Speed Automatic" data-price="1500">
+                            8-Speed Automatic - $1,500
+                        </option>
+                        <option value="Dual-Clutch" data-price="3000">
+                            Dual-Clutch - $3,000
+                        </option>
+                    </select>
+                    <div class="price-display">
+                        <span>Selected:
+                            <span id="transmission-selection">Automatic</span></span>
+                        <span class="price-change" id="transmission-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Drivetrain</h3>
+                    <select class="config-dropdown" data-option="drivetrain">
+                        <option value="RWD" data-price="0">RWD - $0</option>
+                        <option value="FWD" data-price="0">FWD - $0</option>
+                        <option value="AWD" data-price="2000">AWD - $2,000</option>
+                        <option value="4WD" data-price="2500">4WD - $2,500</option>
+                    </select>
+                    <div class="price-display">
+                        <span>Selected: <span id="drivetrain-selection">RWD</span></span>
+                        <span class="price-change" id="drivetrain-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Suspension</h3>
+                    <select class="config-dropdown" data-option="suspension">
+                        <option value="Standard" data-price="0">Standard - $0</option>
+                        <option value="Sport" data-price="1200">Sport - $1,200</option>
+                        <option value="Adaptive" data-price="2500">
+                            Adaptive - $2,500
+                        </option>
+                        <option value="Air Suspension" data-price="3800">
+                            Air Suspension - $3,800
+                        </option>
+                    </select>
+                    <div class="price-display">
+                        <span>Selected: <span id="suspension-selection">Standard</span></span>
+                        <span class="price-change" id="suspension-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Exhaust System</h3>
+                    <select class="config-dropdown" data-option="exhaust_system">
+                        <option value="Standard" data-price="0">Standard - $0</option>
+                        <option value="Performance" data-price="800">
+                            Performance - $800
+                        </option>
+                        <option value="Sport" data-price="1200">Sport - $1,200</option>
+                        <option value="Race" data-price="2000">Race - $2,000</option>
+                    </select>
+                    <div class="price-display">
+                        <span>Selected:
+                            <span id="exhaust_system-selection">Standard</span></span>
+                        <span class="price-change" id="exhaust_system-price">+$0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="technology">
+                <div class="config-section">
+                    <h3 class="section-title">Infotainment System</h3>
+                    <select class="config-dropdown" data-option="infotainment_system">
+                        <option value="Standard" data-price="0">
+                            Standard 8-inch - $0
+                        </option>
+                        <option value="10-inch Touchscreen" data-price="800">
+                            10-inch Touchscreen - $800
+                        </option>
+                        <option value="12-inch Touchscreen" data-price="1500">
+                            12-inch Touchscreen - $1,500
+                        </option>
+                        <option value="Dual 12-inch Screens" data-price="2500">
+                            Dual 12-inch Screens - $2,500
+                        </option>
+                    </select>
+                    <div class="price-display">
+                        <span>Selected:
+                            <span id="infotainment_system-selection">Standard</span></span>
+                        <span class="price-change" id="infotainment_system-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Sound System</h3>
+                    <select class="config-dropdown" data-option="sound_system">
+                        <option value="Standard" data-price="0">Standard - $0</option>
+                        <option value="Premium 10-Speaker" data-price="800">
+                            Premium 10-Speaker - $800
+                        </option>
+                        <option value="Bose Premium" data-price="1500">
+                            Bose Premium - $1,500
+                        </option>
+                        <option value="Meridian Surround" data-price="2200">
+                            Meridian Surround - $2,200
+                        </option>
+                    </select>
+                    <div class="price-display">
+                        <span>Selected: <span id="sound_system-selection">Standard</span></span>
+                        <span class="price-change" id="sound_system-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Heads-Up Display</h3>
+                    <div class="toggle-option">
+                        <span class="toggle-option-label">Add Heads-Up Display ($1,200)</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" data-option="heads_up_display" data-price="1200" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="price-display">
+                        <span>Selected: <span id="heads_up_display-selection">No</span></span>
+                        <span class="price-change" id="heads_up_display-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Connectivity Package</h3>
+                    <select class="config-dropdown" data-option="connectivity_package">
+                        <option value="Standard" data-price="0">Standard - $0</option>
+                        <option value="Wi-Fi Hotspot" data-price="300">
+                            Wi-Fi Hotspot - $300
+                        </option>
+                        <option value="5G Connectivity" data-price="600">
+                            5G Connectivity - $600
+                        </option>
+                        <option value="Premium Connected Services" data-price="1000">
+                            Premium Connected Services - $1,000
+                        </option>
+                    </select>
+                    <div class="price-display">
+                        <span>Selected:
+                            <span id="connectivity_package-selection">Standard</span></span>
+                        <span class="price-change" id="connectivity_package-price">+$0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="safety">
+                <div class="config-section">
+                    <h3 class="section-title">Autonomous Driving Level</h3>
+                    <select class="config-dropdown" data-option="autonomous_driving_level">
+                        <option value="Level 1" data-price="0">Level 1 - $0</option>
+                        <option value="Level 2" data-price="2000">Level 2 - $2,000</option>
+                        <option value="Level 2+" data-price="3500">
+                            Level 2+ - $3,500
+                        </option>
+                        <option value="Level 3" data-price="6000">Level 3 - $6,000</option>
+                    </select>
+                    <div class="price-display">
+                        <span>Selected:
+                            <span id="autonomous_driving_level-selection">Level 1</span></span>
+                        <span class="price-change" id="autonomous_driving_level-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Advanced Safety Features</h3>
+                    <div class="toggle-option">
+                        <span class="toggle-option-label">Parking Assist ($800)</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" data-option="parking_assist" data-price="800" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-option">
+                        <span class="toggle-option-label">Blind Spot Monitoring ($600)</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" data-option="blind_spot_monitoring" data-price="600" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-option">
+                        <span class="toggle-option-label">Night Vision ($1,500)</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" data-option="night_vision" data-price="1500" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="price-display">
+                        <span>Selected Safety Features</span>
+                        <span class="price-change" id="safety-features-price">+$0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="packages">
+                <div class="config-section">
+                    <h3 class="section-title">Optional Packages</h3>
+                    <div class="toggle-option">
+                        <span class="toggle-option-label">Luxury Package ($3,500)</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" data-option="luxury_package" data-price="3500" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-option">
+                        <span class="toggle-option-label">Sport Package ($2,800)</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" data-option="sport_package" data-price="2800" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-option">
+                        <span class="toggle-option-label">Winter Package ($1,200)</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" data-option="winter_package" data-price="1200" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-option">
+                        <span class="toggle-option-label">Offroad Package ($2,500)</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" data-option="offroad_package" data-price="2500" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="price-display">
+                        <span>Selected Packages</span>
+                        <span class="price-change" id="packages-price">+$0</span>
+                    </div>
+                </div>
+
+                <div class="config-section">
+                    <h3 class="section-title">Accessories</h3>
+                    <div class="toggle-option">
+                        <span class="toggle-option-label">Towing Hitch ($800)</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" data-option="towing_hitch" data-price="800" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-option">
+                        <span class="toggle-option-label">Roof Rack ($600)</span>
+                        <label class="toggle-switch">
+                            <input type="checkbox" data-option="roof_rack" data-price="600" />
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                    <div class="price-display">
+                        <span>Selected Accessories</span>
+                        <span class="price-change" id="accessories-price">+$0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="total-section">
+                <div class="total-price-label">Total Configuration Price</div>
+                <div class="total-price" id="configTotalPrice">$  {{amount_due}}</div>
+                <button type="submit" class="save-config-btn">
+                    Save Configuration
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- <div class="notification" id="configNotification">Configuration updated!</div> -->
+
+
+{% endblock content %}
+{% block script%}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize pricing variables
+        let basePrice = parseInt({{ amount_due }});
+    let exteriorPrice = 0;
+    let interiorPrice = 0;
+    let performancePrice = 0;
+    let techPrice = 0;
+    let packagePrice = 0;
+    let totalPrice = basePrice;
+
+    document.getElementById('base_price').value = basePrice.toString();
+
+
+    // Tab switching
+    const tabs = document.querySelectorAll('.config-tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
+        });
+    });
+
+    // Option selection (grid items)
+    const optionItems = document.querySelectorAll('.option-item');
+
+    optionItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const option = item.dataset.option;
+            const value = item.dataset.value;
+            const price = parseInt(item.dataset.price);
+
+            // Remove active state from siblings
+            document.querySelectorAll(`.option-item[data-option="${option}"]`)
+                .forEach(sibling => sibling.classList.remove('active'));
+
+            item.classList.add('active');
+            updateSelection(option, value, price);
+            updateHiddenField(option, value);
+            showNotification();
+        });
+    });
+
+    // Option selection (dropdowns)
+    const dropdowns = document.querySelectorAll('.config-dropdown');
+
+    dropdowns.forEach(dropdown => {
+        dropdown.addEventListener('change', () => {
+            const option = dropdown.dataset.option;
+            const selectedOption = dropdown.options[dropdown.selectedIndex];
+            const value = selectedOption.value;
+            const price = parseInt(selectedOption.dataset.price);
+
+            updateSelection(option, value, price);
+            updateHiddenField(option, value);
+            showNotification();
+        });
+    });
+
+    // Toggle switches
+    const toggles = document.querySelectorAll('input[type="checkbox"]');
+
+    toggles.forEach(toggle => {
+        toggle.addEventListener('change', () => {
+            const option = toggle.dataset.option;
+            const price = parseInt(toggle.dataset.price);
+            const value = toggle.checked;
+
+            updateSelection(option, value ? 'Yes' : 'No', value ? price : 0);
+            updateHiddenField(option, value.toString());
+            showNotification();
+        });
+    });
+
+    // Update display and price calculation
+    function updateSelection(option, value, price) {
+        // Update selection display
+        const selectionEl = document.getElementById(`${option}-selection`);
+        if (selectionEl) selectionEl.textContent = value;
+
+        // Update price display
+        const priceEl = document.getElementById(`${option}-price`);
+        if (priceEl) priceEl.textContent = `+$${price}`;
+
+        // Update category price
+        if (option.includes('exterior_') || ['wheel_type', 'wheel_color', 'grille_style', 'roof_type', 'mirror_style', 'lighting_package', 'decals'].includes(option)) {
+            updateCategoryPrice('exterior', option, price);
+        } else if (option.includes('interior_') || ['upholstery_material', 'seat_type', 'dashboard_trim', 'steering_wheel'].includes(option)) {
+            updateCategoryPrice('interior', option, price);
+        } else if (['engine_type', 'transmission', 'drivetrain', 'suspension', 'exhaust_system'].includes(option)) {
+            updateCategoryPrice('performance', option, price);
+        } else if (['infotainment_system', 'sound_system', 'heads_up_display', 'connectivity_package'].includes(option)) {
+            updateCategoryPrice('tech', option, price);
+        } else if (['autonomous_driving_level', 'parking_assist', 'blind_spot_monitoring', 'night_vision'].includes(option)) {
+            updateCategoryPrice('safety', option, price);
+        } else if (['luxury_package', 'sport_package', 'winter_package', 'offroad_package', 'towing_hitch', 'roof_rack'].includes(option)) {
+            updateCategoryPrice('package', option, price);
+        }
+
+        // Calculate total price
+        calculateTotalPrice();
+    }
+
+    // Price tracking objects
+    const priceTracking = {
+    exterior: {},
+    interior: {},
+    performance: {},
+    tech: {},
+    safety: {},
+    package: {}
+};
+
+function updateCategoryPrice(category, option, price) {
+    // Ensure price is an integer
+    price = parseInt(price) || 0;
+    priceTracking[category][option] = price;
+    
+    // Calculate category total
+    let categoryTotal = 0;
+    for (const opt in priceTracking[category]) {
+        categoryTotal += parseInt(priceTracking[category][opt]) || 0;
+    }
+    
+    // Update category price
+    switch(category) {
+            case 'exterior':
+                exteriorPrice = categoryTotal;
+                document.getElementById('exterior_price').value = exteriorPrice.toString();
+                break;
+            case 'interior':
+                interiorPrice = categoryTotal;
+                document.getElementById('interior_price').value = interiorPrice.toString();
+                break;
+            case 'performance':
+                performancePrice = categoryTotal;
+                document.getElementById('performance_price').value = performancePrice.toString();
+                break;
+            case 'tech':
+                techPrice = categoryTotal;
+                document.getElementById('tech_price').value = techPrice.toString();
+                break;
+            case 'safety':
+                // Update just the safety part in the tech price
+                let techTotal = 0;
+                for (const opt in priceTracking['tech']) {
+                    techTotal += parseInt(priceTracking['tech'][opt]) || 0;
+                }
+                techPrice = techTotal + categoryTotal;
+                document.getElementById('tech_price').value = techPrice.toString();
+                break;
+            case 'package':
+                packagePrice = categoryTotal;
+                document.getElementById('package_price').value = packagePrice.toString();
+                break;
+        }
+}
+
+
+function calculateTotalPrice() {
+    // Ensure all values are properly parsed as integers
+    totalPrice = 
+        parseInt(basePrice) + 
+        parseInt(exteriorPrice) + 
+        parseInt(interiorPrice) + 
+        parseInt(performancePrice) + 
+        parseInt(techPrice) + 
+        parseInt(packagePrice);
+    
+    document.getElementById('configTotalPrice').textContent = `$${totalPrice.toLocaleString()}`;
+    document.getElementById('mobileConfigTotalPrice').textContent = `$${totalPrice.toLocaleString()}`;
+    document.getElementById('total_price').value = totalPrice;
+    console.log("(*********************************************************************************")
+    console.log("TOtal price",totalPrice)
+    const hiddenTotalPrice = document.getElementById('total_price');
+    console.log("Hidden total price",hiddenTotalPrice)
+}
+
+    // Update hidden form fields
+    function updateHiddenField(option, value) {
+        const field = document.getElementById(option);
+        if (field) field.value = value;
+    }
+
+    // View controls
+    const viewBtns = document.querySelectorAll('.view-btn');
+    const carImage = document.getElementById('carImage');
+
+    viewBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            viewBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Here you'd change the image based on view
+            // This is a placeholder for demonstration
+            const view = btn.dataset.view;
+            let imagePath = carImage.src;
+
+            // In a real implementation, you'd have different images for different views
+            // For now, we'll just log the view change
+            console.log(`Changing to ${view} view`);
+        });
+    });
+
+    // Dark mode toggle
+    const themeToggle = document.querySelector('.theme-toggle');
+    const body = document.body;
+    const moonIcon = '<i class="fas fa-moon"></i>';
+    const sunIcon = '<i class="fas fa-sun"></i>';
+
+    themeToggle.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        themeToggle.innerHTML = body.classList.contains('dark-mode') ? sunIcon : moonIcon;
+    });
+
+    // Notification
+    function showNotification() {
+        const notification = document.getElementById('configNotification');
+        notification.classList.add('show');
+
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 2000);
+    }
+
+      });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const mobileConfigToggle = document.querySelector('.mobile-config-toggle');
+const mobileConfigDialog = document.getElementById('mobileConfigDialog');
+const closeDialogBtn = document.querySelector('.close-dialog');
+const saveChangesBtn = document.querySelector('.save-changes-btn');
+const mobileConfigTotalPrice = document.getElementById('mobileConfigTotalPrice');
+const dialogTotalPrice = document.getElementById('dialogTotalPrice');
+
+// Open dialog
+if (mobileConfigToggle) {
+    mobileConfigToggle.addEventListener('click', () => {
+        mobileConfigDialog.classList.add('open');
+        document.body.classList.add('dialog-open');
+    });
+}
+
+// Close dialog
+if (closeDialogBtn) {
+    closeDialogBtn.addEventListener('click', () => {
+        mobileConfigDialog.classList.remove('open');
+        document.body.classList.remove('dialog-open');
+    });
+}
+
+// Apply changes button
+if (saveChangesBtn) {
+    saveChangesBtn.addEventListener('click', () => {
+        mobileConfigDialog.classList.remove('open');
+        document.body.classList.remove('dialog-open');
+        showNotification();
+    });
+}
+
+// Update mobile price displays when total price changes
+function updateMobilePriceDisplays() {
+    if (mobileConfigTotalPrice) {
+        mobileConfigTotalPrice.textContent = `$${totalPrice.toLocaleString()}`;
+    }
+    
+    if (dialogTotalPrice) {
+        dialogTotalPrice.textContent = `$${totalPrice.toLocaleString()}`;
+    }
+}
+
+// Update the calculateTotalPrice function to also update mobile displays
+function calculateTotalPrice() {
+    // Ensure all values are properly parsed as integers
+    totalPrice = 
+        parseInt(basePrice) + 
+        parseInt(exteriorPrice) + 
+        parseInt(interiorPrice) + 
+        parseInt(performancePrice) + 
+        parseInt(techPrice) + 
+        parseInt(packagePrice);
+    
+    document.getElementById('configTotalPrice').textContent = `$${totalPrice.toLocaleString()}`;
+    document.getElementById('total_price').value = totalPrice.toString();
+    
+    // Update mobile price displays
+    updateMobilePriceDisplays();
+}
+    });
+</script>
+{% endblock script %}
+

@@ -1,0 +1,212 @@
+{% load static %}
+<!doctype html>
+<html lang="en" dir="ltr">
+
+    <head>
+        <meta charset="utf-8">
+        <title class="l-dark logo-font">GEN-Z</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="GEN-Z CARS, founded in 2020 by Salman Alvi, a young entrepreneur and car enthusiast based in New York City, is dedicated to manufacturing premium quality component cars.">
+        <meta name="keywords" content="SaMotorsports, GEN-Z CARSas, Mark-I, Mark-II, Mark-IV">
+        <meta name="author" content="GENZ40">
+        <meta name="email" content="info@genz40.com">
+        <meta name="website" content="https://genz40.com">
+        <meta name="Version" content="v4.8.0">
+
+        <!-- favicon -->
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'public/images/genz/apple-touch-icon.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'public/images/genz/favicon-32x32.png' %}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'public/images/genz/favicon-16x16.png' %}">
+        <link rel="manifest" href="{% static 'public/images/genz/site.webmanifest' %}">
+        
+        <!-- Lucide icons -->
+        <script src="https://unpkg.com/lucide@latest"></script>
+        <!-- Style Css-->
+        <link href="{% static 'libs/tiny-slider/tiny-slider.css' %}" rel="stylesheet">
+        <link href="{% static 'libs/tobii/css/tobii.min.css' %}" rel="stylesheet">
+        <!-- Bootstrap Css -->
+        <link href="{% static 'css/bootstrap-dark.min.css' %}" id="bootstrap-style" class="theme-opt" rel="stylesheet" type="text/css">
+        <!-- Icons Css -->
+        <link href="{% static 'libs/@mdi/font/css/materialdesignicons.min.css' %}" rel="stylesheet" type="text/css">
+        <link href="{% static 'libs/@iconscout/unicons/css/line.css' %}" type="text/css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+        <!-- Style Css-->
+        <link href="{% static 'css/style-dark.min.css' %}" id="color-opt" class="theme-opt" rel="stylesheet" type="text/css">
+        
+        <!-- Toastr -->
+        <link href="{% static 'admin/plugins/toastr/toastr.css' %}" rel="stylesheet" type="text/css">
+
+        <style>
+            /* Custom Toastr Styles */
+            #toast-container > div {
+                opacity: 1;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                border-radius: 8px;
+                padding: 15px 15px 15px 50px;
+                width: 300px;
+                background-position: 15px center;
+                background-size: 24px;
+                font-size: 14px;
+                font-weight: 500;
+                line-height: 1.4;
+            }
+
+            #toast-container > .toast-success {
+                background-color: #28a745;
+                color: #fff;
+            }
+
+            #toast-container > .toast-error {
+                background-color: #dc3545;
+                color: #fff;
+            }
+
+            #toast-container > .toast-info {
+                background-color: #17a2b8;
+                color: #fff;
+            }
+
+            #toast-container > .toast-warning {
+                background-color: #ffc107;
+                color: #000;
+            }
+
+            .toast-close-button {
+                color: #fff;
+                opacity: 0.8;
+                font-size: 18px;
+                padding: 0;
+                margin-right: 5px;
+            }
+
+            .toast-close-button:hover {
+                opacity: 1;
+            }
+
+            .toast-progress {
+                background-color: rgba(255, 255, 255, 0.3);
+                height: 3px;
+            }
+        </style>
+
+        <style>
+  
+            .side-btn {
+               background-color: #fff;
+               border-bottom-left-radius: .3rem;
+               border-bottom-right-radius: .3rem;
+               color: #000;
+               cursor: pointer;
+               display: inline-block;
+               font-weight: 500;
+               left: 17px;
+               padding: 5px 30px;
+               position: fixed;
+               top: 60%;
+               -webkit-transform: translateY(-50%) rotate(-90deg);
+               transform: translateY(-50%) rotate(-90deg);
+               -webkit-transform-origin: left;
+               transform-origin: left;
+               z-index:99
+           }
+           
+           .side-btn:hover {
+               left: 20px;
+               padding:10px 30px
+           }
+           
+           @media (max-width: 992px) {
+               .side-btn {
+                   display:none
+               }
+           
+               .gravity-mobile {
+                   width:80%
+               }
+           
+           }
+           
+           @media (max-width: 992px) {
+         .button-bottom-stick-mobile {
+                 background-image: linear-gradient(to left, #fff, #fff, #fff);
+                 border-top-left-radius: 20px;
+                 border-top-right-radius: 20px;
+                 bottom: 0;
+                 display: flex;
+                 font-weight: 600;
+                 left: 0;
+                 padding: .3rem 0;
+                 position: fixed;
+                 text-transform: uppercase;
+                 width: 100%;
+                 z-index:99999
+                 
+             }
+         
+             .button-bottom-stick-mobile .banner-button {
+                 border: none !important;
+                 border-radius: .3rem;
+                 box-shadow: none;
+                 cursor: pointer;
+                 padding: .01rem 3rem;
+                 transition: -webkit-transform .1s;
+                 transition: transform .1s;
+                 transition:transform .1s, -webkit-transform .1s;
+             }
+         
+             .button-bottom-stick-mobile .primary-text {
+                 color:#000
+             }
+         
+             .button-bottom-stick-mobile .banner-btn-logo svg {
+                 fill:#000
+             }
+             .vl {
+                 border-left:.1rem solid #dbd7d7
+             }
+         
+             .banner-button-margin, .banner-hr, .banner-logo, .banner-p {
+                 display: none;
+             }
+         
+             .banner-button-container-mobile, .banner-logo-container-mobile {
+                 display: flex;
+             }
+         
+              .banner-button-container-mobile {
+                 margin-top:2rem
+             }
+         
+                 .banner-button-container-mobile, .banner-logo-container-mobile {
+                 display:flex
+             }
+         
+         }
+         
+         @media (max-width: 767px) {
+             .banner-button-container-mobile .offset-1 {
+                 margin-left: 0;
+                 margin-top:.5rem
+             }
+         
+             .img-div {
+                 height:270px !important
+             }
+         }
+         
+         .banner-button-container-mobile, .banner-logo-container-mobile {
+             display:none
+         }
+         
+           </style>
+       <style>
+        @media (max-width: 767px) { 
+        .hide-on-small { 
+            display: none; 
+        }
+    }
+    </style>    
+    </head>
+
+ 

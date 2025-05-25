@@ -1,0 +1,825 @@
+{% extends "public/layout/base.html" %}
+{% load static %}
+{% load humanize %}
+{% block header %}
+<link href="{% static 'css/custom-styles.css' %}" rel="stylesheet">
+{% endblock header %}
+
+{% block content %}
+<!-- Main Content -->
+<div id="mainContent" class="col-md-12 text-dark transition-all ">
+
+    <section class="bg-home rtl-personal-hero bg-light d-flex align-items-start d-none d-lg-block" id="home" style="background: 
+            {% if items.title == 'Mark I' %} 
+                url('/static/images/mark1details/HighresScreenshot00013.png') 
+            {% elif items.title == 'Mark II' %}
+                url('/static/images/mark2details/HighresScreenshot00001.png')
+            {% elif items.title == 'Mark IV' %}
+                url('/static/images/mark4details/HighresScreenshot00002.png')
+            {% endif %} center center; background-size: cover; height: 100vh;">
+        <div class="container">
+            <div class="justify-content-center row mt-5">
+                <div class="col-12 mt-5">
+                    <h5 class="text-center text-white">Introducing the GEN-Z 40 </h5>
+                    <h3 class="display-3 fw-bold mb-3 title-top text-uppercase">{{ items.title }}</h3>
+                </div>
+            </div>
+            <div class="row bottom-row align-items-center justify-content-center mb-4">
+                <div class="col-4 text-center">
+                    <!-- <p class="text-white p-3 rounded">518hp<br>Max. engine power</p> -->
+                </div>
+                <div class="col-4 text-center">
+                    <!-- <p class="text-white p-3 rounded">3.0s<br>0-60mph</p> -->
+                </div>
+                <div class="col-4 text-center">
+                    <!-- <p class="text-white p-3 rounded">184<br>Top track speed (with summer tries)</p> -->
+                </div>
+
+                {% if items.title == 'Mark IV' %}
+                <a class="btn btn-lg me-2 btn-light text-uppercase" href="#" onclick="notAvailable()">
+                    Not Available Until July 2025
+                </a>
+                {% else %}
+
+                <div class="col-md-6 text-center">
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#fullscreenModal"
+                        class="btn btn-lg me-2 btn-light text-uppercase mt-4 float-end">
+                        <!-- <i class="mdi mdi-arrow-right-thin"></i> -->
+                        Technical Specs</a>
+                </div>
+                <div class="col-md-6 text-center">
+                    <button id="toggleButton" type="button"
+                        class="btn btn-lg me-2 btn-light text-uppercase mt-4 float-start">
+                        <!-- <i class="mdi mdi-arrow-right-thin"></i> -->
+                        Reserve Now</button>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- mobile main content -->
+    <section class="bg-black text-white d-flex align-items-start d-lg-none" id="home">
+        <div class="container d-lg-none ">
+            <div class="hero mt-5">
+                {% if items.title == 'Mark I' %}
+                <img class="mt-5" src="{% static 'images/mark1details/HighresScreenshot00013.png' %}" alt="Mark-I">
+                {% elif items.title == 'Mark II' %}
+                <img class="mt-5" src="{% static 'images/mark2details/HighresScreenshot00001.png' %}" alt="Mark-II">
+                {% elif items.title == 'Mark IV' %}
+                <img class="mt-5" src="{% static 'images/mark4details/HighresScreenshot00002.png' %}" alt="Mark-IV">
+                {% endif %}
+            </div>
+            <div class="specs">
+                <div>
+                    <h5 class="text-white">Introducing the GEN-Z 40 </h5>
+                    <h3 class="display-3 fw-bold text-uppercase">{{ items.title }}</h3>
+                </div>
+            </div>
+
+            <div class="row mb-4 justify-content-center">
+                <div class="col-12">
+                    <div class="pt-2 d-grid gap-2">
+                        {% if items.title == 'Mark IV' %}
+                        <a class="btn btn-lg me-2 btn-light text-uppercase" href="#" onclick="notAvailable()">
+                            Not Available Until July 2025
+                        </a>
+                        {% else %}
+                        <a class="mt-5 btn btn-outline-dark text-uppercase" href="#" data-bs-toggle="modal"
+                            data-bs-target="#fullscreenModal">
+                            Technical Specs
+                        </a>
+                        <a id="toggleButtonMobile" class="btn btn-outline-dark text-uppercase mt-2" href="#">
+                            Reserve Now
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="container bg-black">
+    <div class="rounded py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="section-title">
+                        <!-- <h2 class="fw-bold text-white text-center text-uppercase">End of Season Clearance Sale upto 30%</h2> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sidebar for reserve now (Initially Hidden) -->
+<div id="sideContent" class="col-md-12 bg-white text-white transition-all d-none">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12 mt-3">
+                <button id="closeButton" type="button"
+                    class="btn btn-sm btn-outline-secondary text-dark text-uppercase mt-2 float-end"><i
+                        class="mdi mdi-arrow-left-thin"></i>Back</button>
+                <h3 class="display-5 fw-bold mb-0 text-uppercase text-dark">{{ items.title }}</h3>
+                {{items.amount_due}}
+                <span class="badge bg-info">Est. Delivery - Mar 31, 2025</span>
+            </div>
+            <div class="col-md-12">
+                <form id="checkout-form" method="POST" action="{% url 'create_account_before_checkout' %}">
+                    {% csrf_token %}
+                    <input type="text" value="{{ random_password }}" name="password1" hidden>
+                    <input type="text" value="{{ random_password }}" name="password2" hidden>
+                    <input type="text" value="{{ country_code }}" name="country" hidden>
+                    <input type="text" value="customer" name="role" hidden>
+
+                    <div class="alert alert-info alert-dismissible fade show text-dark mt-3" role="alert"
+                        style="background-color: rgb(59 130 246 / .2)!important; border-color: rgb(59 130 246 / .5) !important;">
+                        <i class="uil uil-info-circle fs-5 align-middle me-1 text-dark"></i><strong
+                            class="text-uppercase">Reserve now, Configure later</strong><br>
+                        This reservation will save your position in line. When you car is available
+                        for production, we will invite you to configure and choose from dozens of options to make it
+                        complete personalized and unique.
+                        <button type="button" class="btn-close btn btn-icon btn-sm text-white float-end"
+                            style="width: 20px; height: 20px; color: #fff !important; background-color: rgb(59 130 246 / .5) !important;"
+                            data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    <h3 class="mt-2 text-dark">Reserve Now</h3>
+                    <div class="col-md-12 pt-2">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label class="form-label text-dark">First Name<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control bg-white text-dark" name="first_name"
+                                    id="first_name" value="{{user_data.first_name}}" required />
+                            </div>
+                            <div class="col-md-12 mt-2">
+                                <label class="form-label text-dark">Last Name<span class="text-danger">*</span></label>
+                                <input type="text" class="form-control bg-white text-dark" name="last_name"
+                                    id="last_name" value="{{user_data.last_name}}" required />
+                            </div>
+
+                            <div class="col-md-12 mt-2">
+                                <label class="form-label text-dark">Email<span class="text-danger">*</span></label>
+                                <input type="email" class="form-control bg-white text-dark" name="email" id="email"
+                                    value="{{user_data.email}}" required />
+                            </div>
+                            <div class="col-md-12 mt-2">
+                                <label class="form-label text-dark">Confirm Email<span
+                                        class="text-danger">*</span></label>
+                                <input type="email" class="form-control bg-white text-dark" name="confirm_email"
+                                    id="confirm_email" value="{{user_data.email}}" required />
+                            </div>
+                            <div id="errorMessage" style="color: red; display: none;"></div>
+                            <div class="col-md-12 mt-2 position-relative">
+                                <label class="form-label text-dark">Phone Number <span
+                                        class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <!-- Add wrapper to hold the flag -->
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text bg-white border-0 p-0">
+                                            <img class="fea icon-sm icons" src="{{ country_flag_url }}"
+                                                alt="Country Flag" style="width: 28px; height: 28px;" />
+                                        </span>
+                                    </div>
+                                    <!-- Input field -->
+                                    <input type="tel" class="form-control bg-white text-dark pl-5" name="phone_number"
+                                        value="{{user_data.phone_number}}" id="phone_number"
+                                        style="border-radius: .375rem !important;" required />
+                                </div>
+                            </div>
+                            <div class="col-md-12 mt-2">
+                                <label class="form-label text-dark">Delivery Zip Code<span
+                                        class="text-danger">*</span></label>
+                                <input type="text" class="form-control bg-white text-dark" name="zip_code" id="zip_code"
+                                    value="{{ user_data.zip_code }}" required />
+                            </div>
+
+                            <div class="col-md-12 text-dark">
+                                <small class="text-gray text-sm" style="font-size: 11px;">
+                                    By entering my contact information above, I authorize Alvi Automobiles to
+                                    contact me about this request and Alvi Automobiles Updates including other Alvi
+                                    Automobiles
+                                    products, services and events. I can opt out in the Alvi Automobiles app or by
+                                    unsubscribing. This is not a purchase requirement.</span>
+
+                                </small>
+                            </div>
+
+                            <div class="col-md-12 text-dark mt-3 mb-1 text-sm" style="font-size: 11px;">
+                                <h4 class="mb-0">Due Today
+                                    <span class="mb-0 float-end mt-2">$ {{ amount_due }}</span>
+                                </h4>
+                                <!-- <h4 class="mb-0 float-end">$100</h4> -->
+                                <small>Fully Refundable</small>
+                            </div>
+                        </div>
+                        <input type="hidden" value="{{ amount_due }}" name="amount" />
+                        <input type="hidden" value="{{ items.title }}" name="package" />
+                        <!-- {{user_data.is_authenticated}}
+                            {{user_data.user_id}} -->
+                        <div class="d-grid mt-3 mb-1">
+                            <button type="submit"
+                                class="mb-1 btn btn-secondary text-dark text-uppercase">
+                                <!-- <i class="mdi mdi-arrow-right-thin"></i> -->
+                                Reserve Now
+                                <span class="spinner-border spinner-border-sm" id="pro1" role="status"
+                                    aria-hidden="true" style="display: none;"></span>
+                            </button>
+                        </div>
+                        <div class="col-md-12 text-dark mb-5">
+                            <small class="text-dark text-sm mb-5" style="font-size: 11px;">
+                                By placing this order, I understand that this is just the reservation fee and not a
+                                car purchase price.
+                                The Final price of the car will depend on options and features I choose. Reservation
+                                today will save your spot and lock your price for either Package "Roller or Turnkey
+                                Minus"
+                            </small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- tech specs Modal -->
+<div class="modal fade" id="fullscreenModal" tabindex="-1" aria-labelledby="fullscreenModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen">
+        <div class="modal-content">
+            <div class="modal-header"
+                style="background-color: ghostwhite; border-bottom: rgb(70, 70, 74); padding-left: 40px; padding-right: 40px;">
+                <h1 class="modal-title text-dark text-uppercase" id="fullscreenModalLabel">
+                    {{ items.title }}
+                </h1>
+                <button type="button" class="btn-close btn btn-icon btn-outline-danger float-end"
+                    data-bs-dismiss="modal" aria-label="Close"><i class="mdi mdi-close"></i></button>
+                <!-- <button type="button" class="btn-close bg-danger" data-bs-dismiss="modal" aria-label="Close"></button> -->
+            </div>
+            <div class="modal-body bg-white" style="padding-right: 40px; padding-left: 40px;">
+                <div class="row">
+
+                    <div class="col-md-6 text-dark">
+                        <div class="row">
+                            {% for package in packages %}
+                            <div class="col-md-6 text-dark">
+                                <div class="flex-1">
+                                    <h4 class="text-dark mb-0">
+                                        {{ package.name }} From $ {{ package.amount|intcomma }}
+                                        <!-- <span class="wrapper text-primary fs-6">
+                                                <i class="uil uil-info-circle fs-5 align-middle me-1 text-dark"></i>
+                                                <div class="tooltip">
+                                                    Price valid until March 31, 2025
+
+                                                </div>
+                                            </span> -->
+                                        <!-- <button class="btn btn-icon btn-sm" title="Price valid until March 31, 2025"><i data-feather="info" class="fea icon-sm"></i> -->
+                                        <!-- <i class="uil uil-info-circle fs-5 align-middle me-1 text-dark"></i> -->
+                                        <!-- </button> -->
+
+                                    </h4>
+                                    <h6 class="text-black-50 mb-0">
+                                        Original Price <span class="text-decoration-line-through">$ {{
+                                            package.amount_reserve|intcomma }}</span>
+                                    </h6>
+                                    <div class="wrapper text-primary fs-6">
+                                        Learn More
+                                        <div class="tooltip">
+                                            {{ package.description }}
+                                            <!-- Package comes with body mounted to chassis with dash unit and suspension pre
+                                                installed.
+                                                You will be able to choose more options as add-on features to this package
+                                                when your car is in production to make your car as close to turnkey. -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+
+                        </div>
+
+                        <div class="col-md-12 mt-4 pt-2">
+                            <h1 class="text-dark mt-4">Technical Specs</h1>
+                            <div class="accordion" id="accordionExample">
+                                <!-- Accordion Item 1 -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingDimension">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapseDimension"
+                                            aria-expanded="false" aria-controls="collapseDimension">
+                                            Dimensions
+                                        </button>
+                                    </h2>
+                                    <div id="collapseDimension" class="accordion-collapse collapse"
+                                        aria-labelledby="headingDimension" data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Length: 163"</p>
+                                            <p>- Height: 40.5"</p>
+                                            {% if items.title == 'Mark I' %}
+                                            <p>- Width: 71" (intermediate rear) or 79" (Extra Wide rear)</p>
+                                            {% elif items.title == 'Mark II' %}
+                                            <p>- Width: 71"</p>
+                                            {% elif items.title == 'Mark IV' %}
+                                            <p>- Width: 71"</p>
+                                            {% endif %}
+                                            <p>- Wheelbase: 95"</p>
+                                            <p>- Front Wheels: Options Available</p>
+                                            <p>- Rear Wheels: Options Available</p>
+                                            <p>- Front Tires: Options Available</p>
+                                            <p>- Rear Tires: Options Available</p>
+                                            <p>- Fuel Tank: Aluminum 22 Gallons</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading2">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false"
+                                            aria-controls="collapse2">
+                                            Body
+                                        </button>
+                                    </h2>
+                                    <div id="collapse2" class="accordion-collapse collapse" aria-labelledby="heading2"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Vaccum Infused / Handlaid Fiber Glass or Carbon Fiber </p>
+                                            <p>- Fiber Glass / Carbon Fiber Roof</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading3">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false"
+                                            aria-controls="collapse3">
+                                            Chassis
+                                        </button>
+                                    </h2>
+                                    <div id="collapse3" class="accordion-collapse collapse" aria-labelledby="heading3"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Mig/Tig-welded Tubular Chassis be-spoke designed for GEN-Z40 </p>
+                                            <p>- Aluminum Skinned</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading4">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false"
+                                            aria-controls="collapse4">
+                                            Suspension
+                                        </button>
+                                    </h2>
+                                    <div id="collapse4" class="accordion-collapse collapse" aria-labelledby="heading4"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Front: Ford Production upper control Arm and Spindle, cnc produced
+                                                lower control arm, adjustable coilover shocks </p>
+                                            <p>- Rear: Cnc produced uprights and control arm, adjustable coilover shocks
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading5">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false"
+                                            aria-controls="collapse5">
+                                            Steering
+                                        </button>
+                                    </h2>
+                                    <div id="collapse5" class="accordion-collapse collapse" aria-labelledby="heading5"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Rack and pinion with Colapsable Steering Column </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading6">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse6" aria-expanded="false"
+                                            aria-controls="collapse6">
+                                            Brakes
+                                        </button>
+                                    </h2>
+                                    <div id="collapse6" class="accordion-collapse collapse" aria-labelledby="heading6"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Front: Brembo / Wilwood </p>
+                                            <p>- Rear: Brembo / Wilwood </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading9">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse9" aria-expanded="false"
+                                            aria-controls="collapse9">
+                                            Interior
+                                        </button>
+                                    </h2>
+                                    <div id="collapse9" class="accordion-collapse collapse" aria-labelledby="heading9"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Original Style Dash (Left Hand Drive / Right Hand Drive) - Leather
+                                                Stiched / Carbon Fiber / Alacantara </p>
+                                            <p>- Moto-lita 14" Steering Wheel </p>
+                                            <p>- Original style Seats with Leather or Alcantara </p>
+                                            <p>- Speed Hut Gauges </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading7">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse7" aria-expanded="false"
+                                            aria-controls="collapse7">
+                                            Drivetrain
+                                        </button>
+                                    </h2>
+                                    <div id="collapse7" class="accordion-collapse collapse" aria-labelledby="heading7"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Recommended Engines: 289, 302, 351W, 427 or Coyote </p>
+                                            <p>- Transmission: Boxter S (upto 04) or Audi 01E/01X </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading8">
+                                        <button class="accordion-button collapsed text-uppercase" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse8" aria-expanded="false"
+                                            aria-controls="collapse8">
+                                            Exhaust System
+                                        </button>
+                                    </h2>
+                                    <div id="collapse8" class="accordion-collapse collapse" aria-labelledby="heading8"
+                                        data-bs-parent="#accordionExample">
+                                        <div class="accordion-body bg-white text-dark">
+                                            <p>- Bundle of Snakes </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!--end col-->
+                        <div class="col-md-12 d-grid">
+                            <button data-bs-dismiss="modal" id="closeModalButton" type="button"
+                                class="btn btn-lg me-2 btn-light text-uppercase mt-4 float-end">
+                                Reserve Now
+                            </button>
+                            <small class="text-dark text-sm mb-5 mt-3" style="font-size: 11px;">
+                                * Reservation today will save your spot and lock your price for either Package "Roller
+                                or Turnkey Minus"
+                            </small>
+                        </div>
+                    </div>
+                    <div class="pt-2 col-md-6 mb-5">
+                        {% if items.title == 'Mark I' %}
+                        <img src="{% static 'images/genz/mark1wided.jpg' %}" class="img-fluid rounded shadow mb-5"
+                            alt="">
+                        {% elif items.title == 'Mark II' %}
+                        <img src="{% static 'images/genz/mark2wided.jpg' %}" class="img-fluid rounded shadow mb-5"
+                            alt="">
+                        {% elif items.title == 'Mark IV' %}
+                        <img src="{% static 'images/genz/mark1wided.jpg' %}" class="img-fluid rounded shadow mb-5"
+                            alt="">
+                        {% endif %}
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block script %}
+<!-- reserve now side content -->
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+    document.getElementById('toggleButton').addEventListener('click', function () {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+        const mainContent = document.getElementById('mainContent');
+        const sideContent = document.getElementById('sideContent');
+        const closeButton = document.getElementById("closeButton");
+        const button = this;
+        // Toggle classes
+        if (sideContent.classList.contains('d-none')) {
+            // Show sidebar and adjust main content
+            sideContent.classList.remove('d-none');
+            mainContent.classList.replace('col-md-12', 'col-md-0');
+            // button.innerHTML = '<i class="mdi mdi-arrow-right-thin"></i>Back';
+            sideContent.classList.add('show');
+            document.body.classList.add('side-content-open');
+        } else {
+            // Hide sidebar and reset main content
+            sideContent.classList.add('d-none');
+            mainContent.classList.replace('col-md-0', 'col-md-12');
+            // button.innerHTML = '<i class="mdi mdi-arrow-right-thin"></i>Reserve Now';
+            sideContent.classList.remove('show');
+            document.body.classList.remove('side-content-open');
+            // Reset all radio buttons and card styles
+            const radios = document.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => radio.checked = false);
+        }
+
+        closeButton.addEventListener("click", function () {
+            sideContent.classList.add('d-none');
+            mainContent.classList.replace('col-md-8', 'col-md-12');
+            // button.innerHTML = '<i class="mdi mdi-arrow-right-thin"></i>Reserve Now';
+            sideContent.classList.remove('show');
+            document.body.classList.remove('side-content-open');
+            // Reset all radio buttons and card styles
+            const radios = document.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => radio.checked = false);
+        });
+    });
+</script>
+<!-- mobile -->
+<script>
+    document.getElementById('toggleButtonMobile').addEventListener('click', function () {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+        const mainContent = document.getElementById('mainContent');
+        const sideContent = document.getElementById('sideContent');
+        const closeButton = document.getElementById("closeButton");
+        const button = this;
+        // Toggle classes
+        if (sideContent.classList.contains('d-none')) {
+            // Show sidebar and adjust main content
+            sideContent.classList.remove('d-none');
+            mainContent.classList.replace('col-md-12', 'col-md-0');
+            // button.innerHTML = '<i class="mdi mdi-arrow-right-thin"></i>Back';
+            sideContent.classList.add('show');
+            document.body.classList.add('side-content-open');
+        } else {
+            // Hide sidebar and reset main content
+            sideContent.classList.add('d-none');
+            mainContent.classList.replace('col-md-0', 'col-md-12');
+            // button.innerHTML = '<i class="mdi mdi-arrow-right-thin"></i>Reserve Now';
+            sideContent.classList.remove('show');
+            document.body.classList.remove('side-content-open');
+            // Reset all radio buttons and card styles
+            const radios = document.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => radio.checked = false);
+        }
+
+        closeButton.addEventListener("click", function () {
+            sideContent.classList.add('d-none');
+            mainContent.classList.replace('col-md-8', 'col-md-12');
+            // button.innerHTML = '<i class="mdi mdi-arrow-right-thin"></i>Reserve Now';
+            sideContent.classList.remove('show');
+            document.body.classList.remove('side-content-open');
+            // Reset all radio buttons and card styles
+            const radios = document.querySelectorAll('input[type="radio"]');
+            radios.forEach(radio => radio.checked = false);
+        });
+    });
+</script>
+<!-- Lear more side modal -->
+<script>
+    function openModal() {
+        const modal = document.getElementById('rightModal');
+        modal.style.display = 'block'; // Show the modal
+        modal.style.left = '60%';
+        document.body.classList.add('no-scroll'); // Prevent background scrolling
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('rightModal');
+        modal.style.display = 'none'; // Hide the modal
+        modal.style.right = '0';
+        document.body.classList.remove('no-scroll'); // Restore scrolling
+    }
+</script>
+
+<script>
+    document.getElementById('submitBtn').addEventListener('click', function () {
+
+        const selectedOption = document.querySelector('input[type="radio"]:checked');
+        const errorMessage1 = document.getElementById('error-message');
+        if (!selectedOption) {
+            errorMessage1.style.display = 'block';
+        } else {
+            errorMessage1.style.display = 'none';
+            alert('Form submitted successfully with option: ' + selectedOption.nextElementSibling.textContent);
+        }
+
+
+        const radiosbodyTypes = document.querySelectorAll('input[name="bodyTypes"]');
+        const bodyErrorMessage = document.getElementById('bodyErrorMessage');
+
+        const radios = document.querySelectorAll('input[name="package"]');
+        const errorMessage = document.getElementById('errorMessage');
+
+        const isSelectedBody = Array.from(radiosbodyTypes).some(radio => radio.checked);
+
+        if (!isSelectedBody) {
+            bodyErrorMessage.style.display = 'block';
+        } else {
+            setTimeout(() => {
+                bodyErrorMessage.style.display = 'none';
+            }, 3000);
+            // bodyErrorMessage.style.display = 'none';
+        }
+
+        // Check if any radio button is selected
+        const isSelected = Array.from(radios).some(radio => radio.checked);
+
+        if (!isSelected) {
+            // Show error message if no radio button is selected
+            errorMessage.style.display = 'block';
+        } else {
+            // Hide error message and proceed
+            errorMessage.style.display = 'none';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 3000);
+            // alert('Package selected successfully!');
+            // Perform form submission or other actions here
+        }
+    });
+
+</script>
+<script>
+    const images = {
+        body1: [
+            { src: "{% static 'images/intermediatebody/HighresScreenshot00000.png' %}", alt: 'Option 1 Image 1' },
+            { src: "{% static 'images/intermediatebody/HighresScreenshot00001.png' %}", alt: 'Option 1 Image 2' },
+            { src: "{% static 'images/intermediatebody/HighresScreenshot00002.png' %}", alt: 'Option 2 Image 1' },
+            { src: "{% static 'images/intermediatebody/HighresScreenshot00003.png' %}", alt: 'Option 2 Image 2' },
+            { src: "{% static 'images/intermediatebody/HighresScreenshot00004.png' %}", alt: 'Option 2 Image 2' },
+            { src: "{% static 'images/intermediatebody/HighresScreenshot00005.png' %}", alt: 'Option 2 Image 2' }
+        ],
+        body2: [
+            { src: "{% static 'images/homepage/Homepage_01.png' %}", alt: 'Option 2 Image 1' },
+            { src: "{% static 'images/homepage/Homepage_03.jpg' %}", alt: 'Option 2 Image 2' },
+        ]
+    };
+
+    function toggleRadio(card, option) {
+        const radio = card.querySelector('input[type="radio"]');
+        if (!radio.checked) {
+            const allCards = document.querySelectorAll('.checkbox-card');
+            allCards.forEach(c => c.classList.remove('checked'));
+            radio.checked = true;
+            card.classList.add('checked');
+            updateSlider(option);
+        }
+    }
+
+    function toggleInputRadio(radio, option) {
+        const allCards = document.querySelectorAll('.checkbox-card');
+        allCards.forEach(c => c.classList.remove('checked'));
+        const card = radio.closest('.checkbox-card');
+        card.classList.add('checked');
+        updateSlider(option);
+    }
+
+    function updateSlider(option) {
+        const carouselInner = document.querySelector('.carousel-inner');
+        const thumbnailContainer = document.querySelector('.thumbnail-container');
+        carouselInner.innerHTML = '';
+        thumbnailContainer.innerHTML = '';
+
+        images[option].forEach((img, index) => {
+            const item = document.createElement('div');
+            item.className = `carousel-item ${index === 0 ? 'active' : ''}`;
+            item.innerHTML = `<img src="${img.src}" class="d-block w-100" alt="${img.alt}">`;
+            carouselInner.appendChild(item);
+
+            const thumbnail = document.createElement('div');
+            thumbnail.className = 'thumbnail';
+            thumbnail.setAttribute('data-bs-target', '#carouselExample');
+            thumbnail.setAttribute('data-bs-slide-to', index);
+            thumbnail.innerHTML = `<img src="${img.src}" alt="${img.alt}">`;
+            thumbnailContainer.appendChild(thumbnail);
+        });
+    }
+
+    function validateSelection() {
+        const selectedOption = document.querySelector('input[type="radio"]:checked');
+        const errorMessage = document.getElementById('error-message');
+        if (!selectedOption) {
+            errorMessage.style.display = 'block';
+        } else {
+            errorMessage.style.display = 'none';
+            alert('Form submitted successfully with option: ' + selectedOption.nextElementSibling.textContent);
+        }
+    }
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const closeModalButton = document.getElementById("closeModalButton");
+        const toggleButton = document.getElementById("toggleButton");
+
+        // Add an event listener to the modal close button
+        closeModalButton.addEventListener("click", function () {
+            // Simulate a click on the toggleButton
+            toggleButton.click();
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Check if the flag is set in local storage
+        const trigger = localStorage.getItem('triggerToggle');
+        if (trigger === 'true') {
+            // Perform the action on the button
+            const toggleButton = document.getElementById('toggleButton');
+            if (toggleButton) {
+                toggleButton.click(); // Trigger a click event
+            }
+            // Clear the flag after triggering
+            localStorage.removeItem('triggerToggle');
+        }
+    });
+</script>
+
+<script>
+$(document).ready(function () {
+    $("#checkout-form111").submit(function (e) {
+        e.preventDefault();
+        // Get email values
+        const email = document.getElementById('email').value.trim();
+        const confirmEmail = document.getElementById('confirm_email').value.trim();
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Validate emails
+        if (!email || !confirmEmail) {
+            toastr.error('Both email fields are required.');
+            errorMessage.textContent = 'Both email fields are required.';
+            errorMessage.style.display = 'block';
+            return;
+        }
+
+        if (email !== confirmEmail) {
+            toastr.error('Email and Confirm Email must match.');
+            errorMessage.textContent = 'Email and Confirm Email must match.';
+            errorMessage.style.display = 'block';
+            return;
+        }
+
+        errorMessage.style.display = 'none';
+
+        var data = new FormData($('#checkout-form').get(0));
+        $('#pro1').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'create_account_before_checkout' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            headers: { "X-CSRFToken": "{{ csrf_token }}" },
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response.message);
+                    if (typeof secondAjaxFunction === "function") {
+                        secondAjaxFunction(response);
+                    } else {
+                        console.error("secondAjaxFunction is not defined.");
+                    }
+                } else {
+                    toastr.error(response.message);
+                }
+                // $('#checkout-form')[0].reset();
+                $('#pro1').hide();
+            },
+            error: function (response) {
+                // alert the error if any error occurred
+                alert(response["error"]);
+                $('#pro1').hide();
+            }
+        });
+    });
+
+});
+
+
+</script>
+<script>
+    function notAvailable() {
+        // Set a flag in local storage to signal the other page
+        alert('Not Available Until July 2025');
+    }
+</script>
+{% endblock script %}

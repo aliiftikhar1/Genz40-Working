@@ -1,0 +1,642 @@
+{% extends "public/Car-Configurator/baseFile.html" %}
+{% load static %}
+{% load frontend_custom_filters %}
+
+{% block header %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .header-bg {
+            background-image: url('/static/images/header-pattern.png');
+        }
+    </style>
+{% endblock header %}
+
+{% block content %}
+    <!-- Header Section -->
+    <header class="relative bg-gradient-to-r from-blue-500 to-purple-600 text-white py-12 mb-8 rounded-b-lg">
+        <div class="header-bg absolute inset-0 opacity-20 bg-cover"></div>
+        <div class="container mx-auto px-4 relative z-10 mt-20">
+            <h1 class="text-4xl font-bold">Your {{ car_model.title }} Configuration</h1>
+            <p class="text-xl mt-2">View and manage your customized vehicle setup</p>
+            <div class="flex gap-4 mt-6">
+                <a href="{% url 'car_configurator_slug' slug %}" class="btn bg-white bg-opacity-0 hover:bg-opacity-10 text-white border border-white px-4 py-2 rounded-lg transition">
+                    <i class="fas fa-pencil-alt mr-2"></i>Edit Configuration
+                </a>
+                <button class="btn bg-white text-blue-600 hover:bg-gray-100 px-4 py-2 rounded-lg transition" data-bs-toggle="modal" data-bs-target="#shareModal">
+                    <i class="fas fa-share-alt mr-2"></i>Share
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4">
+        <!-- Car Image -->
+        <div class="relative h-72 md:h-80 text-center mb-8">
+            {% if car_model.title == 'Mark I' %}
+            <img src="{% static 'images/car/blue-car.png' %}" class="max-h-full max-w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 hover:scale-105 transition-transform" alt="Car Configuration">
+            {% elif car_model.title == 'Mark II' %}
+            <img src="{% static 'images/car/red-car.png' %}" class="max-h-full max-w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 hover:scale-105 transition-transform" alt="Car Configuration">
+            {% elif car_model.title == 'Mark IV' %}
+            <img src="{% static 'images/car/red-car.png' %}" class="max-h-full max-w-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 hover:scale-105 transition-transform" alt="Car Configuration">
+            {% endif %}
+        </div>
+
+        <!-- Nav Pills -->
+        <ul class="nav flex flex-wrap gap-2 mb-8" id="configTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link bg-white text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-lg font-medium transition active:bg-blue-500 active:text-white" id="summary-tab" data-bs-toggle="pill" data-bs-target="#summary" type="button" role="tab">
+                    <i class="fas fa-list-ul mr-2"></i>Summary
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link bg-white text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-lg font-medium transition" id="exterior-tab" data-bs-toggle="pill" data-bs-target="#exterior" type="button" role="tab">
+                    <i class="fas fa-car mr-2"></i>Exterior
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link bg-white text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-lg font-medium transition" id="interior-tab" data-bs-toggle="pill" data-bs-target="#interior" type="button" role="tab">
+                    <i class="fas fa-couch mr-2"></i>Interior
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link bg-white text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-lg font-medium transition" id="performance-tab" data-bs-toggle="pill" data-bs-target="#performance" type="button" role="tab">
+                    <i class="fas fa-tachometer-alt mr-2"></i>Performance
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link bg-white text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-lg font-medium transition" id="features-tab" data-bs-toggle="pill" data-bs-target="#features" type="button" role="tab">
+                    <i class="fas fa-cogs mr-2"></i>Features
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content" id="configTabContent">
+            <!-- Summary Tab -->
+            <div class="tab-pane fade show active" id="summary" role="tabpanel">
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="w-full md:w-2/3">
+                        <div class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow mb-6 overflow-hidden">
+                            <div class="bg-blue-500 text-white px-4 py-3 flex justify-between items-center">
+                                <h5 class="font-semibold text-lg">Configuration Highlights</h5>
+                                <span class="bg-green-500 text-white text-sm px-2 py-1 rounded">Saved</span>
+                            </div>
+                            <div class="p-4">
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center mb-6">
+                                    <div>
+                                        <div class="text-blue-500 text-3xl mb-2">
+                                            <i class="fas fa-palette"></i>
+                                        </div>
+                                        <h6 class="font-medium">{{ configuration.exterior_color }}</h6>
+                                        <p class="text-gray-500 text-sm">Exterior Color</p>
+                                    </div>
+                                    <div>
+                                        <div class="text-blue-500 text-3xl mb-2">
+                                            <i class="fas fa-engine"></i>
+                                        </div>
+                                        <h6 class="font-medium">{{ configuration.engine_type }}</h6>
+                                        <p class="text-gray-500 text-sm">Engine</p>
+                                    </div>
+                                    <div>
+                                        <div class="text-blue-500 text-3xl mb-2">
+                                            <i class="fas fa-chair"></i>
+                                        </div>
+                                        <h6 class="font-medium">{{ configuration.upholstery_material }}</h6>
+                                        <p class="text-gray-500 text-sm">Upholstery</p>
+                                    </div>
+                                    <div>
+                                        <div class="text-blue-500 text-3xl mb-2">
+                                            <i class="fas fa-cog"></i>
+                                        </div>
+                                        <h6 class="font-medium">{{ configuration.transmission }}</h6>
+                                        <p class="text-gray-500 text-sm">Transmission</p>
+                                    </div>
+                                </div>
+                                
+                                <h6 class="font-medium mb-3">Selected Packages</h6>
+                                <div class="mb-6 flex flex-wrap gap-2">
+                                    {% if configuration.luxury_package %}
+                                    <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">Luxury Package</span>
+                                    {% endif %}
+                                    {% if configuration.sport_package %}
+                                    <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">Sport Package</span>
+                                    {% endif %}
+                                    {% if configuration.winter_package %}
+                                    <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">Winter Package</span>
+                                    {% endif %}
+                                    {% if configuration.offroad_package %}
+                                    <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm">Offroad Package</span>
+                                    {% endif %}
+                                    {% if not configuration.luxury_package and not configuration.sport_package and not configuration.winter_package and not configuration.offroad_package %}
+                                    <span class="text-gray-500">No packages selected</span>
+                                    {% endif %}
+                                </div>
+
+                                <h6 class="font-medium mb-3">Key Features</h6>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <ul class="space-y-2">
+                                            <li class="border-b border-gray-200 pb-2"><i class="fas fa-check-circle text-blue-500 mr-2"></i> {{ configuration.wheel_type }} wheels</li>
+                                            <li class="border-b border-gray-200 pb-2"><i class="fas fa-check-circle text-blue-500 mr-2"></i> {{ configuration.roof_type }} roof</li>
+                                            <li class="pb-2"><i class="fas fa-check-circle text-blue-500 mr-2"></i> {{ configuration.lighting_package }} lighting</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <ul class="space-y-2">
+                                            <li class="border-b border-gray-200 pb-2"><i class="fas fa-check-circle text-blue-500 mr-2"></i> {{ configuration.infotainment_system }} infotainment</li>
+                                            <li class="border-b border-gray-200 pb-2"><i class="fas fa-check-circle text-blue-500 mr-2"></i> {{ configuration.suspension }} suspension</li>
+                                            <li class="pb-2"><i class="fas fa-check-circle text-blue-500 mr-2"></i> {{ configuration.autonomous_driving_level }} autonomous driving</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full md:w-1/3">
+                        <div class="bg-gradient-to-r from-gray-800 to-gray-600 text-white rounded-lg shadow-md overflow-hidden">
+                            <div class="bg-gray-700 px-4 py-3">
+                                <h5 class="font-semibold text-lg">Price Summary</h5>
+                            </div>
+                            <div class="p-4">
+                                <div class="flex justify-between mb-3 pb-3 border-b border-gray-500">
+                                    <span>Base Price:</span>
+                                    <span>${{ configuration.base_price|floatformat:2 }}</span>
+                                </div>
+                                <div class="flex justify-between mb-3 pb-3 border-b border-gray-500">
+                                    <span>Exterior Options:</span>
+                                    <span>${{ configuration.exterior_price|floatformat:2 }}</span>
+                                </div>
+                                <div class="flex justify-between mb-3 pb-3 border-b border-gray-500">
+                                    <span>Interior Options:</span>
+                                    <span>${{ configuration.interior_price|floatformat:2 }}</span>
+                                </div>
+                                <div class="flex justify-between mb-3 pb-3 border-b border-gray-500">
+                                    <span>Performance Options:</span>
+                                    <span>${{ configuration.performance_price|floatformat:2 }}</span>
+                                </div>
+                                <div class="flex justify-between mb-3 pb-3 border-b border-gray-500">
+                                    <span>Tech & Safety:</span>
+                                    <span>${{ configuration.tech_price|floatformat:2 }}</span>
+                                </div>
+                                <div class="flex justify-between mb-3 pb-3 border-b border-gray-500">
+                                    <span>Packages & Accessories:</span>
+                                    <span>${{ configuration.package_price|floatformat:2 }}</span>
+                                </div>
+                            </div>
+                            <div class="text-center bg-gray-900 p-4">
+                                <div class="uppercase mb-2 text-sm">Total Price</div>
+                                <div class="text-3xl font-bold">${{ configuration.total_price|floatformat:2 }}</div>
+                            </div>
+                            <div class="p-4 text-center">
+                                <a href="{% url 'checkout'  %}" class="btn bg-white text-gray-800 hover:bg-gray-100 w-full py-3 rounded-lg transition">
+                                    <i class="fas fa-shopping-cart mr-2"></i>Proceed to Purchase
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Exterior Tab -->
+            <div class="tab-pane fade" id="exterior" role="tabpanel">
+                <div class="flex flex-col lg:flex-row gap-6">
+                    <div class="w-full lg:w-2/3">
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                            <div class="bg-blue-500 text-white px-4 py-3">
+                                <h5 class="font-semibold text-lg">Exterior Details</h5>
+                            </div>
+                            <div class="p-4">
+                                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                                    <div class="text-center">
+                                        <div class="w-12 h-12 rounded-full mx-auto mb-2" style="background-color: {{ configuration.exterior_color|lower }};"></div>
+                                        <h6 class="font-medium">{{ configuration.exterior_color }}</h6>
+                                        <p class="text-gray-500 text-sm">Exterior Color</p>
+                                    </div>
+                                    
+                                    <div class="text-center">
+                                        <i class="fas fa-dharmachakra text-2xl mb-2"></i>
+                                        <h6 class="font-medium">{{ configuration.wheel_type }}</h6>
+                                        <p class="text-gray-500 text-sm">Wheel Type</p>
+                                    </div>
+                                    
+                                    <div class="text-center">
+                                        <div class="w-12 h-12 rounded-full mx-auto mb-2" style="background-color: {{ configuration.wheel_color|lower }};"></div>
+                                        <h6 class="font-medium">{{ configuration.wheel_color }}</h6>
+                                        <p class="text-gray-500 text-sm">Wheel Color</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-between py-3 border-b border-gray-200">
+                                    <span class="text-gray-600 font-medium">Grille Style</span>
+                                    <span class="font-semibold">{{ configuration.grille_style }}</span>
+                                </div>
+                                <div class="flex justify-between py-3 border-b border-gray-200">
+                                    <span class="text-gray-600 font-medium">Roof Type</span>
+                                    <span class="font-semibold">{{ configuration.roof_type }}</span>
+                                </div>
+                                <div class="flex justify-between py-3 border-b border-gray-200">
+                                    <span class="text-gray-600 font-medium">Mirror Style</span>
+                                    <span class="font-semibold">{{ configuration.mirror_style }}</span>
+                                </div>
+                                <div class="flex justify-between py-3 border-b border-gray-200">
+                                    <span class="text-gray-600 font-medium">Lighting Package</span>
+                                    <span class="font-semibold">{{ configuration.lighting_package }}</span>
+                                </div>
+                                <div class="flex justify-between py-3">
+                                    <span class="text-gray-600 font-medium">Decals</span>
+                                    <span class="font-semibold">{{ configuration.decals }}</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-100 px-4 py-3 text-right">
+                                <span class="font-bold">Exterior Options Total: </span>
+                                <span class="bg-pink-500 text-white px-2 py-1 rounded text-sm">${{ configuration.exterior_price|floatformat:2 }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full lg:w-1/3">
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                            <div class="bg-blue-500 text-white px-4 py-3">
+                                <h5 class="font-semibold text-lg">Exterior View</h5>
+                            </div>
+                            <div class="p-0">
+                                <div id="exteriorCarousel" class="carousel slide" data-bs-ride="carousel">
+                                    <div class="carousel-inner">
+                                        <div class="carousel-item active">
+                                            <img src="{% static 'images/car/exterior-front.jpg' %}" class="w-full" alt="Front View">
+                                        </div>
+                                        <div class="carousel-item">
+                                            <img src="{% static 'images/car/exterior-side.jpg' %}" class="w-full" alt="Side View">
+                                        </div>
+                                        <div class="carousel-item">
+                                            <img src="{% static 'images/car/exterior-rear.jpg' %}" class="w-full" alt="Rear View">
+                                        </div>
+                                    </div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#exteriorCarousel" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#exteriorCarousel" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interior Tab -->
+            <div class="tab-pane fade" id="interior" role="tabpanel">
+                <div class="flex flex-col lg:flex-row gap-6">
+                    <div class="w-full lg:w-2/3">
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                            <div class="bg-blue-500 text-white px-4 py-3">
+                                <h5 class="font-semibold text-lg">Interior Details</h5>
+                            </div>
+                            <div class="p-4">
+                                <div class="grid grid-cols-2 gap-4 mb-6">
+                                    <div class="text-center">
+                                        <i class="fas fa-couch text-2xl mb-2"></i>
+                                        <h6 class="font-medium">{{ configuration.upholstery_material }}</h6>
+                                        <p class="text-gray-500 text-sm">Upholstery Material</p>
+                                    </div>
+                                    
+                                    <div class="text-center">
+                                        <div class="w-12 h-12 rounded-full mx-auto mb-2" style="background-color: {{ configuration.interior_color|lower }};"></div>
+                                        <h6 class="font-medium">{{ configuration.interior_color }}</h6>
+                                        <p class="text-gray-500 text-sm">Interior Color</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-between py-3 border-b border-gray-200">
+                                    <span class="text-gray-600 font-medium">Seat Type</span>
+                                    <span class="font-semibold">{{ configuration.seat_type }}</span>
+                                </div>
+                                <div class="flex justify-between py-3 border-b border-gray-200">
+                                    <span class="text-gray-600 font-medium">Dashboard Trim</span>
+                                    <span class="font-semibold">{{ configuration.dashboard_trim }}</span>
+                                </div>
+                                <div class="flex justify-between py-3">
+                                    <span class="text-gray-600 font-medium">Steering Wheel</span>
+                                    <span class="font-semibold">{{ configuration.steering_wheel }}</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-100 px-4 py-3 text-right">
+                                <span class="font-bold">Interior Options Total: </span>
+                                <span class="bg-pink-500 text-white px-2 py-1 rounded text-sm">${{ configuration.interior_price|floatformat:2 }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full lg:w-1/3">
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                            <div class="bg-blue-500 text-white px-4 py-3">
+                                <h5 class="font-semibold text-lg">Interior View</h5>
+                            </div>
+                            <div class="p-0">
+                                <div id="interiorCarousel" class="carousel slide" data-bs-ride="carousel">
+                                    <div class="carousel-inner">
+                                        <div class="carousel-item active">
+                                            <img src="{% static 'images/car/interior-front.jpg' %}" class="w-full" alt="Dashboard View">
+                                        </div>
+                                        <div class="carousel-item">
+                                            <img src="{% static 'images/car/interior-seats.jpg' %}" class="w-full" alt="Seats View">
+                                        </div>
+                                    </div>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#interiorCarousel" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#interiorCarousel" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Tab -->
+            <div class="tab-pane fade" id="performance" role="tabpanel">
+                <div class="w-full">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                        <div class="bg-blue-500 text-white px-4 py-3">
+                            <h5 class="font-semibold text-lg">Performance Specifications</h5>
+                        </div>
+                        <div class="p-4">
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                                <div class="text-center">
+                                    <i class="fas fa-engine text-2xl mb-2"></i>
+                                    <h6 class="font-medium">{{ configuration.engine_type }}</h6>
+                                    <p class="text-gray-500 text-sm">Engine Type</p>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <i class="fas fa-cog text-2xl mb-2"></i>
+                                    <h6 class="font-medium">{{ configuration.transmission }}</h6>
+                                    <p class="text-gray-500 text-sm">Transmission</p>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <i class="fas fa-car text-2xl mb-2"></i>
+                                    <h6 class="font-medium">{{ configuration.drivetrain }}</h6>
+                                    <p class="text-gray-500 text-sm">Drivetrain</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <div class="flex justify-between py-3 border-b border-gray-200">
+                                        <span class="text-gray-600 font-medium">Suspension</span>
+                                        <span class="font-semibold">{{ configuration.suspension }}</span>
+                                    </div>
+                                    <div class="flex justify-between py-3">
+                                        <span class="text-gray-600 font-medium">Exhaust System</span>
+                                        <span class="font-semibold">{{ configuration.exhaust_system }}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between py-3 border-b border-gray-200">
+                                        <span class="text-gray-600 font-medium">Performance Specs</span>
+                                        <span class="font-semibold">
+                                            {% if configuration.engine_type == 'V8 5.0L' %}
+                                                450 HP / 410 lb-ft
+                                            {% elif configuration.engine_type == 'V6 3.5L' %}
+                                                375 HP / 380 lb-ft
+                                            {% elif configuration.engine_type == 'Electric' %}
+                                                400 HP / 480 lb-ft
+                                            {% elif configuration.engine_type == 'Hybrid' %}
+                                                350 HP / 350 lb-ft
+                                            {% else %}
+                                                320 HP / 330 lb-ft
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                    <div class="flex justify-between py-3">
+                                        <span class="text-gray-600 font-medium">0-60 mph</span>
+                                        <span class="font-semibold">
+                                            {% if configuration.engine_type == 'V8 5.0L' %}
+                                                4.2 seconds
+                                            {% elif configuration.engine_type == 'V6 3.5L' %}
+                                                5.1 seconds
+                                            {% elif configuration.engine_type == 'Electric' %}
+                                                3.8 seconds
+                                            {% elif configuration.engine_type == 'Hybrid' %}
+                                                5.5 seconds
+                                            {% else %}
+                                                6.0 seconds
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gray-100 px-4 py-3 text-right">
+                            <span class="font-bold">Performance Options Total: </span>
+                            <span class="bg-pink-500 text-white px-2 py-1 rounded text-sm">${{ configuration.performance_price|floatformat:2 }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Tab -->
+            <div class="tab-pane fade" id="features" role="tabpanel">
+                <div class="flex flex-col lg:flex-row gap-6">
+                    <div class="w-full lg:w-1/2">
+                        <div class="bg-white rounded-lg shadow-md mb-6 overflow-hidden">
+                            <div class="bg-blue-500 text-white px-4 py-3">
+                                <h5 class="font-semibold text-lg">Technology Features</h5>
+                            </div>
+                            <div class="p-4">
+                                <div class="flex justify-between py-3 border-b border-gray-200">
+                                    <span class="text-gray-600 font-medium">Infotainment System</span>
+                                    <span class="font-semibold">{{ configuration.infotainment_system }}</span>
+                                </div>
+                                <div class="flex justify-between py-3 border-b border-gray-200">
+                                    <span class="text-gray-600 font-medium">Sound System</span>
+                                    <span class="font-semibold">{{ configuration.sound_system }}</span>
+                                </div>
+                                <div class="flex justify-between py-3 border-b border-gray-200">
+                                    <span class="text-gray-600 font-medium">Heads-Up Display</span>
+                                    <span class="font-semibold">{% if configuration.heads_up_display %}Yes{% else %}No{% endif %}</span>
+                                </div>
+                                <div class="flex justify-between py-3">
+                                    <span class="text-gray-600 font-medium">Connectivity Package</span>
+                                    <span class="font-semibold">{{ configuration.connectivity_package }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                            <div class="bg-blue-500 text-white px-4 py-3">
+                                <h5 class="font-semibold text-lg">Safety Features</h5>
+                            </div>
+                            <div class="p-4">
+                                <div class="flex justify-between py-3 border-b border-gray-200">
+                                    <span class="text-gray-600 font-medium">Autonomous Driving Level</span>
+                                    <span class="font-semibold">{{ configuration.autonomous_driving_level }}</span>
+                                </div>
+                                <div class="flex justify-between py-3 border-b border-gray-200">
+                                    <span class="text-gray-600 font-medium">Parking Assist</span>
+                                    <span class="font-semibold">{% if configuration.parking_assist %}Yes{% else %}No{% endif %}</span>
+                                </div>
+                                <div class="flex justify-between py-3 border-b border-gray-200">
+                                    <span class="text-gray-600 font-medium">Blind Spot Monitoring</span>
+                                    <span class="font-semibold">{% if configuration.blind_spot_monitoring %}Yes{% else %}No{% endif %}</span>
+                                </div>
+                                <div class="flex justify-between py-3">
+                                    <span class="text-gray-600 font-medium">Night Vision</span>
+                                    <span class="font-semibold">{% if configuration.night_vision %}Yes{% else %}No{% endif %}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full lg:w-1/2">
+                        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                            <div class="bg-blue-500 text-white px-4 py-3">
+                                <h5 class="font-semibold text-lg">Packages & Accessories</h5>
+                            </div>
+                            <div class="p-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                    <div>
+                                        <div class="form-check mb-4">
+                                            <input class="form-check-input" type="checkbox" disabled {% if configuration.luxury_package %}checked{% endif %}>
+                                            <label class="form-check-label font-bold">
+                                                Luxury Package
+                                            </label>
+                                            <div class="text-gray-500 text-sm">Premium materials, enhanced comfort features</div>
+                                        </div>
+                                        
+                                        <div class="form-check mb-4">
+                                            <input class="form-check-input" type="checkbox" disabled {% if configuration.sport_package %}checked{% endif %}>
+                                            <label class="form-check-label font-bold">
+                                                Sport Package
+                                            </label>
+                                            <div class="text-gray-500 text-sm">Performance-tuned chassis, sport brakes</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="form-check mb-4">
+                                            <input class="form-check-input" type="checkbox" disabled {% if configuration.winter_package %}checked{% endif %}>
+                                            <label class="form-check-label font-bold">
+                                                Winter Package
+                                            </label>
+                                            <div class="text-gray-500 text-sm">Heated seats, steering wheel, defrosters</div>
+                                        </div>
+                                        
+                                        <div class="form-check mb-4">
+                                            <input class="form-check-input" type="checkbox" disabled {% if configuration.offroad_package %}checked{% endif %}>
+                                            <label class="form-check-label font-bold">
+                                                Offroad Package
+                                            </label>
+                                            <div class="text-gray-500 text-sm">Enhanced suspension, underbody protection</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-between py-3 border-b border-gray-200">
+                                    <span class="text-gray-600 font-medium">Towing Hitch</span>
+                                    <span class="font-semibold">{% if configuration.towing_hitch %}Yes{% else %}No{% endif %}</span>
+                                </div>
+                                <div class="flex justify-between py-3">
+                                    <span class="text-gray-600 font-medium">Roof Rack</span>
+                                    <span class="font-semibold">{% if configuration.roof_rack %}Yes{% else %}No{% endif %}</span>
+                                </div>
+                            </div>
+                            <div class="bg-gray-100 px-4 py-3 text-right">
+                                <span class="font-bold">Packages & Accessories Total: </span>
+                                <span class="bg-pink-500 text-white px-2 py-1 rounded text-sm">${{ configuration.package_price|floatformat:2 }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="modal fade" id="shareModal" tabindex="-1" aria-labelledby="shareModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-gray-100 border-b border-gray-200">
+                    <h5 class="modal-title font-semibold" id="shareModalLabel">Share Your Configuration</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-4">
+                        <label for="shareLink" class="form-label block mb-2">Configuration Link</label>
+                        <div class="flex">
+                            <input type="text" class="form-control flex-grow rounded-r-none" id="shareLink" value="{{ request.scheme }}://{{ request.get_host }}{% url 'car_configuration_detail' config_id %}" readonly>
+                            <button class="btn bg-gray-200 hover:bg-gray-300 rounded-l-none px-4" type="button" id="copyLinkBtn">Copy</button>
+                        </div>
+                    </div>
+                    <div class="flex justify-center gap-4 mt-6">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.scheme }}://{{ request.get_host }}{% url 'car_configuration_detail' config_id %}" target="_blank" class="btn bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+                            <i class="fab fa-facebook-f mr-2"></i>Facebook
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?text=Check out my custom {{ car_model.title }}&url={{ request.scheme }}://{{ request.get_host }}{% url 'car_configuration_detail' config_id %}" target="_blank" class="btn bg-blue-400 hover:bg-blue-500 text-white px-4 py-2 rounded">
+                            <i class="fab fa-twitter mr-2"></i>Twitter
+                        </a>
+                        <a href="mailto:?subject=Check out my custom {{ car_model.title }}&body=I've configured a custom {{ car_model.title }}. Take a look: {{ request.scheme }}://{{ request.get_host }}{% url 'car_configuration_detail' config_id %}" class="btn bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">
+                            <i class="fas fa-envelope mr-2"></i>Email
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block script %}
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.querySelector('.theme-toggle');
+        const body = document.body;
+        const icon = themeToggle.querySelector('i');
+        
+        // Check for saved theme preference or default to light
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-mode');
+            icon.classList.remove('fa-moon');
+            icon.classList.add('fa-sun');
+        }
+        
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            
+            // Update icon
+            if (body.classList.contains('dark-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+        
+        // Copy link functionality
+        document.getElementById('copyLinkBtn').addEventListener('click', function() {
+            const shareLink = document.getElementById('shareLink');
+            shareLink.select();
+            document.execCommand('copy');
+            
+            // Show feedback
+            this.innerText = 'Copied!';
+            setTimeout(() => {
+                this.innerText = 'Copy';
+            }, 2000);
+        });
+    </script>
+{% endblock script %}

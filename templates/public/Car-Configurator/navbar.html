@@ -1,0 +1,171 @@
+{% load static %}
+<!-- Navbar Start Mobile-->
+<header id="topnav" class="defaultscroll sticky d-lg-none">
+    <div class="container">
+        <!-- Logo container-->
+        <a class="logo" href="{% url 'index' %}">
+            <span class="logo-light-mode">
+                <span class="l-dark logo-font">GEN-Z 40 </span>
+                <span class="l-light logo-font text-white">GEN-Z 40 </span>
+            </span>
+            <span class="logo-dark-mode logo-font text-white" style="font-size: 18px;">GEN-Z 40</span>
+            <span class="w-10 h-8" style="background-color: #ffff; padding: 1px; margin-left: 5px; margin-right: 10px"></span>
+            <span>
+                <img src="{% static 'images/Alvi-Automobile-Logo/alvi-logo-2.jpg' %}" height="28" class="" alt="">
+            </span>
+        </a>
+
+        <!-- End Logo container-->
+        <div class="menu-extras me-3">
+            <div class="menu-item">
+                <!-- Mobile menu toggle-->
+                <a class="navbar-toggle" id="isToggle" onclick="toggleMenu()">
+                    <div class="lines">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </a>
+                <!-- End mobile menu toggle-->
+            </div>
+        </div>
+
+        <!--Login button Start-->
+        {% if user_data.is_authenticated %}
+
+        {% else %}
+            <ul class="buy-button list-inline mb-0">
+                <li class="list-inline-item mb-0 text-uppercase">
+                    <a href="{% url 'customer_login' %}" class="text-white">
+                        <!-- <div class="login-btn-success"><span class="btn btn-icon btn-pills btn-soft-success"><i data-feather="user" class="fea icon-sm"></i></span></div> -->
+                        <div class="login-btn-success"><span class="btn btn-icon btn-pills btn-success"><i data-feather="user" class="fea icon-sm"></i></span></div>
+                    </a>
+                </li>
+            </ul>
+        {% endif %}
+        <!--Login button End-->
+
+        <div id="navigation">
+            <!-- Navigation Menu-->
+            <ul class="navigation-menu nav-light">
+                {% if user_data.is_authenticated %}
+                    <li class="has-submenu parent-menu-item">
+                        <a href="javascript:void(0)" class="text-success">{{ user_data.full_name }}</a><span class="menu-arrow"></span>
+                        <ul class="submenu">
+                            <!-- <li><a href="documentation.html" class="sub-menu-item">Dashboard</a></li> -->
+                            {% if request.user.role == 'customer' %}
+                            <li><a href="{% url 'home' %}" class="sub-menu-item">Home</a></li>
+                            {% endif %}
+                            {% if request.user.role == 'customer' %}
+                            <li><a href="{% url 'my_configurations' %}" class="sub-menu-item">Saved Configurations</a></li>
+                            {% endif %}
+                           
+                            <li><a href="{% url 'my_vehicles' %}" class="sub-menu-item">My Vehicles</a></li>
+                            <li><a href="{% url 'profile_settings' %}" class="sub-menu-item">Profile Settings</a></li>
+                            <li><a href="{% url 'payment_history' %}" class="sub-menu-item">Payments</a></li>
+                            <!-- <li><a href="{% url 'customer_message' %}" class="sub-menu-item">Messages</a></li> -->
+                            <li><a href="{% url 'logout' %}" class="sub-menu-item">Logout</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    {% for item in nav_items %}
+                        <li class="sub-menu-item {% if item.active_children.exists %}dropdown{% endif %}">
+                            <a class="nav-link {% if item.active_children.exists %}dropdown-toggle{% endif %}"
+                            href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                            {% if item.active_children.exists %}id="navbarDropdown{{ forloop.counter }}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"{% endif %}>
+                                {{ item.title }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                        <li><a href="{% url 'about' %}" class="sub-menu-item">Company</a></li>
+                        <!-- <li class="sub-menu-item">
+                            <a class="nav-link" href="#">
+                                Community
+                            </a>
+                        </li> -->
+                {% endif %}
+            </ul><!--end navigation menu-->
+        </div><!--end navigation-->
+    </div><!--end container-->
+</header><!--end header-->
+<!-- Navbar End -->
+
+<!-- Navbar Start web-->
+<header id="topnav" class="defaultscroll sticky d-none d-lg-block bg-black">
+    <div class="container-fluid">
+        <!-- Logo container-->
+        <a class="logo ms-5" href="{% url 'index' %}">
+            
+            <span class="logo-dark-mode logo-font text-white ms-5">
+                GEN-Z 40 
+            </span>
+            <span class="w-10 h-10" style="background-color: #ffff; padding: 1px; margin-left: 5px; margin-right: 10px"></span>
+            <span>
+                <img src="{% static 'images/Alvi-Automobile-Logo/alvi-logo-2.jpg' %}" height="32" class="" alt="">
+            </span>
+            <!-- <h6>By ALVI AUTOMOBILES</h6> -->
+            <!-- <h6 class="text-center text-white">By ALVI AUTOMOBILES</h6> -->
+            <!-- <img src="{% static 'images/logo-light.png' %}" height="24" class="logo-dark-mode" alt=""> -->
+        </a>
+
+        <!--Login button Start-->
+        <ul class="navigation-menu buy-button list-inline mb-0 me-5">
+            {% if user_data.is_authenticated %}
+            <li class="has-submenu parent-menu-item">
+                <a href="javascript:void(0)" class="text-success">{{ user_data.full_name }}</a><span class="menu-arrow"></span>
+                <ul class="submenu">
+                    <li><a href="{% url 'my_vehicles' %}" class="sub-menu-item">My Vehicles</a></li>
+                    <li><a href="{% url 'profile_settings' %}" class="sub-menu-item">Profile Settings</a></li>
+                    <li><a href="{% url 'payment_history' %}" class="sub-menu-item">Payments</a></li>
+                    <!-- <li><a href="{% url 'customer_message' %}" class="sub-menu-item">Messages</a></li> -->
+                    <li><a href="{% url 'logout' %}" class="sub-menu-item">Logout</a></li>
+                </ul>
+            </li>
+            {% else %}
+            <li class="list-inline-item mb-0 text-uppercase" style="font-size: 13px;
+                font-weight: 700;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+                font-family: var(--bs-font-sans-serif);">
+                <a href="{% url 'customer_login' %}" class="text-white">
+                    Account
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+        <!--Login button End-->
+
+        <div id="navigation">
+            <!-- Navigation Menu-->
+            <ul class="navigation-menu nav-light">
+                <li>
+                    <a href="{% if user.is_authenticated %}{% url 'index' %}{% else %}{% url 'home' %}{% endif %}" class="sub-menu-item">
+                      {% if user.is_authenticated %}Dashboard{% else %}Home{% endif %}
+                    </a>
+                  </li>
+                  {% if user.is_authenticated %}
+                  <li>
+                    <a href="{% url 'home' %}" class="sub-menu-item">
+                      Home
+                    </a>
+                  </li>
+                {% endif %}
+                
+                  
+                {% for item in nav_items %}
+                <li class="sub-menu-item {% if item.active_children.exists %}dropdown{% endif %}">
+                    <a class="nav-link {% if item.active_children.exists %}dropdown-toggle{% endif %}"
+                    href="{% if item.get_absolute_url %}{{ item.get_absolute_url }}{% else %}{% url 'index' %}{% endif %}"
+                    {% if item.active_children.exists %}id="navbarDropdown{{ forloop.counter }}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"{% endif %}>
+                        {{ item.title }}
+                    </a>
+                </li>
+                {% endfor %}
+
+                <li><a href="{% url 'about' %}" class="sub-menu-item">Company</a></li>
+                <!-- <li><a href="#" class="sub-menu-item">Community</a></li> -->
+            </ul><!--end navigation menu-->
+        </div><!--end navigation-->
+    </div><!--end container-->
+</header><!--end header-->
+<!-- Navbar End -->

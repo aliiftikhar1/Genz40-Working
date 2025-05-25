@@ -1,0 +1,1379 @@
+
+{% extends 'admin/layout/base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% load frontend_custom_filters %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'admin/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+<link rel="stylesheet" href="{% static 'admin/plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+<link rel="stylesheet" href="{% static 'admin/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css' %}">
+<style>
+    .action-btn {
+        margin: 2px;
+        padding: 5px 8px;
+        min-width: 32px;
+        font-size: 0.85rem;
+    }
+
+    .modal-dialog {
+        max-width: 700px;
+        margin: 1.5rem auto;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+
+    .status-select, .filter-select {
+        width: 100%;
+        height: 34px;
+        padding: 5px 10px;
+        font-size: 0.9rem;
+        border-radius: 4px;
+        border: 1px solid #ced4da;
+    }
+
+    .form-control {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.75rem;
+        height: calc(1.5em + 0.75rem + 2px);
+    }
+
+    .badge-build {
+        background-color: #6c757d;
+        color: white;
+        font-size: 0.8rem;
+    }
+
+    .badge-build-status {
+        background-color: #17a2b8;
+        color: white;
+        font-size: 0.8rem;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .form-group {
+        margin-bottom: 0.75rem;
+    }
+
+    label {
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+    }
+
+    .modal-footer {
+        padding: 0.75rem;
+    }
+
+    .btn-loading {
+        position: relative;
+        pointer-events: none;
+    }
+
+    .btn-loading::after {
+        content: '';
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #fff;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 0.8s linear infinite;
+        margin-left: 8px;
+        vertical-align: middle;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .error-message {
+        color: #dc3545;
+        font-size: 0.8rem;
+        margin-top: 0.25rem;
+    }
+
+    .feature-chip {
+        padding: 5px 10px;
+        margin: 5px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        transition: all 0.3s;
+    }
+    .feature-selected {
+        background-color: #28a745;
+        color: white;
+    }
+    .feature-unselected {
+        background-color: #dc3545;
+        color: white;
+    }
+    .feature-option {
+        font-size: 0.7rem;
+        margin-left: 5px;
+        background-color: rgba(255,255,255,0.2);
+        padding: 2px 5px;
+        border-radius: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .action-btn {
+            width: 100%;
+            margin: 4px 0;
+            text-align: center;
+        }
+
+        .modal-dialog {
+            max-width: 95%;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .filter-select {
+            margin-bottom: 8px;
+        }
+    }
+    .feature-options-wrapper .form-check {
+        margin-bottom: 5px;
+    }
+    
+    .feature-options-wrapper input[type="radio"] {
+        margin-right: 5px;
+    }
+    
+    .feature-options-wrapper label {
+        margin-bottom: 0;
+        font-size: 0.8rem;
+        cursor: pointer;
+    }
+    .feature-options-wrapper .form-check {
+    margin-bottom: 5px;
+    pointer-events: none; /* Disable pointer events for the container */
+}
+
+.feature-options-wrapper input[type="radio"],
+.feature-options-wrapper label {
+    pointer-events: auto; /* Enable pointer events for radios and labels */
+    cursor: pointer;
+}
+
+.feature-options-wrapper label {
+    margin-bottom: 0;
+    font-size: 0.8rem;
+}
+
+.feature-selected {
+    background-color: #28a745 !important;
+    color: white !important;
+}
+
+.feature-unselected {
+    background-color: #dc3545 !important;
+    color: white !important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Reservations</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+                        <li class="breadcrumb-item active">Reservations</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-8 col-12">
+                                    <div class="row">
+                                        <div class="col-md-4 col-sm-6 col-12">
+                                            <label>Status</label>
+                                            <select class="form-control filter-select" id="statusFilter">
+                                                <option value="">All Statuses</option>
+                                                {% for value, label in booked_packages.first.STATUS_CHOICES %}
+                                                <option value="{{ value }}">{{ label }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 col-sm-6 col-12">
+                                            <label>Build Type</label>
+                                            <select class="form-control filter-select" id="buildTypeFilter">
+                                                <option value="">All Build Types</option>
+                                                {% for value, label in booked_packages.first.BUILD_TYPE_CHOICES %}
+                                                <option value="{{ value }}">{{ label }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 col-sm-6 col-12">
+                                            <label>Build Status</label>
+                                            <select class="form-control filter-select" id="buildStatusFilter">
+                                                <option value="">All Build Statuses</option>
+                                                {% for value, label in booked_packages.first.BUILD_STATUS_CHOICES %}
+                                                <option value="{{ value }}">{{ label }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-12">
+                                    <label>Search</label>
+                                    <div class="input-group input-group-sm">
+                                        <input type="text" id="myInputTextField" class="form-control" placeholder="Search...">
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-default"><i class="fas fa-search"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table id="package_tbl" class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Reservation #</th>
+                                            <th>User</th>
+                                            <th>Car Model</th>
+                                            <th>Title</th>
+                                            <th>Price</th>
+                                            <th>Status</th>
+                                            <th>Build Type</th>
+                                            <th>Build Status</th>
+                                            <th>Created At</th>
+                                            <th>Updated At</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for package in booked_packages %}
+                                        <tr>
+                                            <td>{{ package.reservation_number }}</td>
+                                            <td>{{ package.user.first_name }} {{ package.user.last_name }}</td>
+                                            <td>{{ package.car_model.title }}</td>
+                                            <td>{{ package.title }}</td>
+                                            <td>{{ package.price }}</td>
+                                            <td>
+                                                <span class="badge {% if package.status == 'confirmed' or package.status == 'in_progress' or package.status == 'delivered' %}badge-success{% elif package.status == 'pending' %}badge-warning{% elif package.status == 'cancelled' %}badge-danger{% endif %}">
+                                                    {{ package.status|title_case }}
+                                                </span>
+                                            </td>
+                                            <td><span class="badge badge-build">{{ package.build_type|title_case }}</span></td>
+                                            <td><span class="badge badge-build-status">{{ package.build_status|title_case }}</span></td>
+                                            <td>{{ package.created_at|date:"Y-m-d H:i" }}</td>
+                                            <td>{{ package.updated_at|date:"Y-m-d H:i" }}</td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-secondary action-btn view-btn"
+                                                    data-id="{{ package.id }}"
+                                                    data-reservation_number="{{ package.reservation_number }}"
+                                                    data-user_id="{{ package.user.id }}"
+                                                    data-user="{{ package.user.first_name }} {{ package.user.last_name }}"
+                                                    data-car_model_id="{{ package.car_model.id }}"
+                                                    data-car="{{ package.car_model.title }}"
+                                                    data-title="{{ package.title }}"
+                                                    data-features="{{ package.extra_features }}"
+                                                    data-price="{{ package.price }}"
+                                                    data-status="{{ package.status }}"
+                                                    data-build_type="{{ package.build_type }}"
+                                                    data-package_type="{{ package.package.package_type }}"
+                                                    data-build_status="{{ package.build_status }}"
+                                                    data-build_message="{{ package.build_message }}"
+                                                    data-created_at="{{ package.created_at|date:'Y-m-d H:i' }}"
+                                                    data-updated_at="{{ package.updated_at|date:'Y-m-d H:i' }}"
+                                                    data-initial_payment_percentage="{{ package.initial_payment_percentage }}"
+                                                    data-midway_payment_percentage="{{ package.midway_payment_percentage }}"
+                                                    data-final_payment_percentage="{{ package.final_payment_percentage }}"
+                                                    data-remaining_price="{{ package.remaining_price }}">
+                                                    <i class="fas fa-eye"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-info action-btn edit-btn"
+                                                    data-id="{{ package.id }}"
+                                                    data-reservation_number="{{ package.reservation_number }}"
+                                                    data-user_id="{{ package.user.id }}"
+                                                    data-user="{{ package.user.first_name }} {{ package.user.last_name }}"
+                                                    data-car_model_id="{{ package.car_model.id }}"
+                                                    data-package="{{ package.package.id }}"
+                                                    data-package_type="{{ package.package.package_type }}"
+                                                    data-car="{{ package.car_model.title }}"
+                                                    data-title="{{ package.title }}"
+                                                    data-features="{{ package.extra_features }}"
+                                                    data-price="{{ package.price }}"
+                                                    data-status="{{ package.status }}"
+                                                    data-build_type="{{ package.build_type }}"
+                                                    data-build_status="{{ package.build_status }}"
+                                                    data-build_message="{{ package.build_message }}"
+                                                    data-created_at="{{ package.created_at|date:'Y-m-d H:i' }}"
+                                                    data-updated_at="{{ package.updated_at|date:'Y-m-d H:i' }}"
+                                                    data-initial_payment_percentage="{{ package.initial_payment_percentage }}"
+                                                    data-midway_payment_percentage="{{ package.midway_payment_percentage }}"
+                                                    data-final_payment_percentage="{{ package.final_payment_percentage }}"
+                                                    data-remaining_price="{{ package.remaining_price }}">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-sm btn-danger action-btn delete-btn"
+                                                    data-id="{{ package.id }}"
+                                                    data-status="{{ package.status }}">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                                <a href="{% url 'package_detail' package.id %}" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-upload"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Edit Reservation Modal -->
+<div class="modal fade" id="editReservationModal" tabindex="-1" role="dialog" aria-labelledby="editReservationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editReservationModalLabel">Update Reservation</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form id="editReservationForm" method="post">
+                {% csrf_token %}
+
+                <div class="modal-body">
+                    <input type="hidden" id="package" name="package">
+                    <input type="hidden" id="car_model_id" name="car_model">
+                    <input type="hidden" id="user_id" name="user">
+                    <div class="row">
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label>User</label>
+                                <input type="text" class="form-control" id="user_name" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label>Reservation Number</label>
+                                <input type="text" class="form-control" id="reservation_number" name="reservation_number" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label>Car Model</label>
+                                <select class="form-control" name="car_model" id="car_model">
+                                    <option value="">Select Car Model</option>
+                                    {% for car in nav_items %}
+                                        <option value="{{ car.id }}">{{ car.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label>Package Title</label>
+                                <input type="text" name="title" class="form-control" id="package_title" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label>Price</label>
+                                <input type="text" name="price" class="form-control" id="package_price" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label>Remaining Price</label>
+                                <input type="number" class="form-control" id="remaining_price" name="remaining_price" min="0" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-12">
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select class="status-select form-control" id="reservation_status" name="status">
+                                    {% for value, label in booked_packages.first.STATUS_CHOICES %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <div class="form-group">
+                                <label>Build Type</label>
+                                <select class="status-select form-control" id="build_type" name="build_type">
+                                    {% for value, label in booked_packages.first.BUILD_TYPE_CHOICES %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <div class="form-group">
+                                <label>Build Status</label>
+                                <select class="status-select form-control" id="build_status" name="build_status">
+                                    {% for value, label in booked_packages.first.BUILD_STATUS_CHOICES %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Extra Features</label>
+                                <input type="hidden" id="extra_features" name="extra_features">
+                                <div id="featuresContainer" class="d-flex flex-wrap">
+                                    <!-- Features will be dynamically inserted here -->
+                                </div>
+                                <small class="form-text text-muted">Click on features to select/deselect them</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label>Message</label>
+                                <textarea class="form-control" id="build_message" name="build_message" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label>Created At</label>
+                                <input type="text" class="form-control" id="created_at" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-12">
+                            <div class="form-group">
+                                <label>Updated At</label>
+                                <input type="text" class="form-control" id="updated_at" readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-muted mb-2">Payment Information</h6>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-12">
+                            <div class="form-group">
+                                <label>Initial Payment (%)</label>
+                                <input type="number" class="form-control payment-percentage" id="initial_payment_percentage" name="initial_payment_percentage" min="0" max="100">
+                                <div class="error-message" id="initial_payment_error"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <div class="form-group">
+                                <label>Midway Payment (%)</label>
+                                <input type="number" class="form-control payment-percentage" id="midway_payment_percentage" name="midway_payment_percentage" min="0" max="100">
+                                <div class="error-message" id="midway_payment_error"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-12">
+                            <div class="form-group">
+                                <label>Final Payment (%)</label>
+                                <input type="number" class="form-control payment-percentage" id="final_payment_percentage" name="final_payment_percentage" min="0" max="100">
+                                <div class="error-message" id="final_payment_error"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="urls" data-update-url="{% url 'update-booked-package' '00000000-0000-0000-0000-000000000000' %}"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-sm btn-primary" id="saveChangesBtn">Save changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- View Details Modal -->
+<div class="modal fade" id="viewDetailsModal" tabindex="-1" role="dialog" aria-labelledby="viewDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewDetailsModalLabel">Reservation Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 col-12">
+                        <div class="form-group">
+                            <label>User</label>
+                            <input type="text" class="form-control" id="view_user_name" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <div class="form-group">
+                            <label>Reservation Number</label>
+                            <input type="text" class="form-control" id="view_reservation_number" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-12">
+                        <div class="form-group">
+                            <label>Car Model</label>
+                            <input type="text" class="form-control" id="view_car_model" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <div class="form-group">
+                            <label>Package Title</label>
+                            <input type="text" class="form-control" id="view_package_title" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-12">
+                        <div class="form-group">
+                            <label>Price</label>
+                            <input type="text" class="form-control" id="view_package_price" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <div class="form-group">
+                            <label>Remaining Price</label>
+                            <input type="text" class="form-control" id="view_remaining_price" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-12">
+                        <div class="form-group">
+                            <label>Status</label>
+                            <input type="text" class="form-control" id="view_reservation_status" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="form-group">
+                            <label>Build Type</label>
+                            <input type="text" class="form-control" id="view_build_type" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="form-group">
+                            <label>Build Status</label>
+                            <input type="text" class="form-control" id="view_build_status" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label>Extra Features</label>
+                            <div id="viewfeaturesContainer" class="d-flex flex-wrap">
+                                <!-- Features will be dynamically inserted here -->
+                            </div>
+                            {% comment %} <textarea class="form-control" id="view_extra_features" rows="2" readonly></textarea> {% endcomment %}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label>Message</label>
+                            <textarea class="form-control" id="view_build_message" rows="2" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 col-12">
+                        <div class="form-group">
+                            <label>Created At</label>
+                            <input type="text" class="form-control" id="view_created_at" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <div class="form-group">
+                            <label>Updated At</label>
+                            <input type="text" class="form-control" id="view_updated_at" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="text-muted mb-2">Payment Information</h6>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 col-12">
+                        <div class="form-group">
+                            <label>Initial Payment (%)</label>
+                            <input type="text" class="form-control" id="view_initial_payment_percentage" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="form-group">
+                            <label>Midway Payment (%)</label>
+                            <input type="text" class="form-control" id="view_midway_payment_percentage" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                        <div class="form-group">
+                            <label>Final Payment (%)</label>
+                            <input type="text" class="form-control" id="view_final_payment_percentage" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script src="{% static 'admin/plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'admin/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'admin/plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'admin/plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script src="{% static 'admin/plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+<script>
+$(document).ready(function () {
+    // Initialize DataTables
+    const oTable = $('#package_tbl').DataTable({
+        responsive: true,
+        paging: true,
+        lengthChange: false,
+        searching: true,
+        info: true,
+        ordering: false,
+        autoWidth: false,
+        dom: 'lrtip',
+        language: {
+            search: '',
+            searchPlaceholder: 'Search...'
+        }
+    });
+
+    // Debounced search input
+    let searchTimeout;
+    $('#myInputTextField').on('keyup', function () {
+        clearTimeout(searchTimeout);
+        const value = $(this).val();
+        searchTimeout = setTimeout(() => {
+            oTable.search(value).draw();
+        }, 300);
+    });
+
+    // Initialize filters from URL parameters
+    function initFilters() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('status')) {
+            $('#statusFilter').val(urlParams.get('status'));
+            oTable.column(5).search(urlParams.get('status')).draw();
+        }
+        if (urlParams.has('build_type')) {
+            $('#buildTypeFilter').val(urlParams.get('build_type'));
+            oTable.column(6).search(urlParams.get('build_type')).draw();
+        }
+        if (urlParams.has('build_status')) {
+            $('#buildStatusFilter').val(urlParams.get('build_status'));
+            oTable.column(7).search(urlParams.get('build_status')).draw();
+        }
+    }
+    initFilters();
+
+    // Filter event handlers
+    $('#statusFilter').on('change', function () {
+        oTable.column(5).search($(this).val()).draw();
+        updateUrlParams();
+    });
+
+    $('#buildTypeFilter').on('change', function () {
+        oTable.column(6).search($(this).val()).draw();
+        updateUrlParams();
+    });
+
+    $('#buildStatusFilter').on('change', function () {
+        oTable.column(7).search($(this).val()).draw();
+        updateUrlParams();
+    });
+
+    // Update URL parameters without reloading
+    function updateUrlParams() {
+        const url = new URL(window.location);
+        const params = {
+            status: $('#statusFilter').val(),
+            build_type: $('#buildTypeFilter').val(),
+            build_status: $('#buildStatusFilter').val()
+        };
+
+        Object.keys(params).forEach(key => {
+            if (params[key]) {
+                url.searchParams.set(key, params[key]);
+            } else {
+                url.searchParams.delete(key);
+            }
+        });
+
+        window.history.pushState({}, '', url);
+    }
+
+    // Get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Sanitize input to prevent XSS
+    function sanitizeInput(input) {
+        const div = document.createElement('div');
+        div.textContent = input;
+        return div.innerHTML;
+    }
+
+    // Validate payment percentages
+    function validatePercentages() {
+        const initial = parseFloat($('#initial_payment_percentage').val()) || 0;
+        const midway = parseFloat($('#midway_payment_percentage').val()) || 0;
+        const final = parseFloat($('#final_payment_percentage').val()) || 0;
+        const total = initial + midway + final;
+
+        $('.error-message').text('');
+        if (total !== 100) {
+            $('#initial_payment_error').text('Percentages must sum to 100%');
+            return false;
+        }
+        return true;
+    }
+
+    // Calculate payments
+    function calculatePayments(price, initialPercentage, midwayPercentage, finalPercentage) {
+        price = parseFloat(price) || 0;
+        initialPercentage = parseFloat(initialPercentage) || 0;
+        midwayPercentage = parseFloat(midwayPercentage) || 0;
+        finalPercentage = parseFloat(finalPercentage) || 0;
+        
+        const initialAmount = (price * initialPercentage / 100).toFixed(2);
+        const midwayAmount = (price * midwayPercentage / 100).toFixed(2);
+        const finalAmount = (price * finalPercentage / 100).toFixed(2);
+        
+        return {
+            initial: initialAmount,
+            midway: midwayAmount,
+            final: finalAmount,
+            total: price.toFixed(2)
+        };
+    }
+
+    // View button handler
+    // View button handler
+$(document).on('click touchstart', '.view-btn', function (e) {
+    e.preventDefault();
+    try {
+        const data = $(this).data();
+        const formattedStatus = data.status ? data.status.charAt(0).toUpperCase() + data.status.slice(1).replace(/_/g, ' ') : '';
+        const formattedBuildType = data.build_type ? data.build_type.charAt(0).toUpperCase() + data.build_type.slice(1).replace(/_/g, ' ') : '';
+        const formattedBuildStatus = data.build_status ? data.build_status.charAt(0).toUpperCase() + data.build_status.slice(1).replace(/_/g, ' ') : '';
+
+        $('#view_reservation_number').val(sanitizeInput(data.reservation_number || ''));
+        $('#view_user_name').val(sanitizeInput(data.user || ''));
+        $('#view_car_model').val(sanitizeInput(data.car || ''));
+        $('#view_package_title').val(sanitizeInput(data.title || ''));
+        $('#view_package_price').val(sanitizeInput(data.price || ''));
+        $('#view_reservation_status').val(sanitizeInput(formattedStatus));
+        $('#view_build_type').val(sanitizeInput(formattedBuildType));
+        $('#view_build_status').val(sanitizeInput(formattedBuildStatus));
+        $('#view_build_message').val(sanitizeInput(data.build_message || ''));
+        $('#view_created_at').val(sanitizeInput(data.created_at || ''));
+        $('#view_updated_at').val(sanitizeInput(data.updated_at || ''));
+        $('#view_initial_payment_percentage').val(sanitizeInput(data.initial_payment_percentage || '40'));
+        $('#view_midway_payment_percentage').val(sanitizeInput(data.midway_payment_percentage || '40'));
+        $('#view_final_payment_percentage').val(sanitizeInput(data.final_payment_percentage || '20'));
+        $('#view_remaining_price').val(sanitizeInput(data.remaining_price || '0'));
+
+        // Clear previous features
+        $('#viewfeaturesContainer').empty();
+
+        // Parse and display selected features
+        const featuresString = data.features || '';
+        const selectedFeatures = parseFeaturesString(featuresString);
+        
+        // Determine which feature set to use based on package type
+        let featureSet = [];
+        if (data.package_type === 'roller') {
+            featureSet = {{ all_roller_features|safe }};
+        } else if (data.package_type === 'builder') {
+            featureSet = {{ all_builder_features|safe }};
+        } else {
+            featureSet = {{ all_roller_plus_features|safe }};
+        }
+
+        // Create a map of selected features for quick lookup
+        const selectedFeaturesMap = {};
+        selectedFeatures.forEach(feature => {
+            selectedFeaturesMap[feature.id] = {
+                option: feature.option || null
+            };
+        });
+
+        // Display only the selected features as disabled chips
+        featureSet.forEach(feature => {
+            if (selectedFeaturesMap.hasOwnProperty(feature.id)) {
+                const isSelected = true;
+                const selectedOption = selectedFeaturesMap[feature.id].option;
+                
+                const chip = $('<div>').addClass('feature-chip d-flex feature-selected')
+                    .attr('data-id', feature.id)
+                    .attr('data-price', feature.price)
+                    .css('pointer-events', 'none'); // Disable interaction
+
+                // Add feature name and base price
+                $('<span>').text(feature.title).appendTo(chip);
+                    if(feature.type !== 'radiobox'){
+                    $('<span>').addClass('feature-price')
+                        .text(` ($${feature.price})`)
+                        .appendTo(chip);
+                }
+
+                
+                // Handle options if they exist and were selected
+                if (feature.options && feature.options.length > 0 && selectedOption) {
+                    const optionsWrapper = $('<div>').addClass('feature-options-wrapper ');
+                    
+                    feature.options.forEach((opt, index) => {
+                        if (opt.value === selectedOption) {
+                            const radioId = `view_feature_${feature.id}_option_${index}`;
+                            const radio = $('<input>')
+                                .attr('type', 'radio')
+                                .attr('name', `view_feature_${feature.id}_options`)
+                                .attr('id', radioId)
+                                .attr('value', opt.value)
+                                .attr('data-option-price', opt.price)
+                                .prop('checked', true)
+                                .prop('disabled', true); // Disable the radio button
+
+                            const label = $('<label>')
+                                .attr('for', radioId)
+                                .text(`: ${opt.label} ($${opt.price})`)
+                                .css({ 'margin-left': '5px', 'font-size': '0.8rem' });
+
+                            optionsWrapper.append(
+                                $('<span>')
+                                    .append(label)
+                            );
+                        }
+                    });
+                    
+                    chip.append(optionsWrapper);
+                }
+                
+                $('#viewfeaturesContainer').append(chip);
+            }
+        });
+
+        const price = data.price || 0;
+        const initialPercentage = data.initial_payment_percentage || 40;
+        const midwayPercentage = data.midway_payment_percentage || 40;
+        const finalPercentage = data.final_payment_percentage || 20;
+        
+        const payments = calculatePayments(price, initialPercentage, midwayPercentage, finalPercentage);
+        
+        $('#viewDetailsModal').modal('show');
+    } catch (error) {
+        console.error('Error in view button handler:', error);
+        Swal.fire({
+            position: 'top-end',
+            icon: 'error',
+            title: 'Error',
+            text: 'Failed to open view details',
+            showConfirmButton: false,
+            timer: 3000,
+            toast: true
+        });
+    }
+});
+
+    // Edit button handler
+    $(document).on('click touchstart', '.edit-btn', function (e) {
+        e.preventDefault();
+        const data = $(this).data();
+        console.log("Data from edit button:", data); // Debugging line
+        const urlPattern = $('#urls').data('update-url');
+        const url = urlPattern.replace('00000000-0000-0000-0000-000000000000', data.id);
+
+        // Set basic form values
+        $('#reservation_number').val(sanitizeInput(data.reservation_number || ''));
+        $('#user_id').val(sanitizeInput(data.user_id || ''));
+        $('#car_model_id').val(sanitizeInput(data.car_model_id || ''));
+        $('#package').val(sanitizeInput(data.package || ''));
+        $('#user_name').val(sanitizeInput(data.user || ''));
+        $('#car_model').val(sanitizeInput(data.car_model_id || ''));
+        $('#package_title').val(sanitizeInput(data.title || ''));
+        $('#package_price').val(sanitizeInput(data.price || ''));
+        $('#reservation_status').val(sanitizeInput(data.status || ''));
+        $('#build_type').val(sanitizeInput(data.build_type || ''));
+        $('#build_status').val(sanitizeInput(data.build_status || ''));
+        $('#build_message').val(sanitizeInput(data.build_message || ''));
+        $('#created_at').val(sanitizeInput(data.created_at || ''));
+        $('#updated_at').val(sanitizeInput(data.updated_at || ''));
+        $('#initial_payment_percentage').val(sanitizeInput(data.initial_payment_percentage || '40'));
+        $('#midway_payment_percentage').val(sanitizeInput(data.midway_payment_percentage || '40'));
+        $('#final_payment_percentage').val(sanitizeInput(data.final_payment_percentage || '20'));
+        $('#remaining_price').val(sanitizeInput(data.remaining_price || '0'));
+
+        // Parse and display features
+        const featuresString = data.features || '';
+        const selectedFeatures = parseFeaturesString(featuresString);
+        
+        // Determine which feature set to use based on package type
+        let featureSet = [];
+        if (data.package_type === 'roller') {
+            featureSet = {{ all_roller_features|safe }};
+            console.log("Feature Set is roller: ",featureSet)
+        } else if (data.package_type === 'builder') {
+            featureSet = {{ all_builder_features|safe }};
+            console.log("Feature Set is builder: ",featureSet)
+        } else {
+            featureSet = {{ all_roller_plus_features|safe }};
+            console.log("Feature Set is : roller Plus",featureSet)
+        }
+        
+
+        // Display features as chips
+        displayFeatures(featureSet, selectedFeatures);
+
+        const price = data.price || 0;
+        const initialPercentage = data.initial_payment_percentage || 40;
+        const midwayPercentage = data.midway_payment_percentage || 40;
+        const finalPercentage = data.final_payment_percentage || 20;
+        
+        const payments = calculatePayments(price, initialPercentage, midwayPercentage, finalPercentage);
+        
+        $('#initial_payment_amount_display').text(`Initial Payment (${initialPercentage}%): $${payments.initial}`);
+        $('#midway_payment_amount_display').text(`Midway Payment (${midwayPercentage}%): $${payments.midway}`);
+        $('#final_payment_amount_display').text(`Final Payment (${finalPercentage}%): $${payments.final}`);
+        $('#total_payment_display').text(`Total: $${payments.total}`);
+        
+        $('#editReservationForm').attr('action', url);
+        $('#editReservationModal').modal('show');
+    });
+
+    // Parse the features string into an array of objects
+    function parseFeaturesString(featuresString) {
+        if (!featuresString) return [];
+        
+        const features = [];
+        const featureParts = featuresString.split(',');
+        
+        for (const part of featureParts) {
+            if (!part) continue;
+            
+            const [featureId, option] = part.split(':');
+            features.push({
+                id: featureId,
+                option: option || null
+            });
+        }
+        
+        return features;
+    }
+
+    // Modify the displayFeatures function to handle price display
+    function displayFeatures(featureSet, selectedFeatures) {
+        const container = $('#featuresContainer');
+        container.empty();
+        
+        // Create a map of selected features for quick lookup
+        const selectedFeaturesMap = {};
+        selectedFeatures.forEach(feature => {
+            selectedFeaturesMap[feature.id] = {
+                option: feature.option || null,
+                price: feature.price || 0
+            };
+        });
+        
+        featureSet.forEach(feature => {
+            const isSelected = selectedFeaturesMap.hasOwnProperty(feature.id);
+            const selectedOption = isSelected ? selectedFeaturesMap[feature.id].option : null;
+            
+            const chip = $('<div>').addClass('feature-chip')
+                .addClass(isSelected ? 'feature-selected' : 'feature-unselected')
+                .attr('data-id', feature.id)
+                .attr('data-price', feature.price);
+            
+            // Add feature name and base price
+            $('<span>').text(feature.title).appendTo(chip);
+            $('<span>').addClass('feature-price')
+                .text(` ($${feature.price})`)
+                .appendTo(chip);
+            
+            // Handle options if they exist
+            if (feature.options && feature.options.length > 0) {
+                const optionsWrapper = $('<div>').addClass('feature-options-wrapper mt-2');
+                
+                feature.options.forEach((opt, index) => {
+                    const radioId = `feature_${feature.id}_option_${index}`;
+                    const radio = $('<input>')
+                        .attr('type', 'radio')
+                        .attr('name', `feature_${feature.id}_options`)
+                        .attr('id', radioId)
+                        .attr('value', opt.value)
+                        .attr('data-option-price', opt.price)
+                        .prop('checked', selectedOption === opt.value)
+                        .on('change', function() {
+                            updateFeaturesInput();
+                            updatePriceCalculation();
+                        });
+    
+                    const label = $('<label>')
+                        .attr('for', radioId)
+                        .text(`${opt.label} ($${opt.price})`)
+                        .css({ 'margin-left': '5px', 'font-size': '0.8rem' });
+    
+                    optionsWrapper.append(
+                        $('<div>').addClass('form-check')
+                            .append(radio, label)
+                    );
+                });
+    
+                if (isSelected) {
+                    chip.append(optionsWrapper);
+                }
+            }
+            
+            chip.on('click', function(e) {
+                // Only trigger if clicked element is not a radio or label
+                if (!$(e.target).is('input[type="radio"], label')) {
+                    const featureId = $(this).attr('data-id');
+                    const isSelected = $(this).hasClass('feature-selected');
+                    
+                    if (isSelected) {
+                        $(this).removeClass('feature-selected').addClass('feature-unselected');
+                        $(this).find('.feature-options-wrapper').remove();
+                    } else {
+                        $(this).removeClass('feature-unselected').addClass('feature-selected');
+                        const currentFeature = featureSet.find(f => f.id === featureId);
+                        
+                        if (currentFeature?.options?.length) {
+                            const optionsWrapper = createRadioOptions(currentFeature, selectedFeaturesMap[featureId]?.option);
+                            $(this).append(optionsWrapper);
+                        }
+                    }
+                    
+                    updateFeaturesInput();
+                    updatePriceCalculation();
+                }
+            });
+            
+            container.append(chip);
+        });
+        
+        // Initialize the hidden input field
+        updateFeaturesInput();
+    }
+
+    function createRadioOptions(feature, selectedOption) {
+        const optionsWrapper = $('<div>').addClass('feature-options-wrapper mt-2');
+        
+        feature.options.forEach((opt, index) => {
+            const radioId = `feature_${feature.id}_option_${index}`;
+            const radio = $('<input>')
+                .attr('type', 'radio')
+                .attr('name', `feature_${feature.id}_options`)
+                .attr('id', radioId)
+                .attr('value', opt.value)
+                .attr('data-option-price', opt.price)
+                .prop('checked', selectedOption === opt.value)
+                .on('change', function() {
+                    updateFeaturesInput();
+                    updatePriceCalculation();
+                });
+    
+            const label = $('<label>')
+                .attr('for', radioId)
+                .text(`${opt.label} ($${opt.price})`)
+                .css({ 'margin-left': '5px', 'font-size': '0.8rem' });
+    
+            optionsWrapper.append(
+                $('<div>').addClass('form-check')
+                    .append(radio, label)
+            );
+        });
+        
+        return optionsWrapper;
+    }
+    
+
+// Add this new function to handle price calculations
+function updatePriceCalculation() {
+    let basePrice = parseFloat($('#package_price').val()) || 0;
+    let additionalPrice = 0;
+    
+    // Calculate additional features price
+    $('#featuresContainer .feature-selected').each(function() {
+        const featureId = $(this).attr('data-id');
+        const optionsWrapper = $(this).find('.feature-options-wrapper');
+        
+        if (optionsWrapper.length > 0) {
+            const selectedRadio = $(this).find('input[type="radio"]:checked');
+            if (selectedRadio.length > 0) {
+                additionalPrice += parseFloat(selectedRadio.attr('data-option-price')) || 0;
+            }
+        } else {
+            additionalPrice += parseFloat($(this).attr('data-price')) || 0;
+        }
+    });
+    
+    const totalPrice = basePrice + additionalPrice;
+    $('#package_price').val(totalPrice.toFixed(2));
+    
+    // Update payment calculations
+    const initialPercentage = $('#initial_payment_percentage').val() || 40;
+    const midwayPercentage = $('#midway_payment_percentage').val() || 40;
+    const finalPercentage = $('#final_payment_percentage').val() || 20;
+    
+    const payments = calculatePayments(totalPrice, initialPercentage, midwayPercentage, finalPercentage);
+    
+    $('#initial_payment_amount_display').text(`Initial Payment (${initialPercentage}%): $${payments.initial}`);
+    $('#midway_payment_amount_display').text(`Midway Payment (${midwayPercentage}%): $${payments.midway}`);
+    $('#final_payment_amount_display').text(`Final Payment (${finalPercentage}%): $${payments.final}`);
+    $('#total_payment_display').text(`Total: $${payments.total}`);
+}
+
+
+$(document).on('change', 'input[type="radio"]', function() {
+    updateFeaturesInput();
+    updatePriceCalculation();
+});
+
+
+function updateFeaturesInput() {
+    const selectedFeatures = [];
+    
+    $('#featuresContainer .feature-selected').each(function() {
+        const featureId = $(this).attr('data-id');
+        const optionsWrapper = $(this).find('.feature-options-wrapper');
+        
+        if (optionsWrapper.length > 0) {
+            const selectedRadio = $(this).find('input[type="radio"]:checked');
+            if (selectedRadio.length > 0) {
+                selectedFeatures.push(`${featureId}:${selectedRadio.val()}`);
+            } else {
+                // If no option selected for a radio feature, don't include it
+                $(this).removeClass('feature-selected').addClass('feature-unselected');
+                optionsWrapper.remove();
+            }
+        } else {
+            selectedFeatures.push(featureId);
+        }
+    });
+    
+    $('#extra_features').val(selectedFeatures.join(','));
+}
+
+    // Handle changes in feature options
+    $(document).on('change', '.feature-option-select', function() {
+        updateFeaturesInput();
+    });
+
+    // Update payment calculations when percentages change
+    $('.payment-percentage').on('input', function() {
+        const price = $('#package_price').val();
+        const initialPercentage = $('#initial_payment_percentage').val();
+        const midwayPercentage = $('#midway_payment_percentage').val();
+        const finalPercentage = $('#final_payment_percentage').val();
+        
+        const payments = calculatePayments(price, initialPercentage, midwayPercentage, finalPercentage);
+        
+        $('#initial_payment_amount_display').text(`Initial Payment (${initialPercentage}%): $${payments.initial}`);
+        $('#midway_payment_amount_display').text(`Midway Payment (${midwayPercentage}%): $${payments.midway}`);
+        $('#final_payment_amount_display').text(`Final Payment (${finalPercentage}%): $${payments.final}`);
+        $('#total_payment_display').text(`Total: $${payments.total}`);
+        
+        validatePercentages();
+    });
+
+    // Form submission handler with loading state
+    $('#editReservationForm').on('submit', function (e) {
+        e.preventDefault();
+        
+        if (!validatePercentages()) {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: 'Invalid percentages',
+                text: 'Payment percentages must sum to 100%',
+                showConfirmButton: false,
+                timer: 3000,
+                toast: true
+            });
+            return;
+        }
+
+        const form = $(this);
+        const url = form.attr('action');
+        const $submitBtn = $('#saveChangesBtn');
+        
+        // Show loading state
+        $submitBtn.addClass('btn-loading').prop('disabled', true);
+        $submitBtn.text('Saving...');
+
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: form.serialize(),
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            success: function () {
+                $('#editReservationModal').modal('hide');
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Reservation updated successfully!',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    toast: true
+                });
+                setTimeout(() => location.reload(), 1500);
+            },
+            error: function (xhr) {
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'error',
+                    title: 'Error updating reservation',
+                    text: xhr.responseJSON?.error || 'An unknown error occurred',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    toast: true
+                });
+            },
+            complete: function () {
+                // Reset button state
+                $submitBtn.removeClass('btn-loading').prop('disabled', false);
+                $submitBtn.text('Save changes');
+            }
+        });
+    });
+
+    // Delete button handler
+    $(document).on('click touchstart', '.delete-btn', function (e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        const status = $(this).data('status');
+        const url = "{% url 'delete-booked-package' '00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', id);
+
+        if (status !== 'pending' && status !== 'cancelled') {
+            Swal.fire({
+                position: 'top-end',
+                icon: 'error',
+                title: 'Error deleting reservation',
+                text: 'Only pending and cancelled reservations can be deleted',
+                showConfirmButton: false,
+                timer: 3000,
+                toast: true
+            });
+            return;
+        }
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    success: function () {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'success',
+                            title: 'Reservation deleted successfully!',
+                            showConfirmButton: false,
+                            timer: 1500,
+                            toast: true
+                        });
+                        setTimeout(() => location.reload(), 1500);
+                    },
+                    error: function (xhr) {
+                        Swal.fire({
+                            position: 'top-end',
+                            icon: 'error',
+                            title: 'Error deleting reservation',
+                            text: xhr.responseJSON?.error || 'An unknown error occurred',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            toast: true
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+    // Reset modals on close
+    $('#editReservationModal, #viewDetailsModal').on('hidden.bs.modal', function () {
+        const $form = $(this).find('form');
+        $form.trigger('reset');
+        $form.find('input, textarea, select').val('');
+        $('.error-message').text('');
+        $('#featuresContainer').empty();
+        $('#initial_payment_amount_display').text('Initial Payment (40%): $0.00');
+        $('#midway_payment_amount_display').text('Midway Payment (40%): $0.00');
+        $('#final_payment_amount_display').text('Final Payment (20%): $0.00');
+        $('#total_payment_display').text('Total: $0.00');
+    });
+});
+</script>
+{% endblock %}

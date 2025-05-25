@@ -1,0 +1,405 @@
+{% load static %}
+
+<style>
+    @media (max-width: 992px) {
+        .offcanvas.offcanvas-end {
+            width: 100% !important;
+            /* Make sidebar full-width */
+            max-width: 100% !important;
+        }
+
+        .offcanvas-body {
+            width: 100% !important;
+        }
+
+        .card {
+            width: 100% !important;
+            /* Ensure card is full width */
+        }
+    }
+</style>
+
+<!-- Footer Start -->
+<footer class="footer footer-bar bg-black">
+    <div class="footer-py-30">
+        <div class="container text-center">
+            <div class="row align-items-center">
+                <div class="col-sm-3">
+                    <div class="text-sm-start">
+                        <a href="{% url 'index' %}" class="logo-footer">
+                            <span class="l-light logo-font text-white">GEN-Z 40 </span>
+                            <!-- <img src="assets/images/logo-light.png" height="24" alt=""> -->
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                    <div class="text-center">
+                        <p class="mb-0 text-white d-flex flex-column flex-lg-row" >
+                            <span  style="display:flex; width:auto; justify-content: center; align-items:center">
+                                ©
+                            <script>document.write(new Date().getFullYear())</script>
+                            <span class="l-dark logo-font" > GEN-Z 40</span>
+                            <span class="h-6" style="background-color: #ffff; padding: 1px; margin-left: 5px; margin-right: 5px"></span>
+                            <span>
+                                <img src="{% static 'images/Alvi-Automobile-Logo/alvi-logo-2.jpg' %}" height="20" class="" style="max-width:4rem" alt="">
+                            </span>
+                            </span>
+                            <span class="">
+                                <a href="{% url 'terms_conditions' %}" target="_blank" class="text-reset">Terms</a> | <a
+                                    href="{% url 'privacy_policy' %}" target="_blank" class="text-reset">Privacy Policy</a>
+                                </span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-sm-3 mt-4 mt-sm-0 pt-2 pt-sm-0">
+                    <ul class="list-unstyled social-icon foot-social-icon text-sm-end mb-0">
+                        <li class="list-inline-item mb-0"><a href="http://facebook.com/genzsportscars"
+                                class="rounded text-white" target="_blank"><i data-feather="facebook"
+                                    class="fea icon-sm fea-social"></i></a></li>
+                        <li class="list-inline-item mb-0"><a href="http://instagram.com/genz40_official"
+                                class="rounded text-white" target="_blank"><i data-feather="instagram"
+                                    class="fea icon-sm fea-social"></i></a></li>
+                        <!-- <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded text-white"><i data-feather="twitter" class="fea icon-sm fea-social"></i></a></li>
+                              <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded text-white"><i data-feather="linkedin" class="fea icon-sm fea-social"></i></a></li> -->
+                    </ul><!--end icon-->
+                </div><!--end col-->
+            </div><!--end row-->
+        </div><!--end container-->
+    </div>
+</footer><!--end footer-->
+
+<!-- Cookies Start -->
+<!-- <div class="card cookie-popup shadow rounded py-3 px-4">
+        <p class="text-muted mb-0">This website uses cookies to provide you with a great user experience. By using it, you accept our <a href="https://shreethemes.in" target="_blank" class="text-success h6">use of cookies</a></p>
+        <div class="cookie-popup-actions text-end">
+            <button><i class="uil uil-times fs-4"></i></button>
+        </div>
+    </div> -->
+<!--Note: Cookies Js including in plugins.init.js (path like; js/plugins.init.js) and Cookies css including in _helper.scss (path like; scss/_helper.scss)-->
+<!-- Cookies End -->
+
+<!-- Offcanvas Start -->
+<div class="offcanvas offcanvas-end shadow border-0" tabindex="-1" id="offcanvasRight"
+    aria-labelledby="offcanvasRightLabel" style="max-width: 450px;">
+
+    <div class="offcanvas-header p-4 border-bottom">
+        <h5 id="offcanvasRightLabel" class="mb-0">
+            <span class="l-dark logo-font">GEN-Z 40 </span>
+            <!-- <span class="l-light logo-font text-white-50">GEN-Z</span> -->
+        </h5>
+        <button type="button" class="btn-close d-flex align-items-center" data-bs-dismiss="offcanvas"
+            aria-label="Close"><i class="uil uil-times fs-4"></i></button>
+    </div>
+    <div class="offcanvas-body p-4 w-100 w-lg-auto">
+        <div class="row">
+            <div class="col-12">
+                <img src="{% static 'images/logo.jpg' %}" class="img-fluid d-block mx-auto" alt="">
+                <div class="card border-0 mt-4" style="z-index: 1">
+                    <div class="card-body p-0">
+                        <h4 class="card-title text-center">Login</h4>
+                        <form class="login-form mt-4" method="post" id="customer-login-form">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        <label class="form-label">Email <span class="text-danger">*</span></label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="mail" class="fea icon-sm icons text-white"></i>
+                                            <input type="text" class="form-control ps-5" placeholder="Email"
+                                                name="username" required="">
+                                        </div>
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-lg-12">
+                                    <div class="mb-3">
+                                        <label class="form-label">Password <span class="text-danger">*</span></label>
+                                        <div class="form-icon position-relative">
+                                            <i data-feather="key" class="fea icon-sm icons text-white"></i>
+                                            <input type="password" name="password" class="form-control ps-5"
+                                                placeholder="Password" required="">
+                                        </div>
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-lg-12">
+                                    <div class="d-flex justify-content-between">
+                                        <p class="forgot-pass mb-3"><a href="{% url 'password_reset' %}"
+                                                class="text-white fw-bold float-end">Forgot password ?</a></p>
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-lg-12 mb-0">
+                                    <div class="d-grid">
+                                        <button type="submit" class="btn btn-success w-100">Sign in
+                                            <span class="spinner-border spinner-border-sm" id="pro1" role="status"
+                                                aria-hidden="true" style="display: none;"></span>
+                                        </button>
+                                    </div>
+                                </div><!--end col-->
+
+                                <div class="col-12 text-center">
+                                    <p class="mb-0 mt-3"><small class="text-white me-2">Don't have an account ?</small>
+                                        <a href="{% url 'register_page' %}"
+                                            class="text-white fw-bold text-decoration-underline">Sign Up</a></p>
+                                </div><!--end col-->
+                            </div><!--end row-->
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="offcanvas-footer p-4 border-top text-center">
+        <ul class="list-unstyled social-icon social mb-0">
+            <li class="list-inline-item mb-0"><a href="http://facebook.com/genzsportscars" class="rounded"
+                    target="_blank"><i data-feather="facebook" class="fea icon-sm fea-social"></i></a></li>
+            <li class="list-inline-item mb-0"><a href="http://instagram.com/genz40_official" class="rounded"
+                    target="_blank"><i data-feather="instagram" class="fea icon-sm fea-social"></i></a></li>
+            <!-- <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded"><i data-feather="twitter" class="fea icon-sm fea-social"></i></a></li>
+                <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded"><i data-feather="linkedin" class="fea icon-sm fea-social"></i></a></li> -->
+        </ul><!--end icon-->
+    </div>
+</div>
+<!-- Offcanvas End -->
+
+<!-- Switcher Start -->
+<a href="javascript:void(0)" class="side-btn text-black" data-bs-toggle="offcanvas"
+    data-bs-target="#switcher-sidebar">REQUEST A CALL BACK</a>
+<!-- <a href="javascript:void(0)" class="card switcher-btn shadow-md text-success z-index-1 d-md-inline-flex d-none bg-white text-uppercase" data-bs-toggle="offcanvas" data-bs-target="#switcher-sidebar">
+        <i class="mdi mdi-human-greeting-proximity mdi-24px align-middle"></i> -->
+<!-- mdi-spin -->
+<!-- style="width: 120px; word-wrap: break-word; white-space: pre-wrap; transform: rotate(270deg);border-radius:0px; align-items: baseline !important; padding: 0px;" -->
+<!-- Contact Us -->
+<!-- </a> -->
+
+<div class="offcanvas offcanvas-start shadow border-0" tabindex="-1" id="switcher-sidebar"
+    aria-labelledby="offcanvasLeftLabel">
+    <div class="offcanvas-header p-4 border-bottom">
+        <h5 id="offcanvasLeftLabel" class="mb-0">
+            <span class="l-dark logo-font">GEN-Z 40</span>
+            <!-- <span class="l-light logo-font text-white-50">GEN-Z</span> -->
+        </h5>
+        <button type="button" class="btn-close d-flex align-items-center" data-bs-dismiss="offcanvas"
+            aria-label="Close"><i class="uil uil-times fs-4"></i></button>
+    </div>
+    <div class="offcanvas-body p-3 pb-0">
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center">
+                    <h6 class="fw-bold">Get in Touch</h6>
+                    <ul class="pattern mb-0 mt-3">
+                        <li>
+                            <a class="btn btn-primary" href="tel:+17187875849" title="Call Us"><i
+                                    class="mdi mdi-phone mdi-16px align-middle"></i> Call Us</a>
+                        </li>
+                        <li>
+                            <a class="btn btn-success btn-block"
+                                href="https://wa.me/+17187875849/?text=Welcome to GENZ40. Please share your request."
+                                title="WhatsApp"><i class="mdi mdi-whatsapp mdi-16px align-middle"></i> WhatsApp</a>
+                        </li>
+
+                    </ul>
+                </div>
+                <div class="text-center mt-4 pt-4 border-top">
+                    <h6 class="fw-bold">GET FREE QUOTATION FOR YOUR CAR</h6>
+                    <p>Fill in your details below to request a call back.</p>
+
+                    <form class="login-form mt-4" method="post" id="contact-form">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <!-- <label class="form-label">Your Email <span class="text-danger">*</span></label> -->
+                                    <div class="form-icon position-relative">
+                                        <i data-feather="user" class="fea icon-sm icons"></i>
+                                        <input type="text" class="form-control ps-5" placeholder="Full Name *"
+                                            name="name" required="">
+                                    </div>
+                                </div>
+                            </div><!--end col-->
+
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <!-- <label class="form-label">Password <span class="text-danger">*</span></label> -->
+                                    <div class="form-icon position-relative">
+                                        <i data-feather="mail" class="fea icon-sm icons"></i>
+                                        <input type="email" name="email" class="form-control ps-5" placeholder="Email *"
+                                            required="">
+                                    </div>
+                                </div>
+                            </div><!--end col-->
+
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <!-- <label class="form-label">Password <span class="text-danger">*</span></label> -->
+                                    <div class="form-icon position-relative">
+                                        <i data-feather="phone" class="fea icon-sm icons"></i>
+                                        <input type="text" name="phone_number" id="phone_number" maxlength="10"
+                                            class="form-control ps-5" placeholder="Phone Number">
+                                    </div>
+                                </div>
+                            </div><!--end col-->
+
+                            <div class="col-lg-12">
+                                <div class="mb-3">
+                                    <select class="form-select form-control" name="car"
+                                        aria-label="Default select example" required>
+                                        <option value="" selected>Select Car *</option>
+                                        {% for item in nav_items %}
+                                        <option value="{{item}}">{{ item }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <div class="form-icon position-relative">
+                                        <i data-feather="message-circle" class="fea icon-sm icons"></i>
+                                        <textarea name="comments" id="comments" rows="4" class="form-control ps-5"
+                                            placeholder="Message"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-12 mb-0">
+                                <div class="d-grid">
+                                    <button type="submit" class="btn btn-success">Enquiry
+                                        <span class="spinner-border spinner-border-sm" id="pro" role="status"
+                                            aria-hidden="true" style="display: none;"></span>
+                                    </button>
+                                </div>
+                            </div><!--end col-->
+
+                        </div><!--end row-->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="offcanvas-footer p-4 border-top text-center">
+        <ul class="list-unstyled social-icon social mb-0">
+            <li class="list-inline-item mb-0"><a href="http://facebook.com/genzsportscars" class="rounded"
+                    target="_blank"><i data-feather="facebook" class="fea icon-sm fea-social"></i></a></li>
+            <li class="list-inline-item mb-0"><a href="http://instagram.com/genz40_official" class="rounded"
+                    target="_blank"><i data-feather="instagram" class="fea icon-sm fea-social"></i></a></li>
+            <!-- <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded"><i data-feather="twitter" class="fea icon-sm fea-social"></i></a></li>
+                <li class="list-inline-item mb-0"><a href="javascript:void(0)" class="rounded"><i data-feather="linkedin" class="fea icon-sm fea-social"></i></a></li> -->
+        </ul><!--end icon-->
+    </div>
+</div>
+<!-- Switcher End -->
+
+<!-- Back to top -->
+<!-- <a href="#" onclick="topFunction()" id="back-to-top" class="back-to-top fs-5 bg-success mb-5"><i data-feather="arrow-up" class="fea icon-sm icons align-middle"></i></a> -->
+<!-- Back to top -->
+
+<!-- sticky for mobile -->
+<div class="container-fluid button-bottom-stick-mobile d-lg-none">
+    <a href="tel:+17187875849" class="col-md-4 align-items-center banner-button text-decoration-none">
+        <i class="mdi mdi-phone text-success" style="font-size: 35px;"> </i>
+    </a>
+    <div class="vl"></div>
+    <a href="mailto:info@genz40.com" class="col-md-4 align-items-center banner-button text-decoration-none">
+        <i class="mdi mdi-email-arrow-right text-success" style="font-size: 35px;"> </i>
+    </a>
+    <div class="vl"></div>
+    <a href="https://wa.me/+17187875849/?text=Welcome to GENZ40. Please share your request."
+        class="col-md-4 align-items-center banner-button text-decoration-none" target="_blank">
+        <i class="mdi mdi-whatsapp text-success" style="font-size: 35px;"> </i>
+</div>
+{% block script %}
+
+{% endblock script %}
+
+<!-- JAVASCRIPT -->
+<script src="{% static 'libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- SLIDER -->
+<script src="{% static 'libs/tiny-slider/min/tiny-slider.js' %}"></script>
+<!-- Lightbox -->
+<script src="{% static 'libs/shufflejs/shuffle.min.js' %}"></script>
+<script src="{% static 'libs/tobii/js/tobii.min.js' %}"></script>
+<!-- Main Js -->
+<script src="{% static 'libs/feather-icons/feather.min.js' %}"></script>
+<script src="{% static 'js/plugins.init.js' %}"></script>
+<!--Note: All init js like tiny slider, counter, countdown, maintenance, lightbox, gallery, swiper slider, aos animation etc.-->
+<script src="{% static 'js/app.js' %}"></script>
+<!--Note: All important javascript like page loader, menu, sticky menu, menu-toggler, one page menu etc. -->
+
+<script src="{% static 'public/js/jquery.min.js' %}"></script>
+
+<script>
+    $("#customer-login-form").submit(function (e) {
+        event.preventDefault();
+        var data = new FormData($('#customer-login-form').get(0));
+        $('#pro1').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'customer_login' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+                if (response.is_success) {
+                    toastr.success(response.message);
+                    location.href = "{% url 'dashboard' %}"
+                } else {
+                    toastr.error(response.message);
+                }
+                $('#customer-login-form')[0].reset();
+                $('#pro1').hide();
+            },
+            error: function (response) {
+                // alert the error if any error occurred
+                alert(response["error"]);
+                $('#pro1').hide();
+            }
+        })
+    })
+
+</script>
+
+<script>
+    $("#contact-form").submit(function (e) {
+        event.preventDefault();
+        var data = new FormData($('#contact-form').get(0));
+        $('#pro').show();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'save_contact' %}",
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            crossDomain: true,
+            success: function (response) {
+
+                if (response.is_success) {
+                    toastr.success(response.message);
+                    // Close the Bootstrap offcanvas
+                    var offcanvasElement = document.getElementById("switcher-sidebar");
+                    var offcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                    offcanvas.hide();
+                } else {
+                    toastr.error(response.message);
+                }
+                $('#contact-form')[0].reset();
+                $('#pro').hide();
+            },
+            error: function (response) {
+                // alert the error if any error occurred
+                alert(response["error"]);
+                $('#pro').hide();
+            }
+        })
+    })
+
+</script>
