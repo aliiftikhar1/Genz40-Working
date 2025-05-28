@@ -934,8 +934,14 @@ def save_booked_package(request):
     """
     data = request.data.copy() 
     data['user'] = request.user.id
-    data['package'] = data['package_id']
-    print("The data for saving package is :",data)
+    # Use 'package' from POST data if present, fallback to 'package_id' for backward compatibility
+    if 'package' in data:
+        data['package'] = data['package']
+    elif 'package_id' in data:
+        data['package'] = data['package_id']
+    else:
+        return Response({'error': 'Missing package field in request.'}, status=status.HTTP_400_BAD_REQUEST)
+    print("The data for saving package is :", data)
     serializer = BookedPackageSerializer(data=data)
     if serializer.is_valid():
         serializer.save()

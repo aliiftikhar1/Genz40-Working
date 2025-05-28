@@ -379,11 +379,30 @@ def register_page(request):
     }
     return render(request, 'registration/register.html', context)
 
+# def send_activation_email(request, user, random_password):
+#     current_site = get_current_site(request)
+#     subject = "Activate Your Account"
+#     print("User Details before sending activation email",current_site,user,random_password)
+#     html_content = render_to_string("email/activation_email.html", {
+#         "email": user.email,
+#         "password": random_password,
+#         "user": user,
+#         "domain": current_site.domain,
+#         "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+#         "token": account_activation_token.make_token(user),
+#     })
+    
+#     plain_text = strip_tags(html_content)
+#     sender = settings.EMAIL_FROM
+#     recipient_list = [user.email]
+#     EmailThread(subject, html_content, recipient_list, sender).start()
+
 def send_activation_email(request, user, random_password):
+   
     current_site = get_current_site(request)
-    subject = "Activate Your Account"
+    mail_subject = "Activate Your Account"
     print("User Details before sending activation email",current_site,user,random_password)
-    html_content = render_to_string("email/activation_email.html", {
+    html_message = render_to_string("email/activation_email.html", {
         "email": user.email,
         "password": random_password,
         "user": user,
@@ -392,36 +411,16 @@ def send_activation_email(request, user, random_password):
         "token": account_activation_token.make_token(user),
     })
     
-    plain_text = strip_tags(html_content)
-    sender = settings.EMAIL_FROM
-    recipient_list = [user.email]
-    EmailThread(subject, html_content, recipient_list, sender).start()
-
-# def send_activation_email(request, user, random_password):
-   
-#     current_site = get_current_site(request)
-#     mail_subject = "Activate Your Account"
-#     print("User Details before sending activation email",current_site,user,random_password)
-#     html_message = render_to_string("email/activation_email.html", {
-#         "email": user.email,
-#         "password": random_password,
-#         "user": user,
-#         # "domain": 'http://178.128.150.238',
-#         "domain": current_site.domain,
-#         "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-#         "token": account_activation_token.make_token(user),
-#     })
+    plain_message = strip_tags(html_message)
     
-#     plain_message = strip_tags(html_message)
-    
-#     # Send mail with both HTML and plain text versions
-#     send_mail(
-#         subject=mail_subject,
-#         message=plain_message,  # Plain text version
-#         from_email=settings.EMAIL_FROM,
-#         recipient_list=[user.email],
-#         html_message=html_message  # HTML version
-    # )
+    # Send mail with both HTML and plain text versions
+    send_mail(
+        subject=mail_subject,
+        message=plain_message,  # Plain text version
+        from_email=settings.EMAIL_FROM,
+        recipient_list=[user.email],
+        html_message=html_message  # HTML version
+    )
 
 from django.http import JsonResponse
 from django.contrib.auth import get_user_model
@@ -991,12 +990,12 @@ def save_contact(request):
         plain_text = strip_tags(html_content) 
 
         send_mail(
-        subject=mail_subject,
-        message=plain_text,
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=[settings.ADMIN_EMAIL],
-        html_message=html_content, 
-         )
+            subject=mail_subject,
+            message=plain_text,
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[settings.ADMIN_EMAIL],
+            html_message=html_content, 
+        )
         if not PostContactUs.objects.filter(email=request.POST['email']).exists():
             form = PostContactForm(request.POST)
             if form.is_valid():
@@ -1065,8 +1064,18 @@ def create_account_before_checkout(request):
                 sender = settings.EMAIL_FROM  # Ensure this is set in settings.py
                 # Render HTML email template
                 html_content = render_to_string("email/welcome_email.html", {'user': user, 'password': request.POST['password1']})
+                
+                plain_message = strip_tags(html_content)  # Create a plain text version
                 # Send email in background
-                EmailThread(subject, html_content, recipient_list, sender).start()
+                send_mail(
+                    subject=subject,
+                    message=plain_message,
+                    from_email=sender,
+                    recipient_list=recipient_list,
+                    html_message=html_content
+                )
+
+                # EmailThread(subject, html_content, recipient_list, sender).start()
 
                 if(user.id):
                     fullName = user.first_name+ ' '+user.last_name
@@ -1517,25 +1526,23 @@ def process_reservation_payment(request):
             session_data = {
                 'customer_id': customer.id,
                 'line_items': line_items,
-                'package_id': str(package_id),
+                'package_id': str(booked_package.id),
                 'success_url': request.build_absolute_uri(
-                            f'/car/reservation_success/{package_id}/'
-                            ) + '{CHECKOUT_SESSION_ID}'+'/',
-                
+                    f'/car/reservation_success/{booked_package.id}/')+ '{CHECKOUT_SESSION_ID}'+'/',
                 'cancel_url': request.build_absolute_uri(
-                    f'/car/reservation-checkout/{package_id}/'
+                    f'/car/reservation-checkout/'
                 ),
                 'metadata': {
                     'product_name':booked_package.car_model.title,
-                    'package_id': str(package_id),
+                    'package_id': str(booked_package.id),
                     'user_email': email,
                     'descripton':f" Payment for {booked_package.title} Package of {booked_package.car_model.title}"
                 },
-                'payment_intent_data':{
-                'description': f" Payment for {booked_package.title} Package of {booked_package.car_model.title}",
-                "metadata": {
-                    'product_name':booked_package.car_model.title, 
-                },
+                'payment_intent_data': {
+                    'description': f" Payment for {booked_package.title} Package of {booked_package.car_model.title}",
+                    "metadata": {
+                        'product_name':booked_package.car_model.title, 
+                    },
                 },
             }
 
@@ -1577,7 +1584,7 @@ def create_package_checkout_session(request):
                 payment_method_types=['card'],
                 line_items=data['line_items'],
                 mode='payment',
-                success_url=f"{data['success_url']}{{CHECKOUT_SESSION_ID}}",
+                success_url=data['success_url'],
                 cancel_url=data['cancel_url'],
                 metadata=data['metadata'],
                 payment_intent_data=data['payment_intent_data']
@@ -1641,8 +1648,15 @@ def reservation_success(request, id, sessionId):
         plain_text = strip_tags(html_content)
         receipient_list = [booked_package.user.email, settings.ADMIN_EMAIL]
         sender = settings.EMAIL_FROM
+        # Send email in background
+        send_mail(
+            subject=subject,
+            message=plain_text,
+            from_email=sender,
+            recipient_list=receipient_list,
+            html_message=html_content
+        )
         
-        EmailThread(subject, html_content, receipient_list, sender).start()
         return render(request, 'public/payment/success.html', {'is_footer_required': False})
     
     except Exception as e:
@@ -1829,14 +1843,57 @@ def reservation_details(request, id):
                 'features': list(group)
             })
 
-    # Group newly_added_features by section
+    # Initialize the grouped list
     newly_added_features_grouped = []
+
     if newly_added_features.exists():
-        for key, group in groupby(newly_added_features.order_by('features__section__name'), key=lambda x: x.features.section.name if x.features else None):
-            newly_added_features_grouped.append({
-                'section': key,
-                'features': list(group)
-            })
+        # Get all feature IDs from the newly added features
+        feature_ids = [f.feature_id for f in newly_added_features if f.feature_id]
+        
+        # Determine which FeatureModel to use based on package type
+        if package_type == 'roller':
+            FeatureModel = PackageFeatureRoller
+        elif package_type == 'builder':
+            FeatureModel = PackageFeatureBuilder
+        else:
+            FeatureModel = PackageFeatureRollerPlus
+        
+        # Get all features with their sections in one query
+        features = FeatureModel.objects.filter(id__in=feature_ids).select_related('section')
+        
+        # Create a mapping of feature_id to feature object
+        feature_map = {str(feature.id): feature for feature in features}
+        
+        # Organize features by section
+        sections_map = {}
+        for reservation_feature in newly_added_features:
+            if reservation_feature.feature_id in feature_map:
+                feature = feature_map[reservation_feature.feature_id]
+                section_name = feature.section.name if feature.section else 'Other Features'
+                
+                # Create a modified feature object with both reservation and feature data
+                enhanced_feature = {
+                    'features': feature,  # The actual feature object with .name attribute
+                    'amount': reservation_feature.amount  # The amount from the reservation
+                }
+                
+                if section_name not in sections_map:
+                    sections_map[section_name] = []
+                sections_map[section_name].append(enhanced_feature)
+        
+        # Convert the map to the required grouped structure
+        newly_added_features_grouped = [
+            {
+                'section': section_name,
+                'features': features_list
+            }
+            for section_name, features_list in sections_map.items()
+        ]
+        
+        # Sort the sections alphabetically
+        newly_added_features_grouped.sort(key=lambda x: x['section'])
+
+    print("Newly Added Features Grouped:", newly_added_features_grouped)
     context = {
         'user_details': request.user,
         'booked_package': booked_package,
@@ -2053,17 +2110,14 @@ def build_payment_success(request, id, sessionId):
         plain_text = strip_tags(html_content)
         receipient_list = [booked_package.user.email, settings.ADMIN_EMAIL]
         sender = settings.EMAIL_FROM
-        
-        EmailThread(subject, html_content, receipient_list, sender).start()
-        
-        # send_mail(
-        #     subject=subject,  
-        #     message=plain_text,
-        #     from_email=settings.EMAIL_FROM,
-        #     recipient_list=[booked_package.user.email],  
-        #     fail_silently=False,
-        #     html_message=html_content
-        # )
+        # Send email in background
+        send_mail(
+            subject=subject,
+            message=plain_text,
+            from_email=sender,
+            recipient_list=receipient_list,
+            html_message=html_content
+        )
 
         if not sessionId:
             raise ValueError("No session ID provided")
@@ -2447,12 +2501,14 @@ def handle_pay_all_features(request, session, booked_package):
         booked_package=booked_package,
         status='pending'
     )
-    
+    total_amount = 0
     for feature in features:
         feature.status = 'completed'
         feature.save()
         create_payment_record(feature, session.payment_intent)
-    
+        total_amount += float(feature.amount)
+    # Send confirmation email for all features
+    send_confirmation_email(request, booked_package, features, total_amount)
     messages.success(request, f"Payment successful! {features.count()} features added")
 
 def handle_single_feature(request, session, booked_package):
@@ -2463,11 +2519,10 @@ def handle_single_feature(request, session, booked_package):
         booked_package=booked_package,
         status='pending'
     )
-    
     feature.status = 'completed'
     feature.save()
     create_payment_record(feature, session.payment_intent)
-    send_confirmation_email(request, booked_package, feature)
+    send_confirmation_email(request, booked_package, [feature], float(feature.amount))
     messages.success(request, f"Payment successful! Feature added")
 
 def create_payment_record(feature, payment_intent):
@@ -2480,27 +2535,30 @@ def create_payment_record(feature, payment_intent):
         transaction_id=payment_intent
     )
 
-def send_confirmation_email(request, booked_package, feature):
-    """Send payment confirmation email"""
-    subject = "Feature Payment Confirmation"
+def send_confirmation_email(request, booked_package, features, total_amount):
+    """Send payment confirmation email for one or multiple features"""
+    subject = "Feature Payment Confirmation - GEN-Z 40"
     context = {
         'user': request.user,
         'booked_package': booked_package,
-        'feature': feature,
-        'amount': feature.amount,
-        'domain': get_current_site(request).domain
+        'features': features,  # List of ReservationNewFeatures
+        'total_amount': total_amount,
+        'domain': get_current_site(request).domain,
+        'now': timezone.now(),
     }
-    
-    html_content = render_to_string('email/payment_successful.html', context)
-    email = EmailMessage(
-        subject,
-        strip_tags(html_content),
-        settings.EMAIL_FROM,
-        [booked_package.user.email, settings.ADMIN_EMAIL],
+    html_content = render_to_string('email/feature_payment_successful.html', context)
+    plain_text = strip_tags(html_content)
+    receipient_list = [booked_package.user.email, settings.ADMIN_EMAIL]
+    sender = settings.EMAIL_FROM
+    send_mail(
+        subject=subject,
+        message=plain_text,
+        from_email=sender,
+        recipient_list=receipient_list,
+        html_message=html_content
     )
-    email.send()
 
-    # Dynamic Package Page
+# Dynamic Package Page
 from django.shortcuts import render, get_object_or_404
 from django.utils.text import slugify
 from decimal import Decimal

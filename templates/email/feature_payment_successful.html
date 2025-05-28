@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Feature Payment Successful - GEN-Z 40</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f6f8fa;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            padding: 32px 32px 24px 32px;
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 16px;
+        }
+        .header img {
+            width: 120px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(43,108,176,0.12);
+        }
+        .title {
+            color: #1a202c;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+        .subtitle {
+            color: #4a5568;
+            font-size: 20px;
+            margin-bottom: 24px;
+        }
+        .details {
+            background: linear-gradient(90deg,#e3f0ff 0%,#f8fafc 100%);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(43,108,176,0.06);
+        }
+        .details strong {
+            color: #2b6cb0;
+        }
+        .footer {
+            text-align: center;
+            color: #718096;
+            font-size: 14px;
+            margin-top: 32px;
+        }
+        .btn {
+            display: inline-block;
+            background: linear-gradient(90deg,#2b6cb0 0%,#205080 100%);
+            color: #fff;
+            padding: 14px 38px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 18px;
+            transition: background 0.2s;
+            font-size: 18px;
+            box-shadow: 0 2px 8px rgba(43,108,176,0.10);
+        }
+        .btn:hover {
+            background: #205080;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(43,108,176,0.04);
+        }
+        th, td {
+            padding: 12px 8px;
+            text-align: left;
+        }
+        th {
+            background: #2b6cb0;
+            color: #fff;
+            font-size: 16px;
+        }
+        td {
+            padding: 10px 8px;
+            font-size: 15px;
+        }
+        tr {
+            border-bottom: 1px solid #e2e8f0;
+        }
+        tfoot tr {
+            font-weight: bold;
+            border-top: 2px solid #2b6cb0;
+            background: #f1f5f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="https://genz40.com/static/images/genz/mark1-builder4.png" alt="GEN-Z 40 Logo">
+            <div class="title">Feature Payment Successful!</div>
+            <div class="subtitle">Thank you for your payment.<br>Your features have been added to your reservation.</div>
+        </div>
+        <div class="details">
+            <p style="margin-bottom:8px;"><strong>Customer:</strong> <span style="color:#205080;">{{ user.get_full_name|default:user.email }}</span></p>
+            <p style="margin-bottom:8px;"><strong>Reservation Number:</strong> <span style="color:#205080;">{{ booked_package.reservation_number }}</span></p>
+            <p style="margin-bottom:8px;"><strong>Car Model:</strong> <span style="color:#205080;">{{ booked_package.car_model.title }}</span></p>
+            <p style="margin-bottom:8px;"><strong>Date:</strong> <span style="color:#205080;">{{ now|date:'F d, Y' }}</span></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="text-align:left;">Feature</th>
+                        <th style="text-align:right;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for f in features %}
+                    <tr>
+                        <td>{{ f.features }}</td>
+                        <td style="text-align:right;color:#2b6cb0;">${{ f.amount }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>Total Paid</td>
+                        <td style="text-align:right;color:#205080;">${{ total_amount }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div style="text-align:center;margin-top:32px;">
+            <a href="https://{{ domain }}/car/reservation/{{ booked_package.reservation_number }}" class="btn">View My Configurations</a>
+        </div>
+        <div class="footer" style="margin-top:40px;">
+            <div style="margin-bottom:8px;">If you have any questions, reply to this email or contact our support team.</div>
+            <div style="color:#b0b7c3;">&copy; {{ now|date:'Y' }} GEN-Z 40. All rights reserved.</div>
+        </div>
+    </div>
+</body>
+</html>
