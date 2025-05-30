@@ -2,12 +2,18 @@
 {% load static %}
 {% load frontend_custom_filters %}
 {% block header %}
-<style>
-    /* Global Styles */
+<style>    /* Global Styles */
     body {
         background-color: #000;
         color: #fff;
         font-family: Arial, sans-serif;
+        margin-top: 4rem;
+    }
+
+    @media screen and (max-width: 768px) {
+        body {
+            margin: 0;
+        }
     }
 
     /* Utility Classes */
@@ -144,7 +150,7 @@
 
     /* Community Section */
     .community-section {
-        padding: 3rem 1rem;
+        padding: 1rem 1rem;
     }
     .car-card {
         background: #000;
@@ -405,8 +411,10 @@
 {% endblock header %}
 
 {% block content %}
+{% comment %} {% include 'public/component/topbar_component.html' %} {% endcomment %}
 <div class="position-relative text-white overflow-hidden rounded" style="background:black;">
-{% include 'public/component/carousel_component.html' %}
+{% comment %} {% include 'public/component/carousel_component.html' %} {% endcomment %}
+{% include 'public/component/banner_carousel_component.html' %}
 <!-- Second Section -->
 {% comment %} <section class="services-section text-white bg-black">
     <div class="container">

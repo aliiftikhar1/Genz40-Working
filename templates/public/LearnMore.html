@@ -24,7 +24,7 @@
         display: flex;
         z-index: 500;
         position: fixed;
-        top: 5rem;
+        top: 8rem;
         left: 0;
         justify-content: space-between;
         align-items: center;
@@ -32,7 +32,7 @@
     }
     @media (max-width: 768px) {
         .top-btns-bar {
-            top: 3.2rem;
+            top: 8.2rem;
             padding: 6px 2vw;
         }
         .prominent-btn {
@@ -42,11 +42,11 @@
     }
     @media (max-width: 576px) {
         .top-btns-bar {
-            top: 5rem;
+            top: 8rem;
             padding: 4px 1vw;
         }
         .prominent-btn {
-            font-size: 0.75rem !important;
+            font-size: 0.6rem !important;
             padding: 5px 6px !important;
         }
     }
@@ -381,18 +381,23 @@
     @media (max-width: 992px) {
         .gallery-grid {
             grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            padding: 15px 0;
         }
     }
     @media (max-width: 768px) {
         .gallery-grid {
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            gap: 10px;
+            padding: 10px 0;
         }
     }
     @media (max-width: 576px) {
         .gallery-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
             gap: 8px;
+            padding: 8px 0;
+            margin: 0 -8px;
         }
     }
 
@@ -541,14 +546,28 @@
         background: transparent;
     }
 
-    #imageModal .btn-close {
-        filter: invert(1);
-        opacity: 0.8;
-        transition: opacity 0.2s;
+    #imageModal .modal-header .btn {
+        opacity: 0.7;
+        transition: all 0.3s;
+        background-color: rgba(0, 0, 0, 0.5);
+        border: none;
+        padding: 0.7rem;
+        border-radius: 4px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    #imageModal .btn-close:hover {
+    #imageModal .modal-header .btn:hover {
         opacity: 1;
+        background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    #imageModal .modal-header .btn i {
+        color: white;
+        font-size: 1.2rem;
     }
 
     #modalImage {
@@ -660,46 +679,111 @@
         padding: 10px 0 !important;
     }
     .gallery-grid-item {
-        border-radius: 14px !important;
+        border-radius: 8px !important;
         overflow: hidden;
         background: #fff;
         box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-        margin-bottom: 8px !important;
-        transition: box-shadow 0.2s, transform 0.2s;
+        margin-bottom: 0 !important;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    .gallery-grid-item:active {
+        transform: scale(0.97);
+    }
+    @media (max-width: 576px) {
+        .gallery-grid-item {
+            border-radius: 6px !important;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
     }
     .gallery-grid-item img,
     .gallery-img {
         width: 100%;
-        height: 165px !important;
-        border-radius: 14px;
+        height: 180px !important;
+        border-radius: 8px;
         object-fit: cover;
         background: #eee;
+        transition: transform 0.3s ease;
+    }
+    @media (max-width: 992px) {
+        .gallery-grid-item img,
+        .gallery-img {
+            height: 160px !important;
+        }
     }
     @media (max-width: 768px) {
         .gallery-grid-item img,
         .gallery-img {
-            height: 130px !important;
+            height: 140px !important;
         }
     }
-    @media (max-width: 480px) {
+    @media (max-width: 576px) {
         .gallery-grid-item img,
         .gallery-img {
-            height: 95px !important;
-            min-height: 80px;
+            height: 120px !important;
+            min-height: 120px;
+            border-radius: 6px;
         }
     }
 
-    /* Gallery tab buttons: easier to tap, no overflow */
+    /* Gallery tab buttons with 2 per row mobile layout */
     @media (max-width: 576px) {
         .nav-tabs {
-            flex-wrap: wrap;
-            font-size: 0.95rem;
-            margin-bottom: 22px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            font-size: 0.9rem;
+            margin: 0 0 16px 0;
+            border-bottom: none;
+            padding: 8px;
+            background: #f8f9fa;
+            width: 100%;
+        }
+        .nav-tabs .nav-item {
+            width: 100%;
+            margin: 0;
         }
         .nav-tabs .nav-link {
-            padding: 11px 7px;
-            min-width: 0;
-            font-size: 0.98rem;
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 0.9rem;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            margin: 0;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            color: #495057;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            width: 100%;
+        }
+        .nav-tabs .nav-link:hover {
+            background: #f8f9fa;
+            border-color: #dee2e6;
+        }
+        .nav-tabs .nav-link.active {
+            background: #0d6efd;
+            color: white;
+            border-color: #0d6efd;
+            box-shadow: 0 2px 5px rgba(13, 110, 253, 0.2);
+        }
+        .nav-tabs .nav-link.active .badge-tab {
+            background: white;
+            color: #0d6efd;
+        }
+        .badge-tab {
+            font-size: 0.75rem;
+            padding: 4px 6px;
+            margin-left: 6px;
+            border-radius: 6px;
+            background: #e9ecef;
+            font-weight: 600;
+        }
+        .tab-icon {
+            font-size: 0.9rem;
+            margin-right: 4px;
         }
     }
 
@@ -732,6 +816,32 @@
     button {
         font-size: 1rem;
     }
+
+    /* Modal navigation buttons */
+    #prevImage, #nextImage {
+        opacity: 0.7;
+        transition: opacity 0.3s;
+        background-color: rgba(255, 255, 255, 0.2);
+        border: none;
+        padding: 1rem 0.8rem;
+        border-radius: 4px;
+    }
+
+    #prevImage:hover, #nextImage:hover {
+        opacity: 1;
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+
+    #prevImage i, #nextImage i {
+        color: white;
+    }
+
+    @media (max-width: 576px) {
+        #prevImage, #nextImage {
+            padding: 0.8rem 0.6rem;
+        }
+    }
+
     /* --- End: Custom Responsive & Gallery Styles --- */
 </style>
 {% endblock header %}
@@ -854,15 +964,21 @@
     <div class="container">
         <ul class="nav nav-tabs" id="galleryTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="body-tab" data-bs-toggle="tab" data-bs-target="#body-pane" type="button" role="tab" aria-controls="body-pane" aria-selected="true">
-                    <i class="fas fa-car tab-icon"></i>Body
+                <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all-pane" type="button" role="tab" aria-controls="all-pane" aria-selected="true">
+                    <i class="fas fa-car tab-icon"></i>All
+                    <span class="badge rounded-pill badge-tab" id="all-count">0</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link " id="body-tab" data-bs-toggle="tab" data-bs-target="#body-pane" type="button" role="tab" aria-controls="body-pane" aria-selected="true">
+                    <i class="fas fa-car tab-icon"></i>White Body
                     <span class="badge rounded-pill badge-tab" id="body-count">0</span>
                 </button>
             </li>
 
             <li class="nav-item" role="presentation">
                 <button class="nav-link " id="body-tab" data-bs-toggle="tab" data-bs-target="#intermediate-pane" type="button" role="tab" aria-controls="intermediate-pane" aria-selected="true">
-                    <i class="fas fa-car tab-icon"></i>Intemediate
+                    <i class="fas fa-car tab-icon"></i>Intermediate Body
                     <span class="badge rounded-pill badge-tab" id="intermediate-count">0</span>
                 </button>
             </li>
@@ -876,7 +992,10 @@
         </ul>
         
         <div class="tab-content" id="galleryTabContent">
-            <div class="tab-pane fade show active" id="body-pane" role="tabpanel" aria-labelledby="body-tab">
+            <div class="tab-pane fade show active" id="all-pane" role="tabpanel" aria-labelledby="all-tab">
+                <div class="gallery-grid" id="all-container"></div>
+            </div>
+            <div class="tab-pane fade " id="body-pane" role="tabpanel" aria-labelledby="body-tab">
                 <div class="gallery-grid" id="body-container"></div>
             </div>
            
@@ -895,10 +1014,18 @@
         <div class="modal-dialog modal-fullscreen">
             <div class="modal-content bg-black">
                 <div class="modal-header border-0">
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn btn-dark position-absolute end-0 me-3 mt-3" data-bs-dismiss="modal" aria-label="Close" style="z-index: 1000;">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
                 <div class="modal-body d-flex align-items-center justify-content-center p-0">
+                    <button class="btn btn-dark position-absolute start-0 ms-3" id="prevImage" style="z-index: 1000;">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
                     <img src="" alt="Full Screen Image" class="img-fluid" id="modalImage" style="max-height: 100vh; object-fit: contain;">
+                    <button class="btn btn-dark position-absolute end-0 me-3" id="nextImage" style="z-index: 1000;">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
                 <div class="modal-footer border-0 justify-content-center bg-black">
                     <span class="badge bg-light text-dark" id="modalCategory"></span>
@@ -1081,9 +1208,8 @@
             </div>
         </div>
     </div>
-</div>
 
-{{ GalleryImages|json_script:"gallery-images" }}
+    {{ GalleryImages|json_script:"gallery-images" }}
 
 {% endblock content %}
 
@@ -1091,25 +1217,78 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const images = JSON.parse(document.getElementById('gallery-images').textContent);
+        let currentImageIndex = 0;
+        let currentCategoryImages = [];
+        
         initGallery(images);
         updateTabCounts(images);
+        
+        // Handle next/previous navigation
+        document.getElementById('nextImage').addEventListener('click', function(e) {
+            e.stopPropagation();
+            navigateImages('next');
+        });
+        
+        document.getElementById('prevImage').addEventListener('click', function(e) {
+            e.stopPropagation();
+            navigateImages('prev');
+        });
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            const modal = document.getElementById('imageModal');
+            if (modal.classList.contains('show')) {
+                if (e.key === 'ArrowRight') {
+                    navigateImages('next');
+                } else if (e.key === 'ArrowLeft') {
+                    navigateImages('prev');
+                }
+            }
+        });
+        
+        function navigateImages(direction) {
+            if (currentCategoryImages.length === 0) return;
+            
+            if (direction === 'next') {
+                currentImageIndex = (currentImageIndex + 1) % currentCategoryImages.length;
+            } else {
+                currentImageIndex = (currentImageIndex - 1 + currentCategoryImages.length) % currentCategoryImages.length;
+            }
+            
+            const newImage = currentCategoryImages[currentImageIndex];
+            document.getElementById('modalImage').src = newImage.url;
+            document.getElementById('modalCategory').textContent = capitalizeFirstLetter(newImage.label || '');
+        }
         
         function addModalEvents() {
             document.querySelectorAll('.gallery-grid-item').forEach(item => {
                 item.addEventListener('click', function() {
                     const img = this.querySelector('img');
                     const category = this.dataset.category;
+                    const currentTabId = document.querySelector('.tab-pane.active').id.replace('-pane', '');
+                    const currentContainer = document.querySelector(`#${currentTabId}-container`);
+                    
+                    // Get all visible images in the current tab
+                    const visibleItems = Array.from(currentContainer.querySelectorAll('.gallery-grid-item'));
+                    
+                    // Find the index of clicked image among visible images
+                    currentImageIndex = visibleItems.findIndex(gridItem => gridItem === this);
+                    
+                    // Update current category images based on the visible images in active tab
+                    currentCategoryImages = visibleItems.map(item => ({
+                        url: item.querySelector('img').src,
+                        label: item.dataset.category
+                    }));
                     
                     // Set modal content
                     document.getElementById('modalImage').src = img.src;
-                    document.getElementById('modalCategory').textContent = 
-                        capitalizeFirstLetter(category);
+                    document.getElementById('modalCategory').textContent = capitalizeFirstLetter(category);
                     
                     // Show the modal
                     const modal = new bootstrap.Modal(document.getElementById('imageModal'));
                     modal.show();
 
-                    // Optionally reset zoom state if you use zoom
+                    // Reset zoom state
                     const modalImg = document.getElementById('modalImage');
                     if (modalImg.classList.contains('zoomed')) {
                         modalImg.classList.remove('zoomed');
@@ -1117,26 +1296,51 @@
                 });
             });
 
-            // Optional: Zoom functionality for modal image
+            // Zoom functionality for modal image
             const modalImg = document.getElementById('modalImage');
             if (modalImg) {
-                modalImg.onclick = function () {
-                    this.classList.toggle('zoomed');
+                modalImg.onclick = function(e) {
+                    // Only toggle zoom if not clicking navigation buttons
+                    if (e.target === this) {
+                        this.classList.toggle('zoomed');
+                    }
                 };
             }
         }
+
+        // Tab change event listener
+        document.querySelectorAll('button[data-bs-toggle="tab"]').forEach(button => {
+            button.addEventListener('click', function() {
+                const newCategory = this.getAttribute('data-bs-target').replace('#', '').replace('-pane', '');
+                currentCategoryImages = newCategory === 'all' ? images : 
+                    images.filter(img => (img.label || '').toLowerCase() === newCategory);
+                currentImageIndex = 0;
+            });
+        });
 
         function initGallery(images) {
             // Clear all containers
             document.getElementById('body-container').innerHTML = '';
             document.getElementById('chassis-container').innerHTML = '';
             document.getElementById('intermediate-container').innerHTML = '';
+            document.getElementById('all-container').innerHTML = '';
+
+            // Create a Set to track processed image IDs
+            const processedIds = new Set();
 
             images.forEach(image => {
                 const galleryItem = createGalleryItem(image);
                 const label = (image.label || '').toLowerCase();
+                
+                // Add to category-specific container
                 if (document.getElementById(`${label}-container`)) {
                     document.getElementById(`${label}-container`).appendChild(galleryItem);
+                }
+
+                // Add to all-container only if not already processed
+                if (!processedIds.has(image.id)) {
+                    document.getElementById('all-container').appendChild(galleryItem.cloneNode(true));
+                    processedIds.add(image.id);
                 }
             });
 
@@ -1161,10 +1365,12 @@
                 body: images.filter(img => (img.label || '').toLowerCase() === 'body').length,
                 intermediate: images.filter(img => (img.label || '').toLowerCase() === 'intermediate').length,
                 chassis: images.filter(img => (img.label || '').toLowerCase() === 'chassis').length,
+                all: images.length, // Total count for all images
             };
             document.getElementById('body-count').textContent = counts.body;
             document.getElementById('intermediate-count').textContent = counts.intermediate;
             document.getElementById('chassis-count').textContent = counts.chassis;
+            document.getElementById('all-count').textContent = counts.all; // Update all count
         }
 
         function capitalizeFirstLetter(string) {
@@ -1172,7 +1378,7 @@
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
 
-        // Optional: Clean up modal image on close
+        // Clean up modal image on close
         const imageModal = document.getElementById('imageModal');
         if (imageModal) {
             imageModal.addEventListener('hidden.bs.modal', function () {

@@ -1,0 +1,207 @@
+<style>
+    /* Enhanced Carousel Styles */
+    .carousel-container {
+        position: relative;
+        width: 80%; /* Reduced width */
+        height: 60vh;
+        margin: 0 auto; /* Center the carousel horizontally */
+        margin-bottom: 20px; /* Space below the carousel */
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    
+
+    .carousel-wrapper {
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .carousel-slide {
+        min-width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    .carousel-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: brightness(0.9);
+    }
+
+    .carousel-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        border: none;
+        padding: 15px;
+        cursor: pointer;
+        z-index: 10;
+        border-radius: 50%;
+        transition: background 0.3s ease;
+    }
+
+    .carousel-nav:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .carousel-nav.prev {
+        left: 15px;
+    }
+
+    .carousel-nav.next {
+        right: 15px;
+    }
+
+    /* Updated Carousel Indicators to Lines */
+    .carousel-indicators {
+        position: absolute;
+        bottom: 0px;
+        left: 35%;
+        transform: translateX(-50%); /* Ensure perfect centering */
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+    }
+
+    .carousel-indicators button {
+        width: 30px;
+        height: 4px;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.5);
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .carousel-indicators button.active {
+        background: white;
+        transform: scaleX(1.5);
+    }
+
+    /* Media query for mobile screens */
+    @media screen and (max-width: 768px) {
+        .carousel-container {
+            width: 100%;
+            height: 25vh;
+            border-radius: 0;
+        }
+
+        .carousel-slide {
+            height: 25vh;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #000;
+        }
+    }
+</style>
+
+<div class="carousel-container">
+    <div class="carousel-wrapper" id="banner-carousel-wrapper">
+        <!-- Slides will be dynamically inserted here -->
+    </div>
+
+    <!-- Navigation Buttons -->
+    {% comment %} <button class="carousel-nav prev" onclick="previousBannerSlide()">&#10094;</button>
+    <button class="carousel-nav next" onclick="nextBannerSlide()">&#10095;</button> {% endcomment %}
+
+    <!-- Indicators -->
+    <div class="carousel-indicators" id="banner-carousel-indicators">
+        <!-- Indicators will be dynamically inserted here -->
+    </div>
+</div>
+
+<script>
+    const bannerImages = [
+        {% for banner in banners %}
+        { src: '{{ banner.image.url }}', alt: '{{ banner.title }}' },
+        {% endfor %}
+    ];
+
+    let currentBannerIndex = 0;
+    let autoPlayInterval;
+    let userInteractionTimeout;
+
+    function renderBannerCarousel() {
+        const wrapper = document.getElementById('banner-carousel-wrapper');
+        const indicators = document.getElementById('banner-carousel-indicators');
+
+        wrapper.innerHTML = '';
+        indicators.innerHTML = '';
+
+        bannerImages.forEach((image, index) => {
+            const slide = document.createElement('div');
+            slide.className = 'carousel-slide';
+            slide.innerHTML = `<img src="${image.src}" alt="${image.alt}">`;
+            wrapper.appendChild(slide);
+
+            const indicator = document.createElement('button');
+            indicator.className = index === 0 ? 'active' : '';
+            indicator.onclick = () => goToBannerSlide(index);
+            indicators.appendChild(indicator);
+        });
+
+        updateBannerCarousel();
+    }
+
+    function updateBannerCarousel() {
+        const wrapper = document.getElementById('banner-carousel-wrapper');
+        const indicators = document.querySelectorAll('#banner-carousel-indicators button');
+
+        wrapper.style.transform = `translateX(-${currentBannerIndex * 100}%)`;
+
+        indicators.forEach((indicator, index) => {
+            indicator.classList.toggle('active', index === currentBannerIndex);
+        });
+    }
+
+    function nextBannerSlide() {
+        currentBannerIndex = (currentBannerIndex + 1) % bannerImages.length;
+        updateBannerCarousel();
+    }
+
+    function previousBannerSlide() {
+        currentBannerIndex = (currentBannerIndex - 1 + bannerImages.length) % bannerImages.length;
+        updateBannerCarousel();
+    }
+
+    function goToBannerSlide(index) {
+        currentBannerIndex = index;
+        updateBannerCarousel();
+    }
+
+    function startAutoPlay() {
+        autoPlayInterval = setInterval(nextBannerSlide, 3000); // Change image every 3 seconds
+    }
+
+    function stopAutoPlay() {
+        clearInterval(autoPlayInterval);
+    }
+
+    function resetAutoPlay() {
+        stopAutoPlay();
+        clearTimeout(userInteractionTimeout);
+        userInteractionTimeout = setTimeout(startAutoPlay, 3000); // Restart autoplay after 3 seconds of inactivity
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderBannerCarousel();
+        startAutoPlay();
+
+        const carouselContainer = document.querySelector('.carousel-container');
+        carouselContainer.addEventListener('mouseenter', stopAutoPlay);
+        carouselContainer.addEventListener('mouseleave', startAutoPlay);
+
+        const indicators = document.querySelectorAll('.carousel-indicators button');
+        indicators.forEach(indicator => {
+            indicator.addEventListener('click', resetAutoPlay);
+        });
+    });
+</script>

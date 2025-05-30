@@ -1,6 +1,9 @@
 {% load static %}
+
+{% include 'public/component/topbar_component.html' %}
+
 <!-- Navbar Start Mobile-->
-<header id="topnav" class="defaultscroll sticky d-lg-none">
+<header id="topnav" class="defaultscroll sticky d-lg-none" style="border-top: 1px solid white;" >
     <div class="container">
         <!-- Logo container-->
         <a class="logo" href="{% url 'index' %}">
@@ -8,8 +11,8 @@
                 <span class="l-dark logo-font">GEN-Z 40 </span>
                 <span class="l-light logo-font text-white">GEN-Z 40 </span>
             </span>
-            <span class="logo-dark-mode logo-font text-white" style="font-size: 18px;">GEN-Z 40</span>
-            <span class="w-10 h-8" style="background-color: #ffff; padding: 1px; margin-left: 5px; margin-right: 10px"></span>
+            {% comment %} <span class="logo-dark-mode logo-font text-white" style="font-size: 18px;">GEN-Z 40</span>
+            <span class="w-10 h-8" style="background-color: #ffff; padding: 1px; margin-left: 5px; margin-right: 10px"></span> {% endcomment %}
             <span>
                 <img src="{% static 'images/Alvi-Automobile-Logo/alvi-logo-2.jpg' %}" height="28" class="" alt="">
             </span>
@@ -72,7 +75,7 @@
                     {% for item in nav_items %}
                         <li class="sub-menu-item {% if item.active_children.exists %}dropdown{% endif %}">
                             <a class="nav-link {% if item.active_children.exists %}dropdown-toggle{% endif %}"
-                            href="{% if item.get_absolute_url %}{% url 'car_configurator_slug' item.slug %}{% else %}{% url 'index' %}{% endif %}"
+                            href="{% if item.get_absolute_url %}{% url 'learn_more' item.slug %}{% else %}{% url 'index' %}{% endif %}"
                             {% if item.active_children.exists %}id="navbarDropdown{{ forloop.counter }}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"{% endif %}>
                                 {{ item.title }}
                             </a>
@@ -93,15 +96,15 @@
 <!-- Navbar End -->
 
 <!-- Navbar Start web-->
-<header id="topnav" class="defaultscroll sticky d-none d-lg-block bg-black">
+<header id="topnav" class="defaultscroll sticky d-none d-lg-block bg-black" style="border-top: 1px solid white;">
     <div class="container-fluid">
         <!-- Logo container-->
         <a class="logo ms-5" href="{% url 'index' %}">
             
-            <span class="logo-dark-mode logo-font text-white ms-5">
+            {% comment %} <span class="logo-dark-mode logo-font text-white ms-5">
                 GEN-Z 40 
             </span>
-            <span class="w-10 h-10" style="background-color: #ffff; padding: 1px; margin-left: 5px; margin-right: 10px"></span>
+            <span class="w-10 h-10" style="background-color: #ffff; padding: 1px; margin-left: 5px; margin-right: 10px"></span> {% endcomment %}
             <span>
                 <img src="{% static 'images/Alvi-Automobile-Logo/alvi-logo-2.jpg' %}" height="32" class="" alt="">
             </span>
@@ -158,7 +161,7 @@
                 {% for item in nav_items %}
                 <li class="sub-menu-item {% if item.active_children.exists %}dropdown{% endif %}">
                     <a class="nav-link {% if item.active_children.exists %}dropdown-toggle{% endif %}"
-                    href="{% if item.get_absolute_url %}{% url 'car_configurator' item.slug %}{% else %}{% url 'index' %}{% endif %}"
+                    href="{% if item.get_absolute_url %}{% url 'learn_more' item.slug %}{% else %}{% url 'index' %}{% endif %}"
                     {% if item.active_children.exists %}id="navbarDropdown{{ forloop.counter }}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"{% endif %}>
                         {{ item.title }}
                     </a>

@@ -19,7 +19,7 @@ from django.urls import path
 from django.views import View
 from django.urls import reverse
 from backend.models import BookedPackage, ReservationNewFeatures, ReservationFeaturesPayment, DynamicPackages, FeaturesSection, PackageFeatureRoller, PackageFeatureRollerPlus, PackageFeatureBuilder
-from backend.models import LearnMoreContent
+from backend.models import LearnMoreContent, Banner
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
@@ -68,6 +68,9 @@ def index(request):
     section_2 = get_object_or_404(PostLandingPageImages, section=2)
     section_3 = get_object_or_404(PostLandingPageImages, section=3)
 
+    # Fetch banner data
+    banners = Banner.objects.all()
+
     car_list = []
     car_list.append({
             'image': section_1.image.url,
@@ -92,21 +95,22 @@ def index(request):
         })
     items = PostNavItem.objects.filter(is_active=True).order_by('position')
     random_password = generate_random_password()
-    # ip = get_country_info(request)
-    # response = requests.get(f'https://ipinfo.io/{ip}/json')
-    # data = response.json()
-    # country_code = data.get('country')
-    # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
-    # country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+    ip = get_country_info(request)
+    response = requests.get(f'https://ipinfo.io/{ip}/json')
+    data = response.json()
+    country_code = data.get('country')
+    country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
+    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
     context = {
-        # 'country_code': country_code,
-        # 'country_flag_url': country_flag_url,
+        'country_code': country_code,
+        'country_flag_url': country_flag_url,
         'section_1': section_1,
         'section_2': section_2,
         'section_3': section_3,
         'car_sections': car_list,
         'random_password': random_password,
-        'items': items
+        'items': items,
+        'banners': banners  # Add banner to context
     }
 
     return render(request, 'public/index.html', context)
@@ -117,12 +121,12 @@ def home(request):
     section_3 = get_object_or_404(PostLandingPageImages, section=3)
     items = PostNavItem.objects.filter(is_active=True).order_by('position')
     random_password = generate_random_password()
-    # ip = get_country_info(request)
-    # response = requests.get(f'https://ipinfo.io/{ip}/json')
-    # data = response.json()
-    # country_code = data.get('country')
-    # # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
-    # country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+    ip = get_country_info(request)
+    response = requests.get(f'https://ipinfo.io/{ip}/json')
+    data = response.json()
+    country_code = data.get('country')
+    # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
+    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
     car_list = []
     car_list.append({
             'image': section_1.image.url,
@@ -145,15 +149,17 @@ def home(request):
             'engine': '2840 cc',
             'acceleration': '4.4 secs',
         })
+    banners = Banner.objects.all()
     context = {
-        # 'country_code': country_code,
-        # 'country_flag_url': country_flag_url,
+        'country_code': country_code,
+        'country_flag_url': country_flag_url,
         'section_1': section_1,
         'section_2': section_2,
         'section_3': section_3,
         'car_sections': car_list,
         'random_password': random_password,
-        'items': items
+        'items': items,
+        'banners': banners  # Add banner to context
     }
 
     return render(request, 'public/index.html', context)

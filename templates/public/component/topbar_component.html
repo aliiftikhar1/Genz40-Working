@@ -1,0 +1,361 @@
+{% load static %}
+<style>
+    :root {
+        --topbar-height-desktop: 52px;
+        --topbar-height-mobile: 52px;
+        --transition-timing: 0.3s ease-in-out;
+    }
+
+    /* Top Bar Container */
+    #topBarContainer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1050;
+        background-color: #000000; /* Changed to pure black */
+        transition: transform var(--transition-timing);
+        height: var(--topbar-height-desktop);
+    }
+
+    #topBarContainer.hidden {
+        transform: translateY(-100%);
+    }
+
+    /* Top Bar Styles */
+    .top-bar {
+        height: 100%;
+        color: white;
+    }
+
+    .top-bar-container {
+        max-width: 95%;
+        margin: 0 auto;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0 1rem; /* Only left and right padding */
+    }
+
+    /* Contact Info Styles */
+    .contact-info {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        flex-shrink: 0;
+        color: #ffffff; /* Pure white text */
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        white-space: nowrap;
+        color: #ffffff; /* Pure white text */
+    }
+
+    .contact-item a {
+        color: #ffffff; /* Pure white text for links */
+    }
+    .email-form {
+        padding-left:1rem;
+        padding-right:1rem;
+        position: relative;
+            display: flex;
+        }
+
+    /* Email Form Styles */
+    .email-input {
+        background-color: rgba(255, 255, 255, 0.1); /* Slightly lighter input background */
+        border: 1px solid #ffffff33;
+        border-radius: 9999px;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        width: 20rem;
+        color: #ffffff;
+        transition: all var(--transition-timing);
+    }
+
+    .email-input:focus {
+        outline: none;
+        border-color: #ffffff;
+        background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .email-input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .submit-btn {
+        position: absolute;
+        right: 1rem;
+        background-color: #ffffff; /* White button */
+        color: #000000; /* Black text */
+        padding: 0.5rem 1.5rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all var(--transition-timing);
+        white-space: nowrap;
+    }
+
+    .submit-btn:hover {
+        background-color: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 4px 6px -1px rgba(255, 255, 255, 0.1);
+    }
+
+    /* Close button styles */
+    .close-btn-div{
+        width:3rem;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+    .close-btn {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #ffffff; /* White close button */
+        cursor: pointer;
+        padding: 0.5rem;
+        font-size: 1.25rem;
+        transition: color var(--transition-timing);
+        z-index: 1051;
+    }
+
+    .close-btn:hover {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Sliding Text Styles */
+    .sliding-text-container {
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .sliding-text {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        white-space: nowrap;
+        animation: slideText 20s linear infinite;
+        color: #ffffff;
+        font-size: 0.9rem;
+        letter-spacing: 0.5px;
+    }
+
+    @keyframes slideText {
+        0% {
+            transform: translateX(100%);
+        }
+        100% {
+            transform: translateX(-100%);
+        }
+    }
+
+    /* Update container styles to accommodate sliding text */
+    .top-bar-container {
+        max-width: 95%;
+        margin: 0 auto;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        #topBarContainer, .top-bar {
+            height: var(--topbar-height-mobile);
+        }
+
+        .top-bar-container {
+            flex-direction: row;
+            align-items: center;
+            padding: 0 0.5rem;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .contact-info {
+            flex-direction: row;
+            gap: 1rem;
+            font-size: 0.8rem;
+            flex: 1;
+        }
+
+        .contact-item {
+            font-size: 0.8rem;
+        }
+
+        /* Hide email form on mobile */
+        .email-form {
+            display: none;
+        }
+
+        /* Adjust close button for mobile */
+        .close-btn-div {
+            width: auto;
+            margin-left: 0;
+            flex-shrink: 0;
+        }
+
+        .close-btn {
+            position: relative;
+            right: 0;
+            top: 0;
+            transform: none;
+            padding: 0.25rem;
+        }
+
+        /* Adjust icons size on mobile */
+        .fas {
+            font-size: 0.875rem;
+        }
+
+        .sliding-text-container {
+            display: none;
+        }
+    }
+
+    /* Navbar Adjustments */
+    header#topnav {
+        position: fixed !important;
+        top: var(--topbar-height-desktop) !important;
+        left: 0;
+        right: 0;
+        transition: top var(--transition-timing) !important;
+        z-index: 1000;
+    }
+
+    header#topnav.no-topbar {
+        top: 0 !important;
+    }
+
+    @media (max-width: 768px) {
+        header#topnav:not(.no-topbar) {
+            top: var(--topbar-height-mobile) !important;
+        }
+    }
+
+</style>
+
+<div id="topBarContainer">
+    <div class="top-bar">
+        <div class="top-bar-container">
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fas fa-phone text-cyan"></i>
+                    <span>+17187875849</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope text-cyan"></i>
+                    <a href="mailto:info@alviautomobiles.com" class="hover-cyan">
+                        info@alviautomobiles.com
+                    </a>
+                </div>
+            </div>
+
+            <div class="sliding-text-container">
+                <div class="sliding-text">Interested in GEN-Z 40? Join the most sort out community of Builders & Enthusiats. Ask questions, and share your experience.</div>
+            </div>
+
+            <form class="email-form" id="topbarEmailForm">
+                {% csrf_token %}
+                <input type="email" 
+                       placeholder="Email" 
+                       required 
+                       class="email-input"
+                       name="email"
+                       id="topbarEmail">
+                <button type="submit" class="submit-btn">
+                    Get Started
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+            <!-- Moved close button outside the form for better mobile layout -->
+            <div class="close-btn-div">
+            <button type="button" id="closeTopBar" class="close-btn" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const topBar = document.getElementById('topBarContainer');
+    const closeBtn = document.getElementById('closeTopBar');
+    const navbars = document.querySelectorAll('header#topnav');
+    const emailForm = document.getElementById('topbarEmailForm');
+
+    // Clear localStorage to ensure topbar shows by default
+    localStorage.removeItem('topBarClosed');
+
+    function hideTopBar() {
+        topBar.classList.add('hidden');
+        navbars.forEach(navbar => {
+            navbar.classList.add('no-topbar');
+        });
+        adjustBodyPadding(false);
+    }
+
+    function showTopBar() {
+        topBar.classList.remove('hidden');
+        navbars.forEach(navbar => {
+            navbar.classList.remove('no-topbar');
+        });
+        adjustBodyPadding(true);
+    }
+
+    function adjustBodyPadding(showTopBar) {
+        const isMobile = window.innerWidth <= 768;
+        const topbarHeight = isMobile ? 
+            'calc(var(--topbar-height-mobile) + 70px)' : 
+            'calc(var(--topbar-height-desktop) + 70px)';
+        document.body.style.paddingTop = showTopBar ? topbarHeight : '70px';
+    }
+
+    // Close button click handler
+    closeBtn.addEventListener('click', () => {
+        hideTopBar();
+        localStorage.setItem('topBarClosed', 'true');
+    });
+
+    // Email form submission
+    emailForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('topbarEmail').value;
+        console.log('Email submitted:', email);
+        emailForm.reset();
+    });
+
+    // Handle window resize
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if (!topBar.classList.contains('hidden')) {
+                adjustBodyPadding(true);
+            }
+        }, 250);
+    });
+
+    // Initialize in visible state
+    showTopBar();
+});
+</script>

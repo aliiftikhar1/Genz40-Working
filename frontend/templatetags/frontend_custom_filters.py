@@ -1,6 +1,9 @@
 # frontend/templatetags/frontend_custom_filters.py
 from django import template
 from django.db.models import Q, Sum
+from django.conf import settings
+from PIL import Image
+import os
 import re
 from collections import defaultdict
 from backend.models import BookedPackage
@@ -165,3 +168,59 @@ def map(value, attr):
         return [getattr(item, attr) for item in value]
     except (AttributeError, TypeError):
         return []
+
+@register.filter
+def optimize_image(image_url, size='medium'):
+    """
+    Optimize image based on size parameter
+    size options: 'thumbnail', 'medium', 'large', 'gallery'
+    """
+    sizes = {
+        'thumbnail': (150, 150),
+        'medium': (400, 400),
+        'large': (800, 800),
+        'gallery': (300, 300)
+    }
+    
+    try:
+        # Handle static and media URLs
+        if image_url.startswith('/static/'):
+            base_path = settings.STATIC_ROOT
+            url_prefix = '/static/'
+        else:
+            base_path = settings.MEDIA_ROOT
+            url_prefix = '/media/'
+            
+        # Remove URL prefix to get relative path
+        relative_path = image_url.replace(url_prefix, '')
+        image_path = os.path.join(base_path, relative_path)
+        
+        # Create optimized images directory if it doesn't exist
+        opt_dir = os.path.join(base_path, 'optimized')
+        if not os.path.exists(opt_dir):
+            os.makedirs(opt_dir)
+            
+        # Generate optimized image filename
+        filename = os.path.basename(image_url)
+        name, ext = os.path.splitext(filename)
+        opt_filename = f"{name}_{size}{ext}"
+        opt_path = os.path.join(opt_dir, opt_filename)
+        
+        # Create optimized version if it doesn't exist
+        if not os.path.exists(opt_path):
+            img = Image.open(image_path)
+            img.thumbnail(sizes[size])
+            
+            # Convert to WebP if supported
+            if ext.lower() in ['.jpg', '.jpeg', '.png']:
+                opt_filename = f"{name}_{size}.webp"
+                opt_path = os.path.join(opt_dir, opt_filename)
+                img.save(opt_path, 'WEBP', quality=85, optimize=True)
+            else:
+                img.save(opt_path, quality=85, optimize=True)
+            
+        return f"{url_prefix}optimized/{opt_filename}"
+        
+    except Exception as e:
+        print(f"Image optimization error: {e}")
+        return image_url

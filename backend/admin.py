@@ -9,8 +9,9 @@ from backend.models import (
     CarConfiguration, BookedPackage, BookedPackageImage, DynamicPackages,
     FeaturesSection, PackageFeatureRoller, PackageFeatureRollerPlus,
     PackageFeatureBuilder, PostCommunityJoiners, PostContactUs,
-    ReservationFeaturesPayment, ReservationNewFeatures, LearnMoreContent
+    ReservationFeaturesPayment, ReservationNewFeatures, LearnMoreContent, Banner
 )
+
 
 # Custom User Admin
 @admin.register(CustomUser)
@@ -404,3 +405,8 @@ class LearnMoreContentAdmin(admin.ModelAdmin):
     search_fields = ('car__title',)
 
 
+@admin.register(Banner)
+class BannerAdmin(admin.ModelAdmin):
+    list_display = ('title', 'description', 'created_at')
+    search_fields = ('title', 'description')
+    list_filter = ('created_at',)

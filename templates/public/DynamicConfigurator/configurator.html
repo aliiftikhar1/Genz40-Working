@@ -85,7 +85,7 @@
       <!-- Logo Section -->
       <div class="px-4 py-2 md:px-6 md:py-3 shadow-[0_0_10px_white] bg-black flex rounded-xl">
         <a class="flex items-center space-x-2" href="{% url 'index' %}">
-          <span class="logo-dark-mode logo-font text-sm md:text-2xl text-white">
+          {% comment %} <span class="logo-dark-mode logo-font text-sm md:text-2xl text-white">
             GEN-Z 40 
           </span>
           <span class="h-5 md:h-10" style="
@@ -93,7 +93,7 @@
               padding: 1px;
               margin-left: 5px;
               margin-right: 10px;
-            "></span>
+            "></span> {% endcomment %}
           <span>
             <img src="{% static 'images/Alvi-Automobile-Logo/alvi-logo-2.jpg' %}" class="h-4 md:h-8" alt="" />
           </span>
@@ -183,8 +183,8 @@
               </h2>
               <p>{{ package.description }}</p>
               <div class="mt-6 flex items-center gap-4">
-                <span class="text-xl text-gray-400 line-through">${{ package.baseAmount }}</span>
-                <span class="text-2xl font-bold text-white">${{package.discountAmount}}</span>
+                <span class="text-xl text-gray-400 line-through">${{ package.baseAmount|floatformat:"0"|intcomma }}</span>
+                <span class="text-2xl font-bold text-white">${{ package.discountAmount|floatformat:"0"|intcomma }}</span>
               </div>
               <div class="mt-4 h-1 w-full"></div>
             </div>
@@ -555,23 +555,23 @@
                 <h2 class="text-2xl font-bold mb-4">Est. Purchase Price</h2>
                 <div class="flex justify-between mb-2">
                   <span>Est. Purchase Price</span>
-                  <span id="{{ package.package_type }}totalPrice">${{ package.baseAmount }}</span>
+                  <span id="{{ package.package_type }}totalPrice">${{ package.baseAmount|floatformat:"0"|intcomma }}</span>
                 </div>
                 <div class="flex justify-between mb-2 text-gray-400">
                   <span>After Federal Tax Credit if eligible</span>
-                  <span>${{ package.discountAmount }}</span>
+                  <span>${{ package.discountAmount|floatformat:"0"|intcomma }}</span>
                 </div>
                 <div class="flex justify-between mb-2 text-gray-400">
                   <span>Includes Destination and Order Fee</span>
                 </div>
                 <div class="flex justify-between mt-4 mb-2">
                   <span>Non-refundable Order Fee</span>
-                  <span>${{ package.reserveAmount }}</span>
+                  <span>${{ package.reserveAmount|floatformat:"0"|intcomma }}</span>
                 </div>
                 <div id="{{ package.package_type }}_LOGIN_SIGNUP_SECTION"></div>
                 <div class="flex justify-between mt-4 pt-4 border-t border-gray-600 text-xl font-bold">
                   <span>Due Today</span>
-                  <span>${{ package.reserveAmount }}</span>
+                  <span>${{ package.reserveAmount|floatformat:"0"|intcomma }}</span>
                 </div>
                 <button type="submit" id="{{ package.package_type }}_reserve_button" class="mt-4 w-full bg-transparent border border-white text-white py-3 rounded-md cursor-pointer hover: transition duration-300">
                   Reserve
@@ -603,8 +603,58 @@
   tabContents['{{ package.package_type }}'] = document.getElementById('{{ package.package_type }}-content');
   {% endfor %}
 
+  // Get package from URL parameter and normalize it
+  const urlParams = new URLSearchParams(window.location.search);
+  const packageParam = urlParams.get('package');
+  console.log('Original package param:', packageParam);
+  
+  // Initialize tab visibility
+  let initialTabIndex = 0;
+  if (packageParam) {
+    const normalizedParam = decodeURIComponent(packageParam)
+      .toLowerCase()
+      .replace(/\+/g, ' plus')
+      .replace(/%20/g, ' ')
+      .trim();
+    
+    console.log('Normalized package param:', normalizedParam);
+    
+    // Find the tab button that matches the package parameter
+    tabButtons.forEach((button, index) => {
+      // Get package type from data-tab attribute instead of button text
+      const packageType = button.getAttribute('data-tab');
+      const buttonText = button.textContent.trim().toLowerCase();
+      
+      console.log('Comparing with tab:', {
+        'Tab index': index,
+        'Package type': packageType,
+        'Button text': buttonText,
+        'Is match': buttonText.includes(normalizedParam)
+      });
+      
+      // Try different matching strategies
+      if (buttonText.includes(normalizedParam) || 
+          normalizedParam.includes(buttonText) ||
+          buttonText.replace('plus', '+') === normalizedParam ||
+          buttonText.replace(/\s+/g, '') === normalizedParam.replace(/\s+/g, '')) {
+        console.log('Found matching tab:', buttonText);
+        initialTabIndex = index;
+      }
+    });
+  }
+
+  // Set initial tab visibility
   Object.values(tabContents).forEach((content, index) => {
-    if (content) content.classList.toggle('hidden', index !== 0);
+    if (content) content.classList.toggle('hidden', index !== initialTabIndex);
+  });
+
+  // Set initial active tab styling
+  tabButtons.forEach((button, index) => {
+    if (index === initialTabIndex) {
+      button.classList.add('active-tab', 'bg-gradient-to-l', 'from-white/20', 'via-white/40', 'to-white/20');
+    } else {
+      button.classList.remove('active-tab', 'bg-gradient-to-l', 'from-white/20', 'via-white/40', 'to-white/20');
+    }
   });
 
   tabButtons.forEach(button => {
@@ -1012,7 +1062,7 @@ function showSignUpForm(package_type) {
             </svg>
             <!-- Eye off icon -->
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 hidden" id="eye-off-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
           </button>
         </div>
