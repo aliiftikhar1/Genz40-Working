@@ -24,7 +24,8 @@
         display: flex;
         z-index: 500;
         position: fixed;
-        top: 8rem;
+        {% comment %} top: 8rem; {% endcomment %}
+        top: 5rem;
         left: 0;
         justify-content: space-between;
         align-items: center;
@@ -32,7 +33,8 @@
     }
     @media (max-width: 768px) {
         .top-btns-bar {
-            top: 8.2rem;
+            {% comment %} top: 8.2rem; {% endcomment %}
+            top: 6rem;
             padding: 6px 2vw;
         }
         .prominent-btn {
@@ -42,7 +44,7 @@
     }
     @media (max-width: 576px) {
         .top-btns-bar {
-            top: 8rem;
+            {% comment %} top: 8rem; {% endcomment %}
             padding: 4px 1vw;
         }
         .prominent-btn {
@@ -107,19 +109,19 @@
     .car-image-container img {
         width: 100%;
         max-width: 900px;
-        height: 400px;
+        height: 100%;
         object-fit: cover;
         object-position: 0% 47%;
     }
     @media (max-width: 768px) {
         .car-image-container img {
-            height: 220px;
+            height: 100%;
             max-width: 100%;
         }
     }
     @media (max-width: 576px) {
         .car-image-container img {
-            height: 120px;
+            height: 100%;
             max-width: 100%;
         }
     }
