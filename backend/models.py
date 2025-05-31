@@ -1104,6 +1104,7 @@ class LearnMoreContent(models.Model):
 
 class Banner(models.Model):
     image = models.ImageField(upload_to='banners/')
+    mobile_image = models.ImageField(upload_to='banners/mobile/')
     title = models.CharField(max_length=255, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

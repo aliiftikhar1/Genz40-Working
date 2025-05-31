@@ -1,70 +1,69 @@
 <style>
-    /* Enhanced Carousel Styles */
+    .Herosection-Banner {
+        position: relative;
+        width: 100%;
+        height: calc(100vh - 120px);
+        margin-top: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
     .carousel-container {
         position: relative;
-        width: 80%; /* Reduced width */
-        height: 60vh;
-        margin: 0 auto; /* Center the carousel horizontally */
-        margin-bottom: 20px; /* Space below the carousel */
+        width: 100%;
+        height: 100%;
         overflow: hidden;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }
 
-    
-
     .carousel-wrapper {
         display: flex;
         transition: transform 0.5s ease-in-out;
+        height: 100%;
+        width: 100%;
     }
 
     .carousel-slide {
         min-width: 100%;
         height: 100%;
         position: relative;
+        flex-shrink: 0;
     }
 
     .carousel-slide img {
         width: 100%;
         height: 100%;
-        object-fit: contain;
-        filter: brightness(0.9);
-    }
-
-    .carousel-nav {
+        object-fit: cover;
         position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        border: none;
-        padding: 15px;
-        cursor: pointer;
-        z-index: 10;
-        border-radius: 50%;
-        transition: background 0.3s ease;
+        top: 0;
+        left: 0;
+    }
+    
+    /* Desktop image visibility */
+    .desktop-image {
+        display: block;
+        width: 100%;
+        height: 100%;
     }
 
-    .carousel-nav:hover {
-        background: rgba(255, 255, 255, 0.3);
-    }
-
-    .carousel-nav.prev {
-        left: 15px;
-    }
-
-    .carousel-nav.next {
-        right: 15px;
+    .mobile-image {
+        display: none;
+        width: 100%;
+        height: 100%;
     }
 
     /* Updated Carousel Indicators to Lines */
     .carousel-indicators {
         position: absolute;
-        bottom: 0px;
+        bottom: 20px;
         left: 35%;
-        transform: translateX(-50%); /* Ensure perfect centering */
+        transform: translateX(-50%);
         display: flex;
         gap: 15px;
         justify-content: center;
+        z-index: 10;
     }
 
     .carousel-indicators button {
@@ -84,31 +83,31 @@
 
     /* Media query for mobile screens */
     @media screen and (max-width: 768px) {
-        .carousel-container {
-            width: 100%;
-            height: 25vh;
-            border-radius: 0;
+        .Herosection-Banner {
+            height: calc(100vh - 60px);
+        }
+        
+        .desktop-image {
+            display: none !important;
         }
 
-        .carousel-slide {
-            height: 25vh;
-        }
-
-        .carousel-slide img {
+        .mobile-image {
+            display: block !important;
             width: 100%;
             height: 100%;
-            object-fit: contain;
-            background-color: #000;
+            object-fit: cover;
         }
+
+        .Herosection-Banner {
+        height: calc(100vh - 200px);
+    }
     }
 </style>
-
+<div class="Herosection-Banner">
 <div class="carousel-container">
     <div class="carousel-wrapper" id="banner-carousel-wrapper">
         <!-- Slides will be dynamically inserted here -->
-    </div>
-
-    <!-- Navigation Buttons -->
+    </div>    <!-- Navigation Buttons -->
     {% comment %} <button class="carousel-nav prev" onclick="previousBannerSlide()">&#10094;</button>
     <button class="carousel-nav next" onclick="nextBannerSlide()">&#10095;</button> {% endcomment %}
 
@@ -117,14 +116,21 @@
         <!-- Indicators will be dynamically inserted here -->
     </div>
 </div>
+</div>
 
-<script>
+<script>    
     const bannerImages = [
         {% for banner in banners %}
-        { src: '{{ banner.image.url }}', alt: '{{ banner.title }}' },
+        { 
+            desktopSrc: {% if banner.image %}'{{ banner.image.url }}'{% else %}'/static/images/default-banner.jpg'{% endif %},
+            mobileSrc: {% if banner.mobile_image %}'{{ banner.mobile_image.url }}'{% elif banner.image %}'{{ banner.image.url }}'{% else %}'/static/images/default-banner.jpg'{% endif %},
+            alt: '{{ banner.title|default:"Banner Image" }}'
+        },
         {% endfor %}
     ];
+    console.log("Banner images are: ", bannerImages);
 
+    const SLIDE_DELAY = 5000; // 5 seconds - adjust this value to change the sliding speed
     let currentBannerIndex = 0;
     let autoPlayInterval;
     let userInteractionTimeout;
@@ -133,13 +139,60 @@
         const wrapper = document.getElementById('banner-carousel-wrapper');
         const indicators = document.getElementById('banner-carousel-indicators');
 
+        if (!wrapper || !indicators) {
+            console.error('Required carousel elements not found');
+            return;
+        }
+
         wrapper.innerHTML = '';
         indicators.innerHTML = '';
 
-        bannerImages.forEach((image, index) => {
+        if (!bannerImages || bannerImages.length === 0) {
+            console.error('No banner images available');
+            const defaultSlide = document.createElement('div');
+            defaultSlide.className = 'carousel-slide';
+            const defaultImg = document.createElement('img');
+            defaultImg.src = '/static/images/default-banner.jpg';
+            defaultImg.alt = 'Default Banner';
+            defaultSlide.appendChild(defaultImg);
+            wrapper.appendChild(defaultSlide);
+            return;
+        }        bannerImages.forEach((image, index) => {
             const slide = document.createElement('div');
             slide.className = 'carousel-slide';
-            slide.innerHTML = `<img src="${image.src}" alt="${image.alt}">`;
+            
+            // Handle desktop image
+            const desktopImg = new Image();
+            desktopImg.className = 'desktop-image';
+            desktopImg.alt = image.alt;
+            desktopImg.style.objectFit = 'cover';
+            desktopImg.onload = () => {
+                console.log(`Desktop image ${index} loaded:`, image.desktopSrc);
+                // Force a reflow to ensure the image is displayed
+                slide.style.opacity = '0.99';
+            };
+            desktopImg.onerror = function() {
+                console.error(`Failed to load desktop image ${index}:`, image.desktopSrc);
+                this.src = '/static/images/default-banner.jpg';
+            };
+            desktopImg.src = image.desktopSrc;
+
+            // Handle mobile image
+            const mobileImg = new Image();
+            mobileImg.className = 'mobile-image';
+            mobileImg.alt = image.alt;
+            mobileImg.style.objectFit = 'cover';
+            mobileImg.onload = () => {
+                console.log(`Mobile image ${index} loaded:`, image.mobileSrc);
+                // Force a reflow to ensure the image is displayed
+                slide.style.opacity = '0.99';
+            };
+            mobileImg.onerror = function() {
+                console.error(`Failed to load mobile image ${index}:`, image.mobileSrc);
+                this.src = image.desktopSrc || '/static/images/default-banner.jpg';
+            };
+            mobileImg.src = image.mobileSrc;            slide.appendChild(desktopImg);
+            slide.appendChild(mobileImg);
             wrapper.appendChild(slide);
 
             const indicator = document.createElement('button');
@@ -149,9 +202,7 @@
         });
 
         updateBannerCarousel();
-    }
-
-    function updateBannerCarousel() {
+    }    function updateBannerCarousel() {
         const wrapper = document.getElementById('banner-carousel-wrapper');
         const indicators = document.querySelectorAll('#banner-carousel-indicators button');
 
@@ -178,7 +229,7 @@
     }
 
     function startAutoPlay() {
-        autoPlayInterval = setInterval(nextBannerSlide, 3000); // Change image every 3 seconds
+        autoPlayInterval = setInterval(nextBannerSlide, SLIDE_DELAY);
     }
 
     function stopAutoPlay() {
@@ -188,10 +239,8 @@
     function resetAutoPlay() {
         stopAutoPlay();
         clearTimeout(userInteractionTimeout);
-        userInteractionTimeout = setTimeout(startAutoPlay, 3000); // Restart autoplay after 3 seconds of inactivity
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
+        userInteractionTimeout = setTimeout(startAutoPlay, SLIDE_DELAY);
+    }    document.addEventListener('DOMContentLoaded', () => {
         renderBannerCarousel();
         startAutoPlay();
 

@@ -473,17 +473,19 @@ def get_register_community(request):
 
                     # Truncate zip_code if needed
                     if hasattr(user, 'zip_code') and user.zip_code:
-                        user.zip_code = user.zip_code[:5]
-
+                        user.zip_code = user.zip_code[:5]                    
                     user.save()
-                    # Automatically log in the user after successful registration
+                    
+                    # Authenticate and login the user after registration
                     from django.contrib.auth import login, authenticate
-
-                    # Authenticate the user (using email as username)
-                    user = authenticate(request, username=user.email, password=request.POST['password'])
-                    if user is not None:
-                        login(request, user)
-
+                    # Use the plain text password from request.POST, not the hashed password
+                    authenticated_user = authenticate(request, username=user.email, password=request.POST['password'])
+                    if authenticated_user is not None:
+                        login(request, authenticated_user)
+                        logger.info(f"Successfully logged in user {user.email} after registration")
+                    else:
+                        logger.error(f"Failed to authenticate user {user.email} after registration")
+                        
                     admin_user = CustomUser.objects.filter(is_staff=True).first()
 
                     # Create chatroom
