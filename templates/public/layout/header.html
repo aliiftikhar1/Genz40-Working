@@ -129,7 +129,7 @@
            
            @media (max-width: 992px) {
          .button-bottom-stick-mobile {
-                 background-image: linear-gradient(to left, #fff, #fff, #fff);
+                 background-color:black;
                  border-top-left-radius: 20px;
                  border-top-right-radius: 20px;
                  bottom: 0;
@@ -145,11 +145,14 @@
              }
          
              .button-bottom-stick-mobile .banner-button {
-                 border: none !important;
+                width:100%;
+                background-color: none !important;
                  border-radius: .3rem;
                  box-shadow: none;
                  cursor: pointer;
-                 padding: .01rem 3rem;
+                 display: flex;
+                 justify-content: center;
+                 align-content:center;
                  transition: -webkit-transform .1s;
                  transition: transform .1s;
                  transition:transform .1s, -webkit-transform .1s;
