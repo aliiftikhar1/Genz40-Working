@@ -605,42 +605,27 @@
 
   // Get package from URL parameter and normalize it
   const urlParams = new URLSearchParams(window.location.search);
-  const packageParam = urlParams.get('package');
+  let packageParam = urlParams.get('package');
   console.log('Original package param:', packageParam);
   
   // Initialize tab visibility
   let initialTabIndex = 0;
   if (packageParam) {
-    const normalizedParam = decodeURIComponent(packageParam)
-      .toLowerCase()
-      .replace(/\+/g, ' plus')
-      .replace(/%20/g, ' ')
-      .trim();
-    
-    console.log('Normalized package param:', normalizedParam);
-    
-    // Find the tab button that matches the package parameter
-    tabButtons.forEach((button, index) => {
-      // Get package type from data-tab attribute instead of button text
-      const packageType = button.getAttribute('data-tab');
-      const buttonText = button.textContent.trim().toLowerCase();
+      // Properly decode the parameter and normalize spaces and case
+      const normalizedParam = decodeURIComponent(packageParam)
+          .replace(/\s+/g, ' ')
+          .trim()
+          .toLowerCase();
       
-      console.log('Comparing with tab:', {
-        'Tab index': index,
-        'Package type': packageType,
-        'Button text': buttonText,
-        'Is match': buttonText.includes(normalizedParam)
+      console.log('Normalized package param:', normalizedParam);
+      
+      // Find the tab button that matches the package parameter
+      tabButtons.forEach((button, index) => {
+          const buttonText = button.textContent.trim().replace(/\s+/g, ' ').toLowerCase();
+          if (buttonText === normalizedParam) {
+              initialTabIndex = index;
+          }
       });
-      
-      // Try different matching strategies
-      if (buttonText.includes(normalizedParam) || 
-          normalizedParam.includes(buttonText) ||
-          buttonText.replace('plus', '+') === normalizedParam ||
-          buttonText.replace(/\s+/g, '') === normalizedParam.replace(/\s+/g, '')) {
-        console.log('Found matching tab:', buttonText);
-        initialTabIndex = index;
-      }
-    });
   }
 
   // Set initial tab visibility
@@ -1532,7 +1517,7 @@ function handleSignUpSubmit(e) {
         for (const feature of features) {
           if (shownCount >= maxToShow) break;
           const li = document.createElement('li');
-          li.className = 'flex justify-between feature-item';
+          li className = 'flex justify-between feature-item';
           li.innerHTML = `
             <span>${feature.name}</span>
             ${feature.included ? '<span class="text-lime-400">Included</span>' :
