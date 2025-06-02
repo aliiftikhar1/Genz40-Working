@@ -17,6 +17,36 @@
             /* Ensure card is full width */
         }
     }
+    
+    /* Sticky mobile footer styles */
+    .button-bottom-stick-mobile {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        z-index: 1000;
+    }
+
+    .button-bottom-stick-mobile a {
+        display: flex;
+        justify-content: center;
+        flex: 1;
+    }
+
+    .vl {
+        border-left: 1px solid #4a4a4a;
+        height: 40px;
+    }
+
+    @media (min-width: 992px) {
+        .button-bottom-stick-mobile {
+            display: none;
+        }
+    }
 </style>
 
 <!-- Footer Start -->
@@ -302,18 +332,20 @@
 <!-- Back to top -->
 
 <!-- sticky for mobile -->
-<div class="container-fluid button-bottom-stick-mobile d-lg-none" style="background-color:black;">
+<div class="container-fluid button-bottom-stick-mobile d-lg-none bg-black" >
     <a href="tel:+17187875849"  class="col-md-4 align-items-center banner-button text-decoration-none">
-        <i class="mdi mdi-phone text-white" style="font-size: 35px; "> </i>
+        <i class="mdi mdi-phone text-white" style="font-size: 35px;"></i>
     </a>
     <div class="vl"></div>
     <a href="mailto:info@genz40.com" class="col-md-4 align-items-center banner-button text-decoration-none">
-        <i class="mdi mdi-email-arrow-right text-white" style="font-size: 35px;"> </i>
+        <i class="mdi mdi-email-arrow-right text-white" style="font-size: 35px;"></i>
     </a>
     <div class="vl"></div>
     <a href="https://wa.me/+17187875849/?text=Welcome to GENZ40. Please share your request."
         class="col-md-4 align-items-center banner-button text-decoration-none" target="_blank">
-        <i class="mdi mdi-whatsapp text-white" style="font-size: 35px;"> </i>
+        <i class="mdi mdi-whatsapp text-white" style="font-size: 35px;"></i>
+    </a>
+</div>
 </div>
 {% block script %}
 
