@@ -1,54 +1,56 @@
 {% load static %}
 
 {% comment %} {% include 'public/component/topbar_component.html' %} {% endcomment %}
-
 <!-- Navbar Start Mobile-->
-<header id="topnav" class="defaultscroll sticky d-lg-none" style="border-top: 1px solid white;" >
+<header id="topnav" class="defaultscroll sticky d-lg-none" style="border-top: 1px solid white;">
     <div class="container">
-        <!-- Logo container-->
-        <a class="logo" href="{% url 'index' %}">
-            <span class="logo-light-mode">
-                <span class="l-dark logo-font">GEN-Z 40 </span>
-                <span class="l-light logo-font text-white">GEN-Z 40 </span>
-            </span>
-            {% comment %} <span class="logo-dark-mode logo-font text-white" style="font-size: 18px;">GEN-Z 40</span>
-            <span class="w-10 h-8" style="background-color: #ffff; padding: 1px; margin-left: 5px; margin-right: 10px"></span> {% endcomment %}
-            <span>
-                <img src="{% static 'images/Alvi-Automobile-Logo/alvi-logo-2.jpg' %}" height="28" class="" alt="">
-            </span>
-        </a>
-
-        <!-- End Logo container-->
-        <div class="menu-extras me-3">
+        <div class="d-flex align-items-center justify-content-between">
+            <!-- Menu button on the left -->
+            <div class="menu-extras">
             <div class="menu-item">
-                <!-- Mobile menu toggle-->
-                <a class="navbar-toggle" id="isToggle" onclick="toggleMenu()">
-                    <div class="lines">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
+                <a class="" id="isToggle" onclick="toggleMenu2()" style="width: 3rem ;color:white; justify-content: center;cursor:pointer; display: flex; align-items: center;">
+                        <span class="menu-text">Menu</span>
+                        <span class="close-text" style="display: none; font-size: 1.2em; font-weight: bold;">✕</span>
                 </a>
-                <!-- End mobile menu toggle-->
             </div>
         </div>
 
-        <!--Login button Start-->
-        {% if user_data.is_authenticated %}
+            <!-- Logo in the center -->
+            <a class="logo" href="{% url 'index' %}">
+                <span class="logo-light-mode">
+                    <span class="l-dark logo-font">GEN-Z 40 </span>
+                    <span class="l-light logo-font text-white">GEN-Z 40 </span>
+                </span>
+                {% comment %} <span class="logo-dark-mode logo-font text-white" style="font-size: 18px;">GEN-Z 40</span>
+                <span class="w-10 h-8" style="background-color: #ffff; padding: 1px; margin-left: 5px; margin-right: 10px"></span> {% endcomment %}
+                <span>
+                    <img src="{% static 'images/Alvi-Automobile-Logo/alvi-logo-2.jpg' %}" height="28" class="" alt="">
+                </span>
+            </a>
 
-        {% else %}
-            <ul class="buy-button list-inline mb-0">
-                <li class="list-inline-item mb-0 text-uppercase">
-                    <a href="{% url 'customer_login' %}" class="text-white">
-                        <!-- <div class="login-btn-success"><span class="btn btn-icon btn-pills btn-soft-success"><i data-feather="user" class="fea icon-sm"></i></span></div> -->
-                        <div class="login-btn-success"><span class="btn btn-icon btn-pills btn-success"><i data-feather="user" class="fea icon-sm"></i></span></div>
-                    </a>
-                </li>
-            </ul>
-        {% endif %}
-        <!--Login button End-->
+            <!-- Login button on the right -->
+            {% if user_data.is_authenticated %}
+                <ul class="buy-button list-inline mb-0">
+                    <li class="list-inline-item mb-0 text-uppercase">
+                        <a href="javascript:void(0)" class="text-success">{{ user_data.full_name }}</a>
+                    </li>
+                </ul>
+            {% else %}
+                <ul class="buy-button list-inline mb-0">
+                    <li class="list-inline-item mb-0 text-uppercase">
+                        <a href="{% url 'customer_login' %}" class="text-white">
+                            <div class="login-btn-success">
+                                <span class="btn btn-icon btn-pills btn-success">
+                                    <i data-feather="user" class="fea icon-sm"></i>
+                                </span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            {% endif %}
+        </div>
 
-        <div id="navigation">
+        <div id="navigation" style="display: none; transition: all 0.3s ease;">
             <!-- Navigation Menu-->
             <ul class="navigation-menu nav-light">
                 {% if user_data.is_authenticated %}
@@ -62,7 +64,6 @@
                             {% if request.user.role == 'customer' %}
                             <li><a href="{% url 'my_configurations' %}" class="sub-menu-item">Saved Configurations</a></li>
                             {% endif %}
-                           
                             <li><a href="{% url 'my_vehicles' %}" class="sub-menu-item">My Vehicles</a></li>
                             <li><a href="{% url 'profile_settings' %}" class="sub-menu-item">Profile Settings</a></li>
                             <li><a href="{% url 'payment_history' %}" class="sub-menu-item">Payments</a></li>
@@ -81,14 +82,8 @@
                             </a>
                         </li>
                     {% endfor %}
-                     <li><a class="sub-menu-item" href="{% url 'customer_community_message' %}">Community</a></li> 
-                        <li><a href="{% url 'about' %}" class="sub-menu-item">Company</a></li>
-                        
-                        {% comment %} <li class="sub-menu-item">
-                            <a class="nav-link" href="{% url 'customer_community_message' %}">
-                                Community
-                            </a>
-                        </li> {% endcomment %}
+                    <li><a class="sub-menu-item" href="{% url 'customer_community_message' %}">Community</a></li> 
+                    <li><a href="{% url 'about' %}" class="sub-menu-item">Company</a></li>
                 {% endif %}
             </ul><!--end navigation menu-->
         </div><!--end navigation-->
@@ -101,7 +96,6 @@
     <div class="container-fluid">
         <!-- Logo container-->
         <a class="logo ms-5" href="{% url 'index' %}">
-            
             {% comment %} <span class="logo-dark-mode logo-font text-white ms-5">
                 GEN-Z 40 
             </span>
@@ -109,9 +103,6 @@
             <span>
                 <img src="{% static 'images/Alvi-Automobile-Logo/alvi-logo-2.jpg' %}" height="32" class="" alt="">
             </span>
-            <!-- <h6>By ALVI AUTOMOBILES</h6> -->
-            <!-- <h6 class="text-center text-white">By ALVI AUTOMOBILES</h6> -->
-            <!-- <img src="{% static 'images/logo-light.png' %}" height="24" class="logo-dark-mode" alt=""> -->
         </a>
 
         <!--Login button Start-->
@@ -123,8 +114,6 @@
                     <li><a href="{% url 'my_vehicles' %}" class="sub-menu-item">My Vehicles</a></li>
                     <li><a href="{% url 'profile_settings' %}" class="sub-menu-item">Profile Settings</a></li>
                     <li><a href="{% url 'payment_history' %}" class="sub-menu-item">Payments</a></li>
-                    {% comment %} <li><a href="{% url 'customer_community_message' %}" class="sub-menu-item">Community</a></li> {% endcomment %}
-                    <!-- <li><a href="{% url 'customer_message' %}" class="sub-menu-item">Messages</a></li> -->
                     <li><a href="{% url 'logout' %}" class="sub-menu-item">Logout</a></li>
                 </ul>
             </li>
@@ -142,23 +131,21 @@
         </ul>
         <!--Login button End-->
 
-        <div id="navigation">
+        <div id="navigation" style="display: block;">
             <!-- Navigation Menu-->
             <ul class="navigation-menu nav-light">
                 <li>
                     <a href="{% if user.is_authenticated %}{% url 'index' %}{% else %}{% url 'home' %}{% endif %}" class="sub-menu-item">
                       {% if user.is_authenticated %}Dashboard{% else %}Home{% endif %}
                     </a>
-                  </li>
-                  {% if user.is_authenticated %}
-                  <li>
+                </li>
+                {% if user.is_authenticated %}
+                <li>
                     <a href="{% url 'home' %}" class="sub-menu-item">
                       Home
                     </a>
-                  </li>
+                </li>
                 {% endif %}
-                
-                  
                 {% for item in nav_items %}
                 <li class="sub-menu-item {% if item.active_children.exists %}dropdown{% endif %}">
                     <a class="nav-link {% if item.active_children.exists %}dropdown-toggle{% endif %}"
@@ -168,12 +155,59 @@
                     </a>
                 </li>
                 {% endfor %}
-
                 <li><a href="{% url 'customer_community_message' %}" class="sub-menu-item">Community</a></li>
                 <li><a href="{% url 'about' %}" class="sub-menu-item">Company</a></li>
-                <!-- <li><a href="#" class="sub-menu-item">Community</a></li> -->
             </ul><!--end navigation menu-->
         </div><!--end navigation-->
     </div><!--end container-->
 </header><!--end header-->
 <!-- Navbar End -->
+
+<script>
+    function toggleMenu2() {
+        const navigation = document.getElementById('navigation');
+        const menuText = document.querySelector('.menu-text');
+        const closeText = document.querySelector('.close-text');
+        
+        // Toggle the navigation menu
+        if (navigation.style.display === 'block') {
+            navigation.style.display = 'none';
+            menuText.style.display = 'inline';
+            closeText.style.display = 'none';
+        } else {
+            navigation.style.display = 'block';
+            menuText.style.display = 'none';
+            closeText.style.display = 'inline';
+        }
+    }
+
+    // Handle responsive behavior
+    function handleResize() {
+        const navigation = document.getElementById('navigation');
+        if (window.innerWidth >= 992) {
+            navigation.style.display = 'block';
+        } else {
+            navigation.style.display = 'none';
+        }
+    }
+
+    // Add resize listener
+    window.addEventListener('resize', handleResize);
+    // Initial check
+    handleResize();
+
+    // Close the menu when clicking on a navigation item (optional)
+    document.querySelectorAll('.navigation-menu a').forEach(item => {
+        item.addEventListener('click', () => {
+            const navigation = document.getElementById('navigation');
+            const menuText = document.querySelector('.menu-text');
+            const closeText = document.querySelector('.close-text');
+            
+            if (window.innerWidth < 992) {
+                navigation.style.display = 'none';
+                menuText.style.display = 'inline';
+                closeText.style.display = 'none';
+            }
+        });
+    });
+</script>

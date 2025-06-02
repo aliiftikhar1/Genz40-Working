@@ -128,12 +128,12 @@
         },
         {% endfor %}
     ];
-    console.log("Banner images are: ", bannerImages);
-
+    console.log("Banner images are: ", bannerImages);    
     const SLIDE_DELAY = 5000; // 5 seconds - adjust this value to change the sliding speed
     let currentBannerIndex = 0;
-    let autoPlayInterval;
-    let userInteractionTimeout;
+    let autoPlayInterval = null;
+    let userInteractionTimeout = null;
+    let isAutoPlayEnabled = true;
 
     function renderBannerCarousel() {
         const wrapper = document.getElementById('banner-carousel-wrapper');
@@ -226,31 +226,75 @@
     function goToBannerSlide(index) {
         currentBannerIndex = index;
         updateBannerCarousel();
-    }
-
-    function startAutoPlay() {
-        autoPlayInterval = setInterval(nextBannerSlide, SLIDE_DELAY);
+    }    function startAutoPlay() {
+        if (!isAutoPlayEnabled) return;
+        stopAutoPlay(); // Clear any existing interval first
+        if (bannerImages.length > 1) { // Only start if there's more than one image
+            // Immediately show next slide
+            nextBannerSlide();
+            // Then set up the interval
+            autoPlayInterval = setInterval(() => {
+                nextBannerSlide();
+                console.log('Auto-sliding to next banner');
+            }, SLIDE_DELAY);
+            console.log('Autoplay started');
+        }
     }
 
     function stopAutoPlay() {
-        clearInterval(autoPlayInterval);
+        if (autoPlayInterval) {
+            clearInterval(autoPlayInterval);
+            autoPlayInterval = null;
+        }
     }
 
     function resetAutoPlay() {
+        if (userInteractionTimeout) {
+            clearTimeout(userInteractionTimeout);
+        }
         stopAutoPlay();
-        clearTimeout(userInteractionTimeout);
-        userInteractionTimeout = setTimeout(startAutoPlay, SLIDE_DELAY);
-    }    document.addEventListener('DOMContentLoaded', () => {
+        userInteractionTimeout = setTimeout(() => {
+            startAutoPlay();
+        }, SLIDE_DELAY);
+    }    // Initialize carousel as soon as images are loaded
+    window.addEventListener('load', () => {
+        console.log('Window loaded, initializing carousel with', bannerImages.length, 'images');
         renderBannerCarousel();
-        startAutoPlay();
+        
+        if (bannerImages.length > 1) {
+            console.log('Starting autoplay immediately');
+            startAutoPlay();
+        }
+    });
+
+    // Also initialize on DOMContentLoaded as backup
+    document.addEventListener('DOMContentLoaded', () => {
+        console.log('DOM loaded, initializing carousel with', bannerImages.length, 'images');
+        renderBannerCarousel();
+        
+        if (bannerImages.length > 1) {
+            console.log('Starting autoplay');
+            startAutoPlay();
+        }
 
         const carouselContainer = document.querySelector('.carousel-container');
-        carouselContainer.addEventListener('mouseenter', stopAutoPlay);
-        carouselContainer.addEventListener('mouseleave', startAutoPlay);
+        if (carouselContainer) {
+            carouselContainer.addEventListener('mouseenter', () => {
+                console.log('Mouse entered - stopping autoplay');
+                stopAutoPlay();
+            });
+            carouselContainer.addEventListener('mouseleave', () => {
+                console.log('Mouse left - resuming autoplay');
+                startAutoPlay();
+            });
+        }
 
         const indicators = document.querySelectorAll('.carousel-indicators button');
         indicators.forEach(indicator => {
-            indicator.addEventListener('click', resetAutoPlay);
+            indicator.addEventListener('click', () => {
+                console.log('Indicator clicked - resetting autoplay');
+                resetAutoPlay();
+            });
         });
     });
 </script>

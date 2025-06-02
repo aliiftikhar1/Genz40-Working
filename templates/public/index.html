@@ -10,7 +10,21 @@
         {% comment %} margin-top: 4rem; {% endcomment %}
     }
 
+    /* Desktop/Mobile image visibility */
+    .desktop-image {
+        display: block;
+    }
+    .mobile-image {
+        display: none;
+    }
+
     @media screen and (max-width: 768px) {
+        .desktop-image {
+            display: none;
+        }
+        .mobile-image {
+            display: block;
+        }
         body {
             margin: 0;
         }
@@ -161,27 +175,64 @@
     }
     .car-card:hover {
         transform: translateY(-5px);
-    }
+    }    
     .card-car-image-container {
+        padding:1rem;
         background: #000;
-        border-radius: 12px;
         width:100%;
         margin:auto;
-        height: 100%;
+        height: auto;
         overflow: hidden;
         display: flex;
         justify-content: center;
         align-items: center;
+        position: relative;
+        margin-bottom:1rem;
     }
-    .card-car-image{
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: 0 -6rem;
+      /* Target containers that contain mobile images directly in the CSS */    @media screen and (max-width: 768px) {
+        .card-car-image-container {
+            position: relative;
+        }
+        .card-car-image-container:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 2;
+        }
+    }
+    
+    /* Additional class with high specificity for mobile image containers */
+    .mobile-image-container {
+        position: relative;
+    }
+    .mobile-image-container:after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        box-shadow: inset 0 0 12px 10px black;
+        pointer-events: none;
+        z-index: 2;
+    }
+   .card-car-image{
+        max-width: 100%;
+height: auto;
+object-fit: contain;
+object-position: center;
     }
     .card-content {
         padding: 1rem 0;
         text-align: center;
+        display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
     }
     .card-text {
         font-size: 1.25rem;
@@ -312,9 +363,7 @@
         border: 2px solid white;
         width:50%;
         background-color: black;
-    }
-
-    /* Community Form Section */
+    }    /* Community Form Section */
     .section.bg-black { padding: 3rem 0; }
     .form-label { color: #fff; text-transform: uppercase; }
     .form-icon { position: relative; }
@@ -323,6 +372,19 @@
         top: 50%;
         left: 12px;
         transform: translateY(-50%);
+    }
+      /* Mobile Community Form Section with reduced padding */
+    @media (max-width: 767.98px) {
+        .section.bg-black.d-lg-none { 
+            padding: 1.5rem 0 0.5rem 0; 
+        }
+        .mobile-community-section {
+            padding-top: 1rem !important;
+            padding-bottom: 0.5rem !important;
+        }
+        .mobile-community-section .col-md-12 {
+            margin-bottom: 0.5rem;
+        }
     }
     .form-control.ps-5 {
         padding-left: 3rem;
@@ -351,10 +413,29 @@
 
     @media (max-width: 767.98px) {
         .hero-container { margin-top: 2rem; }
-        .specs-container .col-6 { margin-bottom: 1.5rem; }
-        .card-car-image-container { height: 100%; width:100%; }
-        {% comment %} .card-car-image, .card-car-image-1 { object-fit: contain; } {% endcomment %}
-        .card-car-image{
+        .specs-container .col-6 { margin-bottom: 1.5rem; }        
+   
+.card-car-image-container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  margin-bottom: 1rem !important;
+}
+.mobile-image {
+ 
+  width: 100% !important;
+  max-height: 50vh !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  display: block !important;
+  margin: 0 auto !important;
+  background: transparent !important;
+}
+        .card-car-image:not(.mobile-image) {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -385,7 +466,7 @@
         .car-image-container { margin-top: -2rem; margin-bottom: 1rem; }
         .show-text { font-size: 2rem; }
         .faq-section { padding: 2rem 0; }
-        .card-car-image-container { height: 100%; }
+        .card-car-image-container { height: 100%;   padding:0rem; }
     }
 
     /* Autofill fix for Chrome, Safari, Edge */
@@ -414,7 +495,7 @@
 {% comment %} {% include 'public/component/topbar_component.html' %} {% endcomment %}
 <div class="position-relative text-white overflow-hidden rounded" style="background:black;">
 {% comment %} {% include 'public/component/carousel_component.html' %} {% endcomment %}
-{% include 'public/component/banner_carousel_component.html' %}
+{% comment %} {% include 'public/component/banner_carousel_component.html' %} {% endcomment %}
 <!-- Second Section -->
 {% comment %} <section class="services-section text-white bg-black">
     <div class="container">
@@ -511,11 +592,12 @@
             
             <!-- Car Card 3 -->
             <div class="col-12 car-section">
-                <div class="card-content">
+                <div class="card-content">                    
                     <h5 class="car-tag">{{ section_1.tag }}</h5>
-                    <h4 class="car-title">{{ section_1.title }}</h4>
-                    <div class="card-car-image-container">
-                        <img src="{{ section_1.image.url }}" alt="{{ section_1.title }}" class="card-car-image">
+                    <h4 class="car-title">{{ section_1.title }}</h4>                    
+                    <div class="card-car-image-container mobile-image-container">
+                        <img src="{{ section_1.image.url }}" alt="{{ section_1.title }}" class="card-car-image desktop-image">
+                        <img src="{{ section_1.web_image.url }}" alt="{{ section_1.title }}" class="card-car-image mobile-image">
                     </div>
                     {% for item in nav_items %}
                     {% if forloop.counter == 1 %}
@@ -529,12 +611,13 @@
             </div>
             
             <!-- Car Card 4 -->
-            <div class="col-12 car-section">
+            <div class="col-12 car-section">                
                 <div class="card-content">
                     <h5 class="car-tag">{{ section_2.tag }}</h5>
                     <h4 class="car-title">{{ section_2.title }}</h4>
-                    <div class="card-car-image-container">
-                        <img src="{{ section_2.image.url }}" alt="{{ section_2.title }}" class="card-car-image">
+                    <div class="card-car-image-container mobile-image-container">
+                        <img src="{{ section_2.image.url }}" alt="{{ section_2.title }}" class="card-car-image desktop-image">
+                        <img src="{{ section_2.web_image.url }}" alt="{{ section_2.title }}" class="card-car-image mobile-image">
                     </div>
                     {% for item in nav_items %}
                     {% if forloop.counter == 2 %}
@@ -550,12 +633,12 @@
            
 
           <!-- Mark 4 card -->
-          <div class="col-12 car-section">
-            <div class="card-content">
+          <div class="col-12 car-section">            <div class="card-content">
                 <h5 class="car-tag">{{ section_3.tag }}</h5>
                 <h4 class="car-title">{{ section_3.title }}</h4>
-                <div class="card-car-image-container">
-                    <img src="{{ section_3.image.url }}" alt="{{ section_3.title }}" class="card-car-image">
+                <div class="card-car-image-container mobile-image-container">
+                    <img src="{{ section_3.image.url }}" alt="{{ section_3.title }}" class="card-car-image desktop-image">
+                    <img src="{{ section_3.web_image.url }}" alt="{{ section_3.title }}" class="card-car-image mobile-image">
                 </div>
                 {% for item in nav_items %}
                 {% if forloop.counter == 3 %}
@@ -817,33 +900,31 @@ GENZCars supply every single part required to complete the car. Buy online or em
 </section>
 
 <!-- Community Form (Mobile) -->
-<section class="section bg-black d-lg-none">
+<section class="section bg-black d-lg-none mobile-community-section">
     <div class="container">
         <div class="row align-items-start">
             <div class="col-md-6">
                 <div class="section-title me-lg-4">
-                    <h4 class="title title-dark mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>
-                    <h4 class="title title-dark mb-4 d-lg-none">JOIN GEN-Z COMMUNITY</h4>
+                    <h4 class="title title-dark mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>                    <h4 class="title title-dark mb-2 d-lg-none">JOIN GEN-Z COMMUNITY</h4>
                     <p class="text-dark para-light para-desc mb-0">
                         Interested in GEN-Z 40? Join the most sort out community of
                         Builders & Enthusiats. Ask questions, and share your experience.
-                    </p>
-                    <div class="mt-4 pt-2">
-                        <h6 class="title-dark mb-4">WHAT ELSE YOU GET?</h6>
-                        <ul class="list-unstyled">
-                            <li class="mb-1">
+                    </p>                    <div class="mt-3 pt-1">
+                        <h6 class="title-dark mb-2">WHAT ELSE YOU GET?</h6>
+                        <ul class="list-unstyled mb-2">
+                            <li class="mb-0">
                                 <span class="text-success h5 me-2">
                                     <i class="uil uil-check-circle align-middle"></i>
                                 </span>
                                 Exclusive Offers
                             </li>
-                            <li class="mb-1">
+                            <li class="mb-0">
                                 <span class="text-success h5 me-2">
                                     <i class="uil uil-check-circle align-middle"></i>
                                 </span>
                                 Build & Technical Support
                             </li>
-                            <li class="mb-1">
+                            <li class="mb-0">
                                 <span class="text-success h5 me-2">
                                     <i class="uil uil-check-circle align-middle"></i>
                                 </span>
@@ -851,9 +932,8 @@ GENZCars supply every single part required to complete the car. Buy online or em
                             </li>
                         </ul>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-6 mt-4">
+                </div>            </div>
+            <div class="col-md-6 mt-2">
                 <div class="card rounded shadow border-0 bg-black">
                     <div class="card-body p-0">
                         <form method="post" id="community-form-mobile" enctype="multipart/form-data">
@@ -862,62 +942,44 @@ GENZCars supply every single part required to complete the car. Buy online or em
                             <input type="hidden" value="{{ random_password }}" name="password2">
                             <input type="hidden" value="{{ country_code }}" name="country">
                             <input type="hidden" value="customer" name="role">
-                            <div class="row mt-4">
-                                <div class="col-md-12 ">
-                                    <div class="mb-3">
-                                        <label class="form-label text-dark text-uppercase">
-                                            First Name <span class="text-danger">*</span>
-                                        </label>
+                            <div class="row mt-4">                                <div class="col-md-12 ">
+                                    <div class="mb-2">
                                         <div class="form-icon position-relative">
                                             <i data-feather="user" class="fea icon-sm icons text-dark"></i>
                                             <input name="first_name" id="first_name" type="text"
                                                    class="ps-5 bg-transparent text-dark"
                                                    style="width: 100%; padding: 12px; font-size: 14px;
                                                           border: 1px solid #ccc; border-radius: 5px;
-                                                          outline: none; margin-bottom: 10px;"
-                                                   placeholder="First Name" required>
+                                                          outline: none; margin-bottom: 5px;"
+                                                   placeholder="First Name *" required>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label class="form-label text-dark text-uppercase">
-                                            Last Name <span class="text-danger">*</span>
-                                        </label>
+                                </div>                                <div class="col-md-12">
+                                    <div class="mb-2">
                                         <div class="form-icon position-relative">
                                             <i data-feather="user" class="fea icon-sm icons text-dark"></i>
                                             <input name="last_name" id="last_name" type="text"
                                                    class="ps-5 bg-transparent text-dark"
                                                    style="width: 100%; padding: 12px; font-size: 14px;
                                                           border: 1px solid #ccc; border-radius: 5px;
-                                                          outline: none; margin-bottom: 10px;
-                                                          "
-                                                   placeholder="Last Name" required>
+                                                          outline: none; margin-bottom: 5px;"
+                                                   placeholder="Last Name *" required>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label class="form-label text-dark text-uppercase">
-                                            Email <span class="text-danger">*</span>
-                                        </label>
+                                </div>                                <div class="col-md-12">
+                                    <div class="mb-2">
                                         <div class="form-icon position-relative">
                                             <i data-feather="mail" class="fea icon-sm icons text-dark"></i>
                                             <input type="email" id="email" class="ps-5 bg-transparent text-dark"
-                                                   placeholder="Email"
+                                                   placeholder="Email *"
                                                    style="width: 100%; padding: 12px; font-size: 14px;
                                                           border: 1px solid #ccc; border-radius: 5px;
-                                                          outline: none; margin-bottom: 10px;
-                                                          "
+                                                          outline: none; margin-bottom: 5px;"
                                                    name="email" required>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label class="form-label text-dark text-uppercase">
-                                            Phone Number
-                                        </label>
+                                </div>                                <div class="col-md-12">
+                                    <div class="mb-2">
                                         <div class="form-icon position-relative">
                                             <img class="fea icon-sm icons"
                                                  src="{{ country_flag_url }}"
@@ -928,22 +990,19 @@ GENZCars supply every single part required to complete the car. Buy online or em
                                                    placeholder="Phone Number"
                                                    style="width: 100%; padding: 12px; font-size: 14px;
                                                           border: 1px solid #ccc; border-radius: 5px;
-                                                          outline: none; margin-bottom: 10px;
-                                                          ">
+                                                          outline: none; margin-bottom: 5px;">
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label class="form-label text-dark text-uppercase">
-                                            Password <span class="text-danger">*</span>
-                                        </label>
+                                </div>                                <div class="col-md-12">
+                                    <div class="mb-2">
                                         <div class="form-icon position-relative">
                                             <i data-feather="lock" class="fea icon-sm icons"></i>
-                                            <input type="password" id="community-password-mobile" name="password" style="width: 100%; padding: 12px; font-size: 14px;
+                                            <input type="password" id="community-password-mobile" name="password" 
+                                                   style="width: 100%; padding: 12px; font-size: 14px;
                                                           border: 1px solid #ccc; border-radius: 5px;
-                                                          outline: none; margin-bottom: 10px;
-                                                          " class="ps-5 bg-transparent text-dark" required>
+                                                          outline: none; margin-bottom: 5px;"
+                                                   class="ps-5 bg-transparent text-dark" 
+                                                   placeholder="Password *" required>
                                             <i data-feather="eye" class="fea icon-sm icons position-absolute password-toggle" style="right: 10px; left: auto; cursor: pointer;"></i>
                                         </div>
                                         <div class="password-requirements text-dark mt-2">
@@ -956,18 +1015,16 @@ GENZCars supply every single part required to complete the car. Buy online or em
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label class="form-label text-dark text-uppercase">
-                                            Confirm Password <span class="text-danger">*</span>
-                                        </label>
+                                </div>                                <div class="col-md-12">
+                                    <div class="mb-2">
                                         <div class="form-icon position-relative">
                                             <i data-feather="lock" class="fea icon-sm icons"></i>
-                                            <input type="password" id="community-password-confirm-mobile" style="width: 100%; padding: 12px; font-size: 14px;
+                                            <input type="password" id="community-password-confirm-mobile" 
+                                                   style="width: 100%; padding: 12px; font-size: 14px;
                                                           border: 1px solid #ccc; border-radius: 5px;
-                                                          outline: none; margin-bottom: 10px;
-                                                          " name="password_confirm" class="ps-5 bg-transparent text-dark" required>
+                                                          outline: none; margin-bottom: 5px;"
+                                                   name="password_confirm" class="ps-5 bg-transparent text-dark" 
+                                                   placeholder="Confirm Password *" required>
                                             <i data-feather="eye" class="fea icon-sm icons position-absolute confirm-password-toggle" style="right: 10px; left: auto; cursor: pointer;"></i>
                                         </div>
                                         <div id="community-password-match-mobile" class="mt-1 text-dark" style="font-size: 0.8rem;"></div>
@@ -1447,4 +1504,19 @@ GENZCars supply every single part required to complete the car. Buy online or em
     });
 </script>
 
+<script>
+    // Add mobile-image-container class to all containers that have mobile images
+    document.addEventListener('DOMContentLoaded', function() {
+        // Find all containers with card-car-image-container class
+        const containers = document.querySelectorAll('.card-car-image-container');
+        
+        // For each container, check if it contains a mobile image
+        containers.forEach(container => {
+            if (container.querySelector('.mobile-image')) {
+                // Add the mobile-image-container class
+                container.classList.add('mobile-image-container');
+            }
+        });
+    });
+</script>
 {% endblock script %}
