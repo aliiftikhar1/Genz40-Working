@@ -1328,10 +1328,21 @@ def customer_message(request):
 
 
 def customer_community_message(request):
+    ip = get_country_info(request)
+    response = requests.get(f'https://ipinfo.io/{ip}/json')
+    data = response.json()
+    country_code = data.get('country')
+    # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
+    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+    context = {
+        'country_code': country_code,
+        'country_flag_url': country_flag_url,
+        'is_footer_required': True
+        }
     if request.user.is_authenticated:
         return render(request, 'customer/message/communityChat.html', {'is_footer_required': True})
     else:
-        return render(request, 'public/community_register.html', {'is_footer_required': True})
+        return render(request, 'public/community_register.html', context)
 
 @login_required
 def email_verify_from_dashboard(request):
