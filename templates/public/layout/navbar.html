@@ -5,11 +5,11 @@
 <header id="topnav" class="defaultscroll sticky d-lg-none" style="border-top: 1px solid white;">
     <div class="container">
         <div class="d-flex align-items-center justify-content-between">
-            <!-- Menu button on the left -->
+            <!-- MENU button on the left -->
             <div class="menu-extras">
             <div class="menu-item">
                 <a class="" id="isToggle" onclick="toggleMenu2()" style="width: 3rem ;color:white; justify-content: center;cursor:pointer; display: flex; align-items: center;">
-                        <span class="menu-text">Menu</span>
+                        <span class="menu-text">MENU</span>
                         <span class="close-text" style="display: none; font-size: 1.2em; font-weight: bold;">✕</span>
                 </a>
             </div>
@@ -52,7 +52,7 @@
         </div>
 
         <div id="navigation" style="display: none; transition: all 0.3s ease;">
-            <!-- Navigation Menu-->
+            <!-- Navigation MENU-->
             <ul class="navigation-menu nav-light">
                 {% if user_data.is_authenticated %}
                     <li class="has-submenu parent-menu-item">
@@ -134,7 +134,7 @@
         <!--Login button End-->
 
         <div id="navigation" style="display: block;">
-            <!-- Navigation Menu-->
+            <!-- Navigation MENU-->
             <ul class="navigation-menu nav-light">
                 <li>
                     <a href="{% if user.is_authenticated %}{% url 'index' %}{% else %}{% url 'home' %}{% endif %}" class="sub-menu-item">

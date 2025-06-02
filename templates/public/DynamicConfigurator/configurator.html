@@ -605,27 +605,42 @@
 
   // Get package from URL parameter and normalize it
   const urlParams = new URLSearchParams(window.location.search);
-  let packageParam = urlParams.get('package');
+  const packageParam = urlParams.get('package');
   console.log('Original package param:', packageParam);
   
   // Initialize tab visibility
   let initialTabIndex = 0;
   if (packageParam) {
-      // Properly decode the parameter and normalize spaces and case
-      const normalizedParam = decodeURIComponent(packageParam)
-          .replace(/\s+/g, ' ')
-          .trim()
-          .toLowerCase();
+    const normalizedParam = decodeURIComponent(packageParam)
+      .toLowerCase()
+      .replace(/\+/g, ' plus')
+      .replace(/%20/g, ' ')
+      .trim();
+    
+    console.log('Normalized package param:', normalizedParam);
+    
+    // Find the tab button that matches the package parameter
+    tabButtons.forEach((button, index) => {
+      // Get package type from data-tab attribute instead of button text
+      const packageType = button.getAttribute('data-tab');
+      const buttonText = button.textContent.trim().toLowerCase();
       
-      console.log('Normalized package param:', normalizedParam);
-      
-      // Find the tab button that matches the package parameter
-      tabButtons.forEach((button, index) => {
-          const buttonText = button.textContent.trim().replace(/\s+/g, ' ').toLowerCase();
-          if (buttonText === normalizedParam) {
-              initialTabIndex = index;
-          }
+      console.log('Comparing with tab:', {
+        'Tab index': index,
+        'Package type': packageType,
+        'Button text': buttonText,
+        'Is match': buttonText.includes(normalizedParam)
       });
+      
+      // Try different matching strategies
+      if (buttonText.includes(normalizedParam) || 
+          normalizedParam.includes(buttonText) ||
+          buttonText.replace('plus', '+') === normalizedParam ||
+          buttonText.replace(/\s+/g, '') === normalizedParam.replace(/\s+/g, '')) {
+        console.log('Found matching tab:', buttonText);
+        initialTabIndex = index;
+      }
+    });
   }
 
   // Set initial tab visibility
@@ -993,7 +1008,7 @@ function showSignUpForm(package_type) {
       </button>
     </div>
     
-    <form id="signup-form" class="gap-3 grid grid-cols-2">
+    <form id="signup-form" class="gap-3 grid grid-cols-1 md:grid-cols-2">
       {% csrf_token %}
       <input type="text" name="role" value="customer" hidden/>
       <input type="text" id="password1" name="password1" value="" hidden/>
@@ -1003,26 +1018,22 @@ function showSignUpForm(package_type) {
         <input type="text" id="first_name" name="first_name" required 
                class="mt-1 block w-full border text-white border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
       </div>
-      
       <div>
         <label for="last_name" class="block text-sm font-medium text-white">Last Name</label>
         <input type="text" id="last_name" name="last_name" required 
                class="mt-1 block w-full border border-gray-300 text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
       </div>
-      
       <div>
         <label for="signup-email" class="block text-sm font-medium text-white">Email</label>
         <input type="email" id="signup-email" name="email" required 
                class="mt-1 block w-full border border-gray-300 text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
       </div>
-      
       <div>
         <label for="phone_number" class="block text-sm font-medium text-white">Phone Number</label>
         <input type="tel" id="phone_number" name="phone_number" required 
                class="mt-1 block w-full border border-gray-300 text-white rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
       </div>
-      
-      <div class="col-span-2 relative group focus-within:opacity-100">
+      <div class="col-span-1 md:col-span-2 relative group focus-within:opacity-100">
         <!-- Tooltip -->
         <div class="top-full mt-1 left-0 z-10 w-full bg-gray-800 text-white text-xs rounded p-2 shadow-lg"
              id="password-rules-static">
@@ -1040,28 +1051,15 @@ function showSignUpForm(package_type) {
           <input type="password" id="signup-password" name="password" required 
                  class="block w-full text-white border border-gray-300 rounded-md shadow-sm py-2 px-3 pr-10 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
           <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 px-3 flex items-center" tabindex="-1">
-            <!-- Eye icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" id="eye-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
-            <!-- Eye off icon -->
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 hidden" id="eye-off-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-            </svg>
           </button>
         </div>
       </div>
-
-      
-      
-      <div class="col-span-2">
+      <div class="col-span-1 md:col-span-2">
         <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
           Continue
         </button>
       </div>
-      
-      <div class="text-center text-sm col-span-2">
+      <div class="text-center text-sm col-span-1 md:col-span-2">
         <p class="text-gray-600">Already have an account? 
           <a href="#" id="show-login-form" class="font-medium text-indigo-600 hover:text-indigo-500">Log in</a>
         </p>
@@ -1517,7 +1515,7 @@ function handleSignUpSubmit(e) {
         for (const feature of features) {
           if (shownCount >= maxToShow) break;
           const li = document.createElement('li');
-          li className = 'flex justify-between feature-item';
+          li.className = 'flex justify-between feature-item';
           li.innerHTML = `
             <span>${feature.name}</span>
             ${feature.included ? '<span class="text-lime-400">Included</span>' :
