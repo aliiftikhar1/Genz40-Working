@@ -95,15 +95,15 @@ def index(request):
         })
     items = PostNavItem.objects.filter(is_active=True).order_by('position')
     random_password = generate_random_password()
-    # ip = get_country_info(request)
-    # response = requests.get(f'https://ipinfo.io/{ip}/json')
-    # data = response.json()
-    # country_code = data.get('country')
+    ip = get_country_info(request)
+    response = requests.get(f'https://ipinfo.io/{ip}/json')
+    data = response.json()
+    country_code = data.get('country')
     # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
-    # country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+    country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
     context = {
-        # 'country_code': country_code,
-        # 'country_flag_url': country_flag_url,
+        'country_code': country_code,
+        'country_flag_url': country_flag_url,
         'section_1': section_1,
         'section_2': section_2,
         'section_3': section_3,
