@@ -1053,7 +1053,7 @@ def update_booked_package(request, pk):
         }
 
         # Render email template
-        subject = 'Reservation Updates - GEN-Z 40'
+        subject = 'Reservation Updates - Alvi Automobiles'
         html_content = render_to_string('email/status_updation.html', context)
         plain_text = strip_tags(html_content)
         

@@ -325,16 +325,44 @@ def about(request):
     })
 
 def blog(request):
-    # items = get_object_or_404(PostNavItem, slug=slug)
+    # Load blog data from JSON file
+    import os
+    blogs_data = []
+    try:
+        # Construct path to blogs.json file
+        json_file_path = os.path.join(settings.BASE_DIR, 'templates', 'public', 'blogs.json')
+        with open(json_file_path, 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            blogs_data = data.get('blogs', [])
+    except (FileNotFoundError, json.JSONDecodeError) as e:
+        # If JSON file is not found or has errors, fall back to empty list
+        blogs_data = []
+    
     return render(request, 'public/blog.html', {
-        'navbar_style': 'dark'
+        'navbar_style': 'dark',
+        'blogs': blogs_data
     })
 
 def blog_details(request):
-    # items = get_object_or_404(PostNavItem, slug=slug)
+    import os, json, random
+    slug = request.GET.get('slug')
+    blog_item = {}
+    related_blogs = []
+    try:
+        json_path = os.path.join(settings.BASE_DIR, 'templates', 'public', 'blogs.json')
+        with open(json_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+            blogs = data.get('blogs', [])
+            blog_item = next((b for b in blogs if b.get('slug') == slug), {})
+            # Pick two random related blogs excluding current
+            others = [b for b in blogs if b.get('slug') != slug]
+            related_blogs = random.sample(others, k=min(2, len(others))) if others else []
+    except Exception:
+        blog_item = {}
     return render(request, 'public/blog_details.html', {
         'navbar_style': 'dark',
-        # 'details': items
+        'blog': blog_item,
+        'related_blogs': related_blogs,
     })
 
 def contact_us(request):
@@ -1008,11 +1036,11 @@ def save_contact(request):
             form = PostContactForm(request.POST)
             if form.is_valid():
                 form.save()
-                return JsonResponse({"message": 'Thank you for contacting us. GENZ team will reach you shortly.', 'is_success': True})
+                return JsonResponse({"message": 'Thank you for contacting us. Alvi Automobiles team will reach you shortly.', 'is_success': True})
             else:
-                return JsonResponse({"message": 'Thank you for contacting us. GENZ team will reach you shortly.', 'is_success': True})
+                return JsonResponse({"message": 'Thank you for contacting us. Alvi Automobiles team will reach you shortly.', 'is_success': True})
         else:
-            return JsonResponse({"message": 'Thank you for contacting us. GENZ team will reach you shortly.', 'is_success': True})
+            return JsonResponse({"message": 'Thank you for contacting us. Alvi Automobiles team will reach you shortly.', 'is_success': True})
         
 def generate_reference_number():
     # Get today's date in MMDDYY format
@@ -1187,7 +1215,7 @@ def stripe_webhook(request):
         payment.status = payment_intent['status']
         payment.save()
 
-        mail_subject = "New car reserved - GEN-Z 40"
+        mail_subject = "New car reserved - Alvi Automobiles"
         context = {
         'admin': 'Salman'
         }
@@ -1652,7 +1680,7 @@ def reservation_success(request, id, sessionId):
                 status="succeeded",  
                 package_name=booked_package.title,
             )
-        subject = "Reservation Confirmation - GEN-Z 40"
+        subject = "Reservation Confirmation - Alvi Automobiles"
         current_site = get_current_site(request)
         context = {
                 'user': request.user,
@@ -2124,7 +2152,7 @@ def build_payment_success(request, id, sessionId):
         }
 
         # Render email template
-        subject = 'Payment Confirmation - GEN-Z 40'
+        subject = 'Payment Confirmation - Alvi Automobiles'
         html_content = render_to_string('email/payment_successful.html', context)
         plain_text = strip_tags(html_content)
         receipient_list = [booked_package.user.email, settings.ADMIN_EMAIL]
@@ -2556,7 +2584,7 @@ def create_payment_record(feature, payment_intent):
 
 def send_confirmation_email(request, booked_package, features, total_amount):
     """Send payment confirmation email for one or multiple features"""
-    subject = "Feature Payment Confirmation - GEN-Z 40"
+    subject = "Feature Payment Confirmation - Alvi Automobiles"
     context = {
         'user': request.user,
         'booked_package': booked_package,
