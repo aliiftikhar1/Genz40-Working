@@ -1,0 +1,44 @@
+/**
+ * iPad Pro Specific CSS Fixes
+ * 
+ * This file contains styles specifically targeting iPad Pro devices 
+ * (screens between 992px and 1366px) to improve the layout and user experience.
+ * 
+ * Main changes:
+ * - Increased container width from 960px to 1080px
+ * - Adjusted column widths for better content display
+ * - Optimized image containers and text sizes
+ * 
+ * Note: iPad Pro devices include:
+ * - 11-inch iPad Pro: 834 x 1194px
+ * - 12.9-inch iPad Pro: 1024 x 1366px
+ */
+
+/* iPad Pro specific styles */
+@media only screen and (min-width: 992px) and (max-width: 1366px) {
+    /* Increase the container width for iPad Pro devices */
+    .container {
+        max-width: 1080px !important; /* Increased from default 960px for this breakpoint */
+    }
+    
+    /* Additional iPad Pro optimizations */
+    .row.justify-content-center .col-lg-10 {
+        flex: 0 0 90%;
+        max-width: 90%;
+    }
+    
+    /* Adjust image containers to take advantage of the wider container */
+    .card-car-image-container {
+        max-height: 65vh;
+    }
+    
+    /* Ensure text is more readable on iPad Pro */
+    .section-title {
+        font-size: 2.5rem;
+    }
+    
+    /* Fix padding in various sections for iPad Pro */
+    .section {
+        padding: 90px 0;
+    }
+}
