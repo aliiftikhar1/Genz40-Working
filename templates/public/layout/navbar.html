@@ -1,4 +1,5 @@
 {% load static %}
+<link rel="stylesheet" href="{% static 'css/navbar-fix.css' %}">
 
 {% comment %} {% include 'public/component/topbar_component.html' %} {% endcomment %}
 <!-- Navbar Start Mobile-->
@@ -83,8 +84,15 @@
                             </a>
                         </li>
                     {% endfor %}
-                    <li><a class="sub-menu-item" href="{% url 'customer_community_message' %}">Community</a></li> 
-                    <li><a href="{% url 'about' %}" class="sub-menu-item">Company</a></li>
+                    <li>
+    <a href="{% url 'blog' %}" class="sub-menu-item">
+        <div class="text-lg-center">
+            <span class="d-block">Blog</span>
+        </div>
+    </a>
+</li>
+<li><a class="sub-menu-item" href="{% url 'customer_community_message' %}">Community</a></li> 
+<li><a href="{% url 'about' %}" class="sub-menu-item">Company</a></li>
                 {% endif %}
             </ul><!--end navigation menu-->
         </div><!--end navigation-->
@@ -157,6 +165,13 @@
                     </a>
                 </li>
                 {% endfor %}
+                 <li>
+                                    <a href="{% url 'blog' %}" class="sub-menu-item">
+                                        <div class="text-lg-center">
+                                            <span class=" d-block">Blog</span>
+                                        </div>
+                                    </a>
+                                </li>
                 <li><a href="{% url 'customer_community_message' %}" class="sub-menu-item">Community</a></li>
                 <li><a href="{% url 'about' %}" class="sub-menu-item">Company</a></li>
             </ul><!--end navigation menu-->

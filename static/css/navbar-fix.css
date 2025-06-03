@@ -1,0 +1,38 @@
+/* Custom fix for iPad Pro and similar tablets: keep navbar items in a single row with horizontal scroll if needed */
+@media (max-width: 1200px) and (min-width: 768px) {
+  #topnav .navigation-menu {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    justify-content: flex-start;
+    align-items: center;
+  }
+  #topnav .navigation-menu > li {
+    float: none !important;
+    display: inline-block !important;
+    margin: 0 0px !important;
+  }
+}
+
+/* Custom fix for mobile screens: stack navbar items vertically */
+@media (max-width: 991.98px) {
+  #topnav .navigation-menu {
+    display: block !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    overflow-x: visible !important;
+    white-space: normal !important;
+  }
+  #topnav .navigation-menu > li {
+    display: block !important;
+    float: none !important;
+    margin: 0 0 10px 0 !important;
+    width: 100%;
+  }
+  #topnav .navigation-menu > li > a {
+    width: 100%;
+    text-align: left;
+  }
+}
