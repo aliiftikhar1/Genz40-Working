@@ -112,7 +112,13 @@ def index(request):
         'items': items,
         'banners': banners  # Add banner to context
     }
-
+    # Load blog data for carousel
+    import os, json
+    json_path = os.path.join(settings.BASE_DIR, 'templates', 'public', 'blogs.json')
+    with open(json_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        context['blogs'] = data.get('blogs', [])
+        
     return render(request, 'public/index.html', context)
 
 def home(request):
@@ -161,6 +167,12 @@ def home(request):
         'items': items,
         'banners': banners  # Add banner to context
     }
+    # Load blog data for carousel
+    import os, json
+    json_path = os.path.join(settings.BASE_DIR, 'templates', 'public', 'blogs.json')
+    with open(json_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+        context['blogs'] = data.get('blogs', [])
 
     return render(request, 'public/index.html', context)
 
@@ -1736,7 +1748,7 @@ def reservation_details(request, id):
     # response = requests.get(f'https://ipinfo.io/{ip}/json')
     # data = response.json()
     # country_code = data.get('country')
-    # country_flag_url = f'https://www.flagsapi.com/{country_code}/flat/64.png'
+    # country_flag_url = f'https://www.countryflags.io/{country_code}/flat/64.png'
 
     car_image = None
     if booked_package.car_model.images.exists():
@@ -2105,6 +2117,8 @@ def create_build_checkout_session(request):
         'success': False,
         'message': 'Invalid request method'
     }, status=405)
+
+
 
 def build_payment_success(request, id, sessionId):
     print("Session id is: ", sessionId)
