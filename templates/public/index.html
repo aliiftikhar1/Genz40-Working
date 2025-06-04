@@ -275,6 +275,12 @@ justify-content: center;
     .faq-section {
         padding: 3rem 0;
     }
+    @media (min-width: 1024px) and (max-width: 1366px) {
+        .faq-section {
+            padding-left: 3rem;
+            padding-right: 3rem;
+        }
+    }
     .faq-title {
         font-weight: 800;
         font-size: 2rem;
@@ -487,6 +493,39 @@ justify-content: center;
         -moz-text-fill-color: #fff !important;
         color: #fff !important;
         border: 1px solid #fff !important;
+    }
+
+    @media (min-width: 1024px) and (max-width: 1366px) {
+        /* iPad Pro: hide desktop community and show mobile version */
+        section.section.bg-black.d-none.d-lg-block {
+            display: none !important;
+        }
+        section.mobile-community-section.d-lg-none {
+            display: block !important;
+        }
+        /* Adjust font sizes in mobile community section on iPad Pro */
+        section.mobile-community-section .section-title h4 {
+            font-size: 2rem !important;
+            line-height: 1.2 !important;
+        }
+        section.mobile-community-section .para-desc {
+            font-size: 1rem !important;
+            line-height: 1.4 !important;
+        }
+
+        /* X-padding for Join GEN-Z Community mobile section */
+        section.mobile-community-section {
+            padding-left: 2rem !important;
+            padding-right: 2rem !important;
+        }
+        /* Reduce font size of list items in mobile Community */
+        section.mobile-community-section ul.list-unstyled li {
+            font-size: 0.9rem !important;
+        }
+
+        /* Stack mobile section into one full-width column */
+        section.mobile-community-section .row.align-items-start { flex-direction: column!important; }
+        section.mobile-community-section .row.align-items-start > [class^="col-"] { width:100%!important; flex:none!important; margin-bottom:1rem!important; padding:0!important; }
     }
 </style>
 {% endblock header %}
@@ -736,8 +775,8 @@ GENZCars supply every single part required to complete the car. Buy online or em
 <section class="section bg-black d-none d-lg-block">
     <div class="container-fluid">
         <div class="row align-items-start">
-            <div class="col-md-1"></div>
-            <div class="col-md-4">
+            <div style="width:8.3333%; flex:0 0 auto;"></div>
+            <div style="width:33.3333%; flex:0 0 auto; padding-right:1.5rem;">
                 <div class="section-title me-lg-4">
                     <h4 class="title text-white mb-4 d-none d-lg-block">JOIN GEN-Z COMMUNITY</h4>
                     <h4 class="title text-white mb-4 d-lg-none">JOIN GEN-Z COMMUNITY</h4>
@@ -749,19 +788,19 @@ GENZCars supply every single part required to complete the car. Buy online or em
                         <h6 class="mb-4">WHAT ELSE YOU GET?</h6>
                         <ul class="list-unstyled">
                             <li class="mb-1">
-                                <span class="text-success h5 me-2">
+                                <span class="text-success h5 me-2 list-items">
                                     <i class="uil uil-check-circle align-middle"></i>
                                 </span>
                                 Exclusive Offers
                             </li>
                             <li class="mb-1">
-                                <span class="text-success h5 me-2">
+                                <span class="text-success h5 me-2 list-items">
                                     <i class="uil uil-check-circle align-middle"></i>
                                 </span>
                                 Build & Technical Support
                             </li>
                             <li class="mb-1">
-                                <span class="text-success h5 me-2">
+                                <span class="text-success h5 me-2 list-items">
                                     <i class="uil uil-check-circle align-middle"></i>
                                 </span>
                                 Live Chat with Member & Group Experts
@@ -770,8 +809,8 @@ GENZCars supply every single part required to complete the car. Buy online or em
                     </div>
                 </div>
             </div>
-            <div class="col-md-2"></div>
-            <div class="col-md-4">
+            <div style="width:16.6667%; flex:0 0 auto;"></div>
+            <div style="width:33.3333%; flex:0 0 auto;">
                 <div class="card rounded shadow  bg-black" style="border: 1px solid black; padding-top: 1rem;">
                     <div class="card-body pt-0">
                         <div class="section-title">

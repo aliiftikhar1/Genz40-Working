@@ -843,7 +843,14 @@
         }
     }
 
-    /* --- End: Custom Responsive & Gallery Styles --- */
+    /* iPad Pro (1024–1366px) horizontal padding */
+    @media (min-width: 1024px) and (max-width: 1366px) {
+      .car-stats-section,
+      .description-section {
+        padding-left: 2rem !important;
+        padding-right: 2rem !important;
+      }
+    }
 </style>
 {% endblock header %}
 
@@ -851,14 +858,14 @@
 <div class="container-fluid p-0" style="margin-top:2rem;">
     <!-- Hero Section -->
     <section class="hero-section">
-        <div class="top-btns-bar">
+        {% comment %} <div class="top-btns-bar">
             <a href="#exclusive-discount" class="btn btn-outline-black btn-md prominent-btn">
                 Get Exclusive Discount
             </a>
             <a href="" data-bs-toggle="modal" data-bs-target="#fullscreenModal" class="btn btn-outline-black btn-md prominent-btn">
                 Technical Specs
             </a>
-        </div>
+        </div> {% endcomment %}
         
         <section>
             <div class="">
@@ -911,11 +918,15 @@
                         </div>
                         <div class="car-stat-desc">{{ TitleData.top_speed_desc }}</div>
                     </div>
+                    <a href="" data-bs-toggle="modal" data-bs-target="#fullscreenModal" class="btn btn-outline-black btn-md prominent-btn">
+                Technical Specs
+            </a>
                 </div>
                 <div class="car-stats-right">
                     <img src="{{ TitleData.title_image_front }}" alt="Car Front" class="car-stats-image">
                 </div>
             </div>
+             
         </div>
         
         <!-- Loop Through Combined Data -->
