@@ -356,7 +356,7 @@ def blog(request):
     })
 
 def blog_details(request):
-    import os, json, random
+    import os, json
     slug = request.GET.get('slug')
     blog_item = {}
     related_blogs = []
@@ -365,10 +365,26 @@ def blog_details(request):
         with open(json_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
             blogs = data.get('blogs', [])
-            blog_item = next((b for b in blogs if b.get('slug') == slug), {})
-            # Pick two random related blogs excluding current
-            others = [b for b in blogs if b.get('slug') != slug]
-            related_blogs = random.sample(others, k=min(2, len(others))) if others else []
+            
+            # Find current blog and its index
+            current_blog_index = -1
+            for i, blog in enumerate(blogs):
+                if blog.get('slug') == slug:
+                    blog_item = blog
+                    current_blog_index = i
+                    break
+            
+            # Get next 2 blogs in sequence (wrap around if at end)
+            if current_blog_index != -1 and len(blogs) > 1:
+                total_blogs = len(blogs)
+                next_blogs = []
+                
+                for i in range(1, 3):  # Get next 2 blogs
+                    next_index = (current_blog_index + i) % total_blogs
+                    next_blogs.append(blogs[next_index])
+                
+                related_blogs = next_blogs
+            
     except Exception:
         blog_item = {}
     return render(request, 'public/blog_details.html', {
