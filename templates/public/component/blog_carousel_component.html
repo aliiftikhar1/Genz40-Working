@@ -2,9 +2,9 @@
 <section class="blog-carousel-section bg-black my-5">
   <div class="container">
     <h2 class="section-title text-white mb-4">From Our Blog</h2>
-    {% if blogs %}
-    <div class="blog-carousel-wrapper position-relative">
-      <div class="blog-carousel-container" id="blogCarouselContainer">        <div class="blog-carousel-track" id="blogCarouselTrack">
+    {% if blogs %}    <div class="blog-carousel-wrapper position-relative">
+      <div class="blog-carousel-container" id="blogCarouselContainer">
+        <div class="blog-carousel-track" id="blogCarouselTrack">
           {% for blog in blogs %}
           <div class="blog-carousel-item" data-original="true">
             <div class="card blog blog-primary rounded border-0 shadow overflow-hidden h-100">
@@ -53,6 +53,36 @@
 /* Blog Carousel Styles */
 .blog-carousel-section {
   padding: 60px 0;
+  overflow-x: hidden; /* Prevent horizontal scroll on mobile */
+}
+
+.blog-carousel-section .container {
+  max-width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* Mobile container adjustments */
+@media (max-width: 768px) {
+  .blog-carousel-section {
+    padding: 40px 0; /* Reduce section padding on mobile */
+  }
+  
+  .blog-carousel-section .container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .blog-carousel-section {
+    padding: 30px 0; /* Further reduce on small screens */
+  }
+  
+  .blog-carousel-section .container {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
 }
 
 .blog-carousel-wrapper {
@@ -78,12 +108,13 @@
 }
 
 .blog-carousel-item {
-  padding:20px;
+  padding: 20px;
   box-sizing: border-box; /* Ensure padding is included in width calculation */
   flex-shrink: 0; /* Prevent items from shrinking */
   /* Original min/max widths will be respected, JS will read offsetWidth */
   min-width: 350px;
   max-width: 350px;
+  height: auto; /* Allow natural height */
 }
 
 /* Responsive adjustments */
@@ -97,10 +128,24 @@
 
 @media (max-width: 768px) {
   .blog-carousel-item {
-    /* flex: 0 0 calc(100% - 20px); */ /* Old flex rule */
-    min-width: 280px;
-    max-width: 100%; /* Original max-width */
-    /* flex-basis: 100%; /* Ensure it takes full available space if that's the design */
+    /* Ensure full width on mobile for single item display */
+    min-width: calc(100vw - 60px); /* Use viewport width minus margins */
+    max-width: calc(100vw - 60px);
+    margin: 0 auto; /* Center the item */
+    padding: 15px; /* Reduce padding on mobile */
+  }
+  
+  .blog-carousel-track {
+    gap: 15px; /* Adjust gap for mobile */
+    padding: 0 5px; /* Reduce track padding */
+  }
+  
+  .blog-carousel-wrapper {
+    margin: 0 10px; /* Reduce wrapper margin */
+  }
+  
+  .blog-carousel-container {
+    overflow: hidden; /* Ensure proper overflow handling */
   }
 }
 
@@ -144,15 +189,32 @@
 
 @media (max-width: 768px) {
   .blog-carousel-wrapper {
-    margin: 0 15px; /* Reduce margin on mobile */
+    margin: 0 10px; /* Reduce margin on mobile for single item display */
   }
   
   .blog-prev-btn {
-    left: -15px;
+    left: -10px; /* Adjust button position */
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
   }
   
   .blog-next-btn {
-    right: -15px;
+    right: -10px; /* Adjust button position */
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+  
+  .blog-carousel-btn {
+    background: rgba(255, 255, 255, 0.9); /* More visible on mobile */
+    color: #333;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  
+  .blog-carousel-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    color: #000;
   }
 }
 
@@ -161,6 +223,9 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Ensure consistent height */
 }
 
 .blog-carousel-section .card:hover {
@@ -238,6 +303,36 @@
   .blog-carousel-section .card-text {
     font-size: 0.8rem;
   }
+  
+  .blog-carousel-item {
+    /* Ensure single item takes full available width on small mobile */
+    min-width: calc(100vw - 40px); /* Use full viewport width */
+    max-width: calc(100vw - 40px);
+    padding: 10px; /* Reduce padding on very small screens */
+  }
+  
+  .blog-carousel-wrapper {
+    margin: 0 5px; /* Minimal margin on very small screens */
+  }
+  
+  .blog-carousel-track {
+    padding: 0 2px; /* Minimal track padding */
+    gap: 10px; /* Smaller gap on very small screens */
+  }
+  
+  .blog-carousel-btn {
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
+  }
+  
+  .blog-prev-btn {
+    left: -5px;
+  }
+  
+  .blog-next-btn {
+    right: -5px;
+  }
 }
 
 /* Hide scrollbar but allow scrolling */
@@ -257,6 +352,68 @@
 
 .blog-carousel-track.no-transition {
   transition: none;
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  .blog-carousel-container {
+    touch-action: pan-x; /* Enable horizontal touch scrolling */
+  }
+  
+  .blog-carousel-section .card {
+    /* Ensure cards are touch-friendly on mobile */
+    cursor: pointer;
+    margin: 0; /* Remove any default margins */
+    width: 100%; /* Ensure card takes full item width */
+    height: auto; /* Allow natural height */
+  }
+  
+  .blog-carousel-section .card img {
+    height: 180px; /* Slightly smaller image height on mobile */
+    width: 100%; /* Ensure image takes full width */
+    object-fit: cover; /* Maintain aspect ratio */
+  }
+  
+  .blog-carousel-section .card-body {
+    padding: 1rem 0.75rem; /* Adjust padding for mobile */
+    display: flex;
+    flex-direction: column;
+    min-height: 150px; /* Ensure consistent card body height */
+  }
+  
+  .blog-carousel-section .card-title a {
+    display: block; /* Ensure title link is block level */
+    line-height: 1.2; /* Tighter line height for mobile */
+  }
+  
+  .blog-carousel-section .card-text {
+    flex-grow: 1; /* Allow text to expand */
+    margin-bottom: 0.75rem; /* Consistent margin */
+  }
+  
+  .blog-carousel-section .btn {
+    align-self: flex-start; /* Align button to start */
+    margin-top: auto; /* Push button to bottom */
+  }
+}
+
+@media (max-width: 480px) {
+  .blog-carousel-section .card img {
+    height: 160px; /* Even smaller on very small screens */
+  }
+  
+  .blog-carousel-section .card-body {
+    padding: 0.75rem 0.5rem;
+    min-height: 140px; /* Adjust minimum height for small screens */
+  }
+  
+  .blog-carousel-section .card-title {
+    margin-bottom: 0.5rem; /* Reduce title margin */
+  }
+  
+  .blog-carousel-section .card-text {
+    margin-bottom: 0.5rem; /* Reduce text margin */
+  }
 }
 </style>
 
@@ -280,32 +437,47 @@ document.addEventListener('DOMContentLoaded', function() {
     // console.log('No blog items found');
     return;
   }
-
   let currentIndex = 0; // This will now track the logical index within the original items
   let actualIndex = 0; // This will track the actual index in the full list (originals + clones)
   let isTransitioning = false;
   const itemGap = 15; 
 
-  function getItemActualWidth() {
+  // Function to detect if we're on mobile
+  function isMobileScreen() {
+    return window.innerWidth <= 768;
+  }  function getItemActualWidth() {
     if (originalItems.length > 0) {
-      return originalItems[0].offsetWidth;
+      const width = originalItems[0].offsetWidth;
+      console.log(`Item actual width: ${width}`);
+      return width;
     }
-    return 280; 
+    // Better mobile width calculation
+    const fallbackWidth = isMobileScreen() 
+      ? (window.innerWidth <= 480 ? window.innerWidth - 40 : window.innerWidth - 60)
+      : 350;
+    console.log(`Using fallback width: ${fallbackWidth}`);
+    return fallbackWidth;
   }
-  
-  // getVisibleItems is not strictly needed for this logic but can be kept for other purposes
+    // getVisibleItems is not strictly needed for this logic but can be kept for other purposes
   // function getVisibleItems() { 
   //   const containerWidth = container.clientWidth;
   //   const itemWidth = getItemActualWidth();
   //   if (itemWidth === 0) return 1; 
   //   return Math.max(1, Math.floor((containerWidth + itemGap) / (itemWidth + itemGap)));
   // }
-
   function updateCarousel(smooth = true) {
     if (originalItems.length === 0) return;
 
     const itemWidth = getItemActualWidth();
-    const translateX = -(actualIndex * (itemWidth + itemGap)); // Use actualIndex for transform
+    // Dynamic gap calculation based on screen size
+    let gap = itemGap;
+    if (isMobileScreen()) {
+      gap = window.innerWidth <= 480 ? 10 : 15;
+    }
+    
+    const translateX = -(actualIndex * (itemWidth + gap)); // Use actualIndex for transform
+    
+    console.log(`Updating carousel: actualIndex=${actualIndex}, itemWidth=${itemWidth}, gap=${gap}, translateX=${translateX}`);
     
     if (smooth) {
       track.style.transition = 'transform 0.5s ease-in-out';
@@ -351,88 +523,47 @@ document.addEventListener('DOMContentLoaded', function() {
         updateCarousel(false); // Snap to the last original item's position
     }
 }
-
-
   function moveNext() {
     if (isTransitioning) return;
     isTransitioning = true;
 
+    console.log(`Moving next: currentIndex=${currentIndex}, actualIndex=${actualIndex}`);
+    
     currentIndex++;
     actualIndex++;
 
-    updateCarousel(true); // Animate to the next item (could be a clone)
+    // Handle infinite loop at the end
+    if (actualIndex >= totalOriginalBlogs) {
+      currentIndex = 0;
+      actualIndex = 0;
+    }
 
-    track.addEventListener('transitionend', function onTransitionEnd() {
-      isTransitioning = false;
-      // If we've moved to a clone that represents the start of the list
-      if (actualIndex >= totalOriginalBlogs) { 
-        // We are now showing a clone of the first item(s).
-        // We need to snap back to the actual first item(s) without animation.
-        currentIndex = actualIndex % totalOriginalBlogs;
-        actualIndex = currentIndex; // Reset actualIndex to correspond to the original item
-        track.style.transition = 'none';
-        updateCarousel(false);
-      }
-      track.removeEventListener('transitionend', onTransitionEnd);
-    }, { once: true });
+    updateCarousel(true);
 
-    // Fallback timeout
     setTimeout(() => {
-      if (isTransitioning) {
-        isTransitioning = false;
-        if (actualIndex >= totalOriginalBlogs) {
-          currentIndex = actualIndex % totalOriginalBlogs;
-          actualIndex = currentIndex;
-          track.style.transition = 'none';
-          updateCarousel(false);
-        }
-      }
-    }, 550); // Slightly longer than transition
-  }
-
-  function movePrev() {
+      isTransitioning = false;
+    }, 500);
+  }  function movePrev() {
     if (isTransitioning) return;
     isTransitioning = true;
+
+    console.log(`Moving prev: currentIndex=${currentIndex}, actualIndex=${actualIndex}`);
 
     currentIndex--;
     actualIndex--;
 
-    updateCarousel(true); // Animate to the previous item
+    // Handle infinite loop at the beginning
+    if (actualIndex < 0) {
+      currentIndex = totalOriginalBlogs - 1;
+      actualIndex = totalOriginalBlogs - 1;
+    }
 
-    track.addEventListener('transitionend', function onTransitionEnd() {
-      isTransitioning = false;
-      // If we've moved to a clone that represents the end of the list (from the left)
-      if (actualIndex < 0) {
-        // We are now showing a clone of the last item(s) (prepended for looping).
-        // For this setup, we have clones only at the end. So, if actualIndex < 0, we need to go to the *actual* end.
-        currentIndex = totalOriginalBlogs - 1; // last original item
-        actualIndex = totalOriginalBlogs + currentIndex; // This points to the clone of the last item at the very end of the track
-                                                // No, this is for when clones are at start AND end.
-                                                // With clones only at the end:
-        actualIndex = totalOriginalBlogs -1 + totalOriginalBlogs; // This is the index of the last *original* item if we consider the whole track (original + clones)
-                                                                // No, this is too complex. Simpler: if currentIndex < 0, it means we were at the first item and clicked prev.
-                                                                // We should go to the last item of the *original* set.
-        currentIndex = totalOriginalBlogs -1; // Go to the logical last item
-        actualIndex = totalOriginalBlogs -1; // And its actual position
-        track.style.transition = 'none'; // Snap to it
-        updateCarousel(false);
-      }
-      track.removeEventListener('transitionend', onTransitionEnd);
-    }, { once: true });
-    
-    // Fallback timeout
+    updateCarousel(true);
+
     setTimeout(() => {
-        if (isTransitioning) {
-            isTransitioning = false;
-            if (actualIndex < 0) {
-                currentIndex = totalOriginalBlogs - 1;
-                actualIndex = currentIndex;
-                track.style.transition = 'none';
-                updateCarousel(false);
-            }
-        }
-    }, 550);
-}
+      isTransitioning = false;
+    }, 500);
+  }
 
 // Initial setup: position at the start of the *original* items
 // If you want to start at the first clone to enable immediate prev looping, adjust actualIndex here.
@@ -441,9 +572,52 @@ document.addEventListener('DOMContentLoaded', function() {
   currentIndex = 0;
   updateCarousel(false);
 
-  if (nextBtn) nextBtn.addEventListener('click', moveNext);
-  if (prevBtn) prevBtn.addEventListener('click', movePrev);
+  if (nextBtn) {
+    nextBtn.addEventListener('click', function() {
+      console.log('Next button clicked');
+      moveNext();
+    });
+  }
+  if (prevBtn) {
+    prevBtn.addEventListener('click', function() {
+      console.log('Previous button clicked');
+      movePrev();
+    });
+  }
 
+  // Add touch/swipe support for mobile
+  let touchStartX = 0;
+  let touchEndX = 0;
+  
+  function handleTouchStart(e) {
+    touchStartX = e.changedTouches[0].screenX;
+  }
+  
+  function handleTouchEnd(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  }
+  
+  function handleSwipe() {
+    const swipeThreshold = 50; // Minimum distance for a swipe
+    const swipeDistance = touchEndX - touchStartX;
+    
+    if (Math.abs(swipeDistance) > swipeThreshold) {
+      if (swipeDistance > 0) {
+        // Swipe right - go to previous
+        movePrev();
+      } else {
+        // Swipe left - go to next
+        moveNext();
+      }
+    }
+  }
+  
+  // Only add touch events on mobile devices
+  if (isMobileScreen()) {
+    track.addEventListener('touchstart', handleTouchStart, { passive: true });
+    track.addEventListener('touchend', handleTouchEnd, { passive: true });
+  }
   let resizeTimeout;
   window.addEventListener('resize', function() {
     clearTimeout(resizeTimeout);
@@ -459,10 +633,25 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         currentIndex = actualIndex;
       }
+      
+      // Re-add or remove touch events based on screen size
+      if (isMobileScreen()) {
+        track.removeEventListener('touchstart', handleTouchStart);
+        track.removeEventListener('touchend', handleTouchEnd);
+        track.addEventListener('touchstart', handleTouchStart, { passive: true });
+        track.addEventListener('touchend', handleTouchEnd, { passive: true });
+      } else {
+        track.removeEventListener('touchstart', handleTouchStart);
+        track.removeEventListener('touchend', handleTouchEnd);
+      }
+      
       updateCarousel(false); 
     }, 250);
-  });
-  
-  // console.log(`Blog carousel initialized. Total original blogs: ${totalOriginalBlogs}`);
+  });  
+  console.log(`Blog carousel initialized. Total original blogs: ${totalOriginalBlogs}`);
+  console.log('Next button:', nextBtn);
+  console.log('Previous button:', prevBtn);
+  console.log('Track element:', track);
+  console.log('Container element:', container);
 });
 </script>
