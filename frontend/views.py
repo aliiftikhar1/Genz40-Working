@@ -1603,7 +1603,7 @@ def process_reservation_payment(request):
                 'line_items': line_items,
                 'package_id': str(booked_package.id),
                 'success_url': request.build_absolute_uri(
-                    f'/car/reservation_success/{booked_package.id}/')+ '{CHECKOUT_SESSION_ID}'+'/',
+                    f'/car/reservation_success/{booked_package.id}/'),
                 'cancel_url': request.build_absolute_uri(
                     f'/car/reservation-checkout/'
                 ),
@@ -1659,7 +1659,7 @@ def create_package_checkout_session(request):
                 payment_method_types=['card'],
                 line_items=data['line_items'],
                 mode='payment',
-                success_url=data['success_url'],
+                success_url=data['success_url'] + '{CHECKOUT_SESSION_ID}/',
                 cancel_url=data['cancel_url'],
                 metadata=data['metadata'],
                 payment_intent_data=data['payment_intent_data']
