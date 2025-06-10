@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from chat.models import ChatRoom, Message, ChatNotification
 from chat.serializers import ChatRoomSerializer, MessageSerializer, ChatNotificationSerializer
 from django.db.models import Q, Max
+from django.db.models import F, Func, Value
 from django.utils import timezone
 import jwt
 from django.conf import settings
@@ -145,13 +146,24 @@ class MobileImageUploadView(APIView):
             file_path = default_storage.save(file_name, ContentFile(image.read()))
             file_url = default_storage.url(file_path)
 
-            # Create message
+            # Determine unread recipients
+            if chat_room.chat_type == ChatRoom.COMMUNITY:
+                unread_by = [str(member.id) for member in chat_room.members.exclude(id=request.user.id)]
+            else:
+                if request.user == chat_room.customer and chat_room.admin:
+                    unread_by = [str(chat_room.admin.id)]
+                elif request.user == chat_room.admin and chat_room.customer:
+                    unread_by = [str(chat_room.customer.id)]
+                else:
+                    unread_by = []
+            # Create message with unread_by
             message = Message.objects.create(
                 chat_room=chat_room,
                 sender=request.user,
                 content='Image shared',
                 message_type=Message.IMAGE,
-                image=file_path
+                image=file_path,
+                unread_by=unread_by
             )
 
             # Create notification
@@ -187,7 +199,7 @@ class MobileImageUploadView(APIView):
                     'sender_name': message.sender.get_full_name() or message.sender.email,
                     'sender_role': 'admin' if message.sender.is_staff else 'customer',
                     'timestamp': message.timestamp.isoformat(),
-                    'is_read': message.is_read,
+                    'unread_by': message.unread_by,
                     'room_id': message.chat_room.id,
                     'room_name': chat_room.community.name if chat_room.chat_type == ChatRoom.COMMUNITY else chat_room.subject,
                     'message_type': message.message_type,
@@ -231,13 +243,16 @@ class MobileMarkMessagesAsReadView(APIView):
                     status=status.HTTP_403_FORBIDDEN
                 )
 
-            # Mark messages as read
+            # Remove current user from unread_by lists
             Message.objects.filter(
-                chat_room=chat_room,
-                is_read=False
+                chat_room=chat_room
             ).exclude(
                 sender=request.user
-            ).update(is_read=True)
+            ).filter(
+                unread_by__contains=[str(request.user.id)]
+            ).update(
+                unread_by=Func(F('unread_by'), Value(str(request.user.id)), function='array_remove')
+            )
 
             # Clear notifications
             ChatNotification.objects.filter(

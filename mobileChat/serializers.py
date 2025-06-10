@@ -33,11 +33,12 @@ class ChatRoomSerializer(serializers.ModelSerializer):
 class MessageSerializer(serializers.ModelSerializer):
     sender = UserSerializer(read_only=True)
     image_url = serializers.SerializerMethodField()
+    unread_by = serializers.ListField(child=serializers.CharField(), read_only=True)
 
     class Meta:
         model = Message
-        fields = ['id', 'content', 'sender', 'timestamp', 'is_read', 
-                 'message_type', 'image_url']
+        fields = ['id', 'content', 'sender', 'timestamp', 'unread_by', 
+                  'message_type', 'image_url']
 
     def get_image_url(self, obj):
         if obj.image:
@@ -49,4 +50,4 @@ class ChatNotificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ChatNotification
-        fields = ['id', 'chat_room', 'count', 'created_at'] 
+        fields = ['id', 'chat_room', 'count', 'created_at']

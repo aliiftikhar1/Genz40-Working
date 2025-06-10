@@ -138,7 +138,7 @@ class MobileChatConsumer(AsyncWebsocketConsumer):
                         'sender_name': await self.get_user_display_name(self.user),
                         'sender_role': 'admin' if self.user.is_staff else 'customer',
                         'timestamp': message_obj.timestamp.isoformat(),
-                        'is_read': message_obj.is_read,
+                        'unread_by': list(message_obj.unread_by),
                         'room_id': room_id,
                         'room_name': room_name or 'Support',
                         'message_type': 'image',
@@ -177,7 +177,7 @@ class MobileChatConsumer(AsyncWebsocketConsumer):
                         'sender_name': await self.get_user_display_name(self.user),
                         'sender_role': 'admin' if self.user.is_staff else 'customer',
                         'timestamp': message_obj.timestamp.isoformat(),
-                        'is_read': message_obj.is_read,
+                        'unread_by': list(message_obj.unread_by),
                         'room_id': room_id,
                         'room_name': room_name or 'Support',
                         'message_type': message_obj.message_type,
@@ -230,7 +230,7 @@ class MobileChatConsumer(AsyncWebsocketConsumer):
                 'sender_name': await self.get_user_display_name(self.user),
                 'sender_role': 'admin' if self.user.is_staff else 'customer',
                 'timestamp': message_obj.timestamp.isoformat(),
-                'is_read': message_obj.is_read,
+                'unread_by': list(message_obj.unread_by),
                 'room_id': room_id,
                 'room_name': room_name or 'Support',
                 'message_type': 'image',
@@ -258,7 +258,7 @@ class MobileChatConsumer(AsyncWebsocketConsumer):
             'sender_name': event['sender_name'],
             'sender_role': event['sender_role'],
             'timestamp': event['timestamp'],
-            'is_read': event['is_read'],
+            'unread_by': event.get('unread_by'),
             'room_id': event['room_id'],
             'room_name': event['room_name'],
             'message_type': event['message_type'],
@@ -317,16 +317,27 @@ class MobileChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def save_message(self, message, room_id):
         room = ChatRoom.objects.get(id=room_id)
+        # Determine unread recipients
         if room.chat_type == ChatRoom.COMMUNITY:
             if not room.members.filter(id=self.user.id).exists():
                 raise ValueError("User is not a member of this community")
+            unread_by = [str(member.id) for member in room.members.exclude(id=self.user.id)]
+        else:
+            if self.user == room.customer and room.admin:
+                unread_by = [str(room.admin.id)]
+            elif self.user == room.admin and room.customer:
+                unread_by = [str(room.customer.id)]
+            else:
+                unread_by = []
+        # Create message with unread_by
         message_obj = Message.objects.create(
             chat_room=room,
             sender=self.user,
-            content=message
+            content=message,
+            unread_by=unread_by
         )
         room.update_timestamp()
-        
+        # Notifications for recipients
         if room.chat_type == ChatRoom.COMMUNITY:
             for member in room.members.exclude(id=self.user.id):
                 notification, created = ChatNotification.objects.get_or_create(
@@ -373,14 +384,24 @@ class MobileChatConsumer(AsyncWebsocketConsumer):
             if room.chat_type == ChatRoom.COMMUNITY:
                 if not room.members.filter(id=self.user.id).exists():
                     raise ValueError("User is not a member of this community")
-            
+            # Determine unread recipients for image as well
+            if room.chat_type == ChatRoom.COMMUNITY:
+                unread_by = [str(member.id) for member in room.members.exclude(id=self.user.id)]
+            else:
+                if self.user == room.customer and room.admin:
+                    unread_by = [str(room.admin.id)]
+                elif self.user == room.admin and room.customer:
+                    unread_by = [str(room.customer.id)]
+                else:
+                    unread_by = []
             # Create the message
             message_obj = Message.objects.create(
                 chat_room=room,
                 sender=self.user,
                 content='Image shared',
-                message_type='image',
-                image=image_url
+                message_type=Message.IMAGE,
+                image=image_url,
+                unread_by=unread_by
             )
             logger.debug(f"Message created with ID: {message_obj.id}")
             
@@ -433,4 +454,4 @@ class MobileChatConsumer(AsyncWebsocketConsumer):
     def get_user_display_name(self, user):
         if not user:
             return "System"
-        return user.get_full_name() or user.email 
+        return user.get_full_name() or user.email
