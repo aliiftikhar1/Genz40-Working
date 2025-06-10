@@ -94,13 +94,13 @@
                         <div class="card blog blog-detail border-0 shadow rounded" style="background-color: white !important;">
                             <img src="{{ blog.featured_image }}" class="img-fluid rounded-top" alt="{{ blog.title }}" style="width: 800px; height: 600px; object-fit: cover;">
                             <div class="card-body content" style="background-color: white !important; color: black !important;">
-                                {% if blog.tags %}
+                                {% comment %} {% if blog.tags %}
                                 <h6 style="color: black !important;"><i class="mdi mdi-tag text-primary me-1"></i>
                                     {% for tag in blog.tags %}
                                         <a href="javascript:void(0)" class="text-primary">{{ tag }}</a>{% if not forloop.last %}, {% endif %}
                                     {% endfor %}
                                 </h6>
-                                {% endif %}
+                                {% endif %} {% endcomment %}
                                 <p class="mt-3" style="color: black !important; background-color: white !important;">{{ blog.content|linebreaksbr }}</p>
                                 <div class="post-meta mt-3" style="color: black !important;">
                                     <ul class="list-unstyled mb-0">
