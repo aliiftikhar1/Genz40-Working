@@ -542,6 +542,8 @@ adminFileInput?.addEventListener('change', (e) => {
                 content: 'Image shared'
             }));
         }
+        // Fetch messages after image upload to update chat for sender
+        loadChatRommMessages(currentAdminRoomId);
     })
     .catch(err => {
         console.error('Upload failed:', err);
