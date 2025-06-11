@@ -611,32 +611,18 @@
   // Initialize tab visibility
   let initialTabIndex = 0;
   if (packageParam) {
+    // Normalize the URL param for comparison
     const normalizedParam = decodeURIComponent(packageParam)
       .toLowerCase()
-      .replace(/\+/g, ' plus')
-      .replace(/%20/g, ' ')
-      .trim();
-    
+      .replace(/\s+/g, ' ').replace(/\s/g, '_').replace(/\+/g, 'plus').trim();
     console.log('Normalized package param:', normalizedParam);
     
-    // Find the tab button that matches the package parameter
+    // Find the tab button that matches the normalized package parameter strictly
     tabButtons.forEach((button, index) => {
-      // Get package type from data-tab attribute instead of button text
-      const packageType = button.getAttribute('data-tab');
-      const buttonText = button.textContent.trim().toLowerCase();
-      
-      console.log('Comparing with tab:', {
-        'Tab index': index,
-        'Package type': packageType,
-        'Button text': buttonText,
-        'Is match': buttonText.includes(normalizedParam)
-      });
-      
-      // Try different matching strategies
-      if (buttonText.includes(normalizedParam) || 
-          normalizedParam.includes(buttonText) ||
-          buttonText.replace('plus', '+') === normalizedParam ||
-          buttonText.replace(/\s+/g, '') === normalizedParam.replace(/\s+/g, '')) {
+      const packageType = button.getAttribute('data-tab').toLowerCase();
+      const buttonText = button.textContent.trim().toLowerCase().replace(/\s+/g, '_').replace(/\+/g, 'plus');
+      // Compare normalizedParam to both data-tab and normalized button text
+      if (packageType === normalizedParam || buttonText === normalizedParam) {
         console.log('Found matching tab:', buttonText);
         initialTabIndex = index;
       }
