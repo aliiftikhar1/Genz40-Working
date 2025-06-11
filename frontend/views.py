@@ -549,7 +549,7 @@ def get_register_community(request):
                         customer=user,
                         admin=admin_user,
                         room_name=f"chat_{str(user.id)}_{str(admin_user.id) if admin_user else '0'}_{timezone.now().timestamp()}",
-                        subject="Genz40-Chat Support",
+                        subject="Alvi Automobiles-Chat Support",
                         created_at=timezone.now()
                     )
 
@@ -558,7 +558,7 @@ def get_register_community(request):
                     welcome_message = Message.objects.create(
                         chat_room=chatroom,
                         sender=admin_user,
-                        content="Welcome to Genz40! Our support team is here to assist you. Feel free to ask any questions.",
+                        content="Welcome to Alvi Automobiles! Our support team is here to assist you. Feel free to ask any questions.",
                         timestamp=timezone.now(),
                         unread_by=unread_by
                     )
@@ -758,7 +758,7 @@ def get_register(request):
             customer=user,
             admin=admin_user,
             room_name=f"chat_{str(user.id)}_{str(admin_user.id) if admin_user else '0'}_{timezone.now().timestamp()}",
-            subject="Genz40-Chat Support",
+            subject="Alvi Automobiles-Chat Support",
             created_at=timezone.now()
         )
 
@@ -767,7 +767,7 @@ def get_register(request):
         welcome_message = Message.objects.create(
             chat_room=chatroom,
             sender=admin_user,
-            content="Welcome to Genz40! Our support team is here to assist you. Feel free to ask any questions.",
+            content="Welcome to Alvi Automobiles! Our support team is here to assist you. Feel free to ask any questions.",
             timestamp=timezone.now(),
             unread_by=unread_by
         )
@@ -889,7 +889,7 @@ def subscribe(request):
             if form.is_valid():
                 form.save()
                 subscribe_email(request.POST['email'])
-                subject = 'Thank you for Newsletter subscribe - www.genz40.com'
+                subject = 'Thank you for Newsletter subscribe - www.Alvi Automobiles.com'
                 email_from = settings.EMAIL_HOST_USER
                 recipient_list = [settings.ADMIN_EMAIL]
                 c = {'name': 'Salman'}
@@ -1123,7 +1123,7 @@ def create_account_before_checkout(request):
                 user.save()
                 # user = form.get_user()
                 login(request, user)
-                subject = "Welcome to Our Platform - www.genz40.com"
+                subject = "Welcome to Our Platform - www.alviautomobiles.com"
                 recipient_list = [user.email]
                 sender = settings.EMAIL_FROM  # Ensure this is set in settings.py
                 # Render HTML email template
@@ -1169,7 +1169,7 @@ def create_checkout_session(request):
                         'product_data': {
                             'name': product_name,
                             'description': 'This reservation will save your position in line. When you car is available for production, we will invite you to configure and choose from dozens of options to make it complete personalized and unique.',
-                            'images': ['https://genz40.com/static/images/genz/mark1-builder4.png'],
+                            'images': ['https://alviautomobiles.com/static/images/genz/mark1-builder4.png'],
                         },
                         'unit_amount': int(amount) * 100,  
                     },
@@ -1591,7 +1591,7 @@ def process_reservation_payment(request):
                     'product_data': {
                         'name': booked_package.car_model.title,
                         'description': f"Payment for {booked_package.title} Package of {booked_package.car_model.title}",
-                        'images': ['https://genz40.com/static/images/genz/mark1-builder4.png'],
+                        'images': ['https://alviautomobiles.com/static/images/genz/mark1-builder4.png'],
                     },
                     'unit_amount': int(float(100) * 100),  # amount in cents
                 },
