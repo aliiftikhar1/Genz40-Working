@@ -1747,7 +1747,19 @@ def reservation_details(request, id):
     """
     View the reservation checkout page.
     """
-    booked_package = get_object_or_404(BookedPackage, reservation_number=id)
+    booked_package = None
+    try:
+        booked_packagee = BookedPackage.objects.get(reservation_number=id)
+        booked_package = booked_packagee
+        if booked_package.user != request.user:
+            raise BookedPackage.DoesNotExist
+    except BookedPackage.DoesNotExist:
+        return render(
+            request,
+            'public/invalid_reservation.html',
+            {'message': 'This reservation id is invalid.'},
+            status=404
+        )
     package_type = booked_package.package.package_type
     car = booked_package.car_model.slug
     pending_features = booked_package.new_features.filter(status='pending')

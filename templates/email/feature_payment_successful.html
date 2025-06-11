@@ -139,8 +139,30 @@
                 </tfoot>
             </table>
         </div>
-        <div style="text-align:center;margin-top:32px;">
-            <a href="https://{{ domain }}/car/reservation/{{ booked_package.reservation_number }}" class="btn">View My Configurations</a>
+        <div style="text-align:center;margin-top:40px;">
+            <a href="https://{{ domain }}/car/reservation/{{ booked_package.reservation_number }}/" 
+               class="btn" 
+               style="
+                display:inline-block;
+                background: linear-gradient(90deg,#4f46e5 0%,#2b6cb0 100%);
+                color: #fff !important;
+                padding: 18px 48px;
+                border-radius: 10px;
+                font-size: 22px;
+                font-weight: 700;
+                text-decoration: none;
+                margin-top: 18px;
+                margin-bottom: 10px;
+                box-shadow: 0 4px 16px rgba(79,70,229,0.18);
+                border: 2px solid #4f46e5;
+                letter-spacing: 1px;
+                transition: background 0.2s, box-shadow 0.2s;
+               "
+               onmouseover="this.style.background='#3730a3';this.style.boxShadow='0 6px 24px rgba(79,70,229,0.25)';"
+               onmouseout="this.style.background='linear-gradient(90deg,#4f46e5 0%,#2b6cb0 100%)';this.style.boxShadow='0 4px 16px rgba(79,70,229,0.18)';"
+            >
+                View My Configuration
+            </a>
         </div>
         <div class="footer" style="margin-top:40px;">
             <div style="margin-bottom:8px;">If you have any questions, reply to this email or contact our support team.</div>
